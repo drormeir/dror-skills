@@ -70,15 +70,15 @@ rather than where control goes.
 
 ## The chain
 
-| Skill | Description | Writes |
-|---|---|---|
-| `dror-show-tickets` | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
-| `dror-implement-adr` | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree, a branch, one commit per ticket |
-| `dror-implement-ticket` | Take one ticket from unwritten to closable — implement it, prove its criteria, loop review and repair until it converges, then prove whatever is still unticked. | code, then whatever the three below write |
-| `dror-prove` | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
-| `dror-review` | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. | a review report; a per-criterion comment |
-| `dror-repair` | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
-| `dror-review-repair` | Loop review and repair over the unpushed work until it converges — round after round while a round is still owed, at least two and up to seven. | whatever its two steps write |
+| Skill | Reach for it when | Description | Writes |
+|---|---|---|---|
+| `dror-show-tickets` | You are deciding what to do next, or want to know whether an ADR is finished. Read it before and after the rest. | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
+| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree, a branch, one commit per ticket |
+| `dror-implement-ticket` | One ticket, start to closable, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closable — implement it, prove its criteria, loop review and repair until it converges, then prove whatever is still unticked. | code, then whatever the three below write |
+| `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
+| `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. | a review report; a per-criterion comment |
+| `dror-repair` | Findings already exist — from a review, from this conversation, from a colleague — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
+| `dror-review-repair` | Same as `dror-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — round after round while a round is still owed, at least two and up to seven. | whatever its two steps write |
 
 ## The pair above the chain
 
@@ -86,10 +86,10 @@ The chain starts at an ADR and takes it on trust. These two ask whether it
 deserves it. They are the same shape one level up: find, then fix, in two runs,
 with the finding refuted before it reaches you.
 
-| Skill | Description | Writes |
-|---|---|---|
-| `dror-adr-review` | Review one ADR document against the code it decides about — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
-| `dror-adr-repair` | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | the ADR's prose, and nothing else |
+| Skill | Reach for it when | Description | Writes |
+|---|---|---|---|
+| `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against the code it decides about — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
+| `dror-adr-repair` | An ADR review returned `text` or `hole` findings and you want the document corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | the ADR's prose, and nothing else |
 
 Findings divide by **kind**, because two different hands fix them: a `text` or
 `hole` is the document's fault and goes to `dror-adr-repair`; a `breach` is the
@@ -98,11 +98,11 @@ until the user says which wins.
 
 ## Beside the chain
 
-| Skill | Description |
-|---|---|
-| `dror-review-retrospective` | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
-| `dror-internal-project-facts` | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-internal-shared` | Reference material the `dror-*` skills read — the test-writing rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
+| Skill | Reach for it when | Description |
+|---|---|---|
+| `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
+| `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
+| `dror-internal-shared` | Never as a run — read it as documentation when you want the test-writing rules or the reasoning behind a skill. | Reference material the `dror-*` skills read — the test-writing rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` is the first step of every skill in the chain; `shared` is a
@@ -112,11 +112,11 @@ shelf and has no procedure at all.
 
 These belong to no chain and read no store.
 
-| Skill | Description |
-|---|---|
-| `dror-guide` | Answer as a step-by-step guide in plain words, assuming nothing. |
-| `brief` | Reset the answering style to terse plain speech — answer first, one or two short sentences, no lists. |
-| `screen-capture` | Capture the user's screen (or a specific monitor / region) to a PNG and view it, so Claude can see what is on screen and guide GUI steps. |
+| Skill | Reach for it when | Description |
+|---|---|---|
+| `dror-guide` | An answer went over your head, or the next thing you must do is a sequence of steps outside the editor. | Answer as a step-by-step guide in plain words, assuming nothing. |
+| `brief` | The replies have grown into essays and you want them cut back for the rest of the session. | Reset the answering style to terse plain speech — answer first, one or two short sentences, no lists. |
+| `screen-capture` | The problem is something you can see and cannot paste — a GUI, a rendered plot, a dialog behaving oddly. | Capture the user's screen (or a specific monitor / region) to a PNG and view it, so Claude can see what is on screen and guide GUI steps. |
 
 ## Who may move a checkbox
 
