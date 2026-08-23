@@ -1,6 +1,6 @@
 ---
 name: dror-internal-shared
-description: Reference material the dror-* skills read - the test-writing rules, the glossary, the map and the decision record. A shelf, read by the skills that run.
+description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the glossary, the map and the decision record. A shelf, read by the skills that run.
 disable-model-invocation: true
 ---
 
@@ -11,6 +11,10 @@ that sharpening a rule sharpens every run that obeys it.
 
 - [`WRITING-TESTS.md`](WRITING-TESTS.md) — how a test is written and how it is
   proved to bite. Read whole by `dror-prove` and `dror-repair`.
+- [`REPORT-STORE.md`](REPORT-STORE.md) — which name a report takes, the identity
+  line that makes the name checkable, the finding id, and the discipline of the
+  logs. Read whole by the reviews that write a report and the repairs that read
+  one.
 - [`CONTEXT.md`](CONTEXT.md) — the glossary. One entry per word these skills use.
 - [`DROR-SKILLS.md`](DROR-SKILLS.md) — the map: what each skill is for and how
   they chain.

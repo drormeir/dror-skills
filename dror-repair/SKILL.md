@@ -24,53 +24,16 @@ route through the three steps is different at every step, and each one says how.
 **Start from the written report if there is one.** It holds the last review's
 findings with their `file:line` and failure scenarios. Read it and work from it.
 
-**Which file it is depends on what was reviewed.** A review given a ticket names
-its report after it, so with a ticket number in hand read
-`<repo>/.claude/dror-skills/review-report-<n>.md`. With no
-ticket number, the plain `<repo>/.claude/dror-skills/review-report.md` is the
-only one to read — never guess a number to
-build a name from. A caller that names a path outright is the answer,
-whatever these rules would have picked.
-
-The names are separate because two sessions review two tickets in one checkout,
-and one store with one name means the second overwrites the first. So the file
-you read may not be the newest in the directory, and that is correct: the newest
-may be another ticket's.
-
-**Whatever picked the file, check what it says it is.** A report's front matter
-carries a `Ticket:` line, and that line is the file's identity — the name is
-not. Read it before working from the file:
-
-- It names **your** ticket, or `none` while you were given none: this is the
-  report, carry on.
-- It names **another** ticket: stop and say so, naming both numbers. This is the
-  one mistake that silently repairs somebody else's findings under your ticket's
-  name, and the file name is exactly what will not reveal it — a review whose
-  own name was taken writes under a name of its own choosing and says so on
-  screen, which is a sentence in a transcript nobody has any more.
-- It carries **no** `Ticket:` line at all — a report written before the line
-  existed. Fall back to the file name: a `review-report-<n>.md` matching your
-  number is yours, and anything else is read only when the caller named it
-  outright. Never take a bare `review-report.md` for a ticket's report on the
-  grounds that it is the only file present; it is as likely to be another
-  ticket's round that could not take its own name.
-
-Where no report answers, say so and work from what the conversation named — an
-absent report is not a reason to read the nearest one.
+**Which file it is, and whether it is yours, the store reference answers.**
+`../dror-internal-shared/REPORT-STORE.md` — the shelf beside this skill — holds
+the naming, identity, staleness, finding-id and log rules every `dror-*` report
+obeys, in one copy. Read it whole before working from a file. It is not restated
+here.
 
 Its `## Refuted` section is **not** the list. Those findings were raised and
 then disproved, and they are kept only as evidence about the review itself.
 Fixing one is changing working code to satisfy a mistake — the user has to name
 it explicitly before it counts as a bug.
-
-Two things about it are stale-prone, and both are checked before any work
-starts. Its recorded base or `HEAD` may differ from the current one, and then
-its line numbers came from another state of the tree — say so, and locate each
-finding by what the code says rather than by the number. And a finding it
-already carries as repaired was fixed by an earlier run: leave it alone and name
-it as already done. The commits will not reveal that on their own, because a
-repair commits nothing — an unchanged `HEAD` is the ordinary case, not evidence
-the report is fresh.
 
 This skill is **repo-agnostic**: it names no tracker, no path and no runner of
 its own. Everything about the project in hand arrives through the facts below.
@@ -269,14 +232,9 @@ Those are the review's false positives, and until they are written down
 somewhere a later run can read, every one of them stays on the record as a
 success.
 
-So for every finding that carried an **id** in the report —
-`<head>-<tag>-<hhmm>-<n>`, or either of the older shapes a kept report may still
-hold, which is the only thing tying a row of the refutation log to a finding,
-since the report names no lens and a `file:line` moves — append one line to
-`~/.claude/dror-skills/repairs.tsv`, outside any repo. Write the header row
-**only into a file that is absent or empty**, or a second header arrives as a
-data row whose `id` column reads `id`. Append only; never rewrite what is
-already there.
+So for every finding that carried an **id** in the report, append one line to
+`~/.claude/dror-skills/repairs.tsv`, on the store reference's terms for every log:
+create it with its header where it is absent, append only, never block the run.
 
 `date` (ISO) · `repo` (the directory name) · `id` · `outcome` (the word from
 this run's report: `Fixed (red→green)`, `Couldn't reproduce`, `Ruled out`, …) ·
@@ -298,22 +256,15 @@ finding, and a per-finding attribution would claim a precision this skill does
 not have — step 2 is deliberately serial and shared helpers are edited for
 several findings at once.
 
-**Copy the id whole, exactly as the report spells it, and never rebuild it from
-parts.** Its shape has grown twice — `<head>-<n>`, then `<head>-<hhmm>-<n>`, now
-`<head>-<tag>-<hhmm>-<n>` — so a run that split on `-` to check or reformat it
-would read one shape's tag as another's minute, and the row it writes would key
-a finding that is not the one it repaired.
+**Copy the id whole, exactly as the report spells it**, by the store reference's
+rule.
 
 A report whose findings carry no id — an older one, or one this skill was not
 given — records nothing here, and that is not a failure: the join has no key,
-and a line keyed on a guess is worse than an absent one. Nothing here blocks the
-run either; a file that cannot be written is one sentence under the rows.
+and a line keyed on a guess is worse than an absent one.
 
-Where the header does not name `files_edited` and `production`, add them to the
-**header line only**, leaving every data row as it stands — the same rule the
-`id` column arrived under. Those older rows then hold four fields under six
-columns, which is the truth about them: nobody recorded what they edited, and no
-later run can reconstruct it.
+Where the header does not name `files_edited` and `production`, they arrive on
+the header line, as any added column does.
 
 The run ends here, with the changes uncommitted. Committing is the user's.
 

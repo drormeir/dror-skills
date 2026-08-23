@@ -1,6 +1,6 @@
 # The dror skills — what each one is for
 
-Eleven skills over one way of working: an **ADR** states a decision, a **spec
+Thirteen skills over one way of working: an **ADR** states a decision, a **spec
 issue** turns it into work, **child tickets** carry the pieces, and each ticket's
 **acceptance criteria** are checkboxes in its body. The criteria are the contract
 — they are what a test is written against, what a review judges, and what a
@@ -19,17 +19,19 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
 | `dror-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`; a per-criterion comment |
 | `dror-repair` | Fix what the review found, each one red then green | code and tests; unticks a red box |
+| `dror-review-repair` | Loop the two until it converges, up to seven rounds | whatever its two steps write |
 
-## The pair above the chain
+## Above the chain
 
-The chain starts at an ADR and takes it on trust. These two ask whether it
-deserves it, and they are the same shape one level up: find, then fix, in two
-runs (ADR 0001), with the finding refuted before it reaches you.
+The chain starts at an ADR and takes it on trust. These ask whether it deserves
+it, and they are the same shape one level up: find, then fix, in two runs
+(ADR 0001), with the finding refuted before it reaches you.
 
 | Skill | Question it answers | Writes |
 |---|---|---|
 | `dror-adr-review` | Is this decision still true, still coherent, still obeyed? | `adr-review-report-<adr>.md` |
 | `dror-adr-repair` | Bring the document back in line with the tree | the ADR's prose, and nothing else |
+| `dror-adr-review-repair` | Loop the two over one ADR until it converges, up to three rounds | whatever its two steps write |
 
 They divide the findings by **kind**, because two different hands fix them: a
 `text` or `hole` is the document's fault and goes to `dror-adr-repair`; a
@@ -55,22 +57,25 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
   level of the session, on whatever is being discussed.
 
 `dror-internal-shared` is the shelf the others read from, holding
-[`WRITING-TESTS.md`](WRITING-TESTS.md), this map, the glossary and the ADRs.
+[`WRITING-TESTS.md`](WRITING-TESTS.md), [`REPORT-STORE.md`](REPORT-STORE.md),
+this map, the glossary and the ADRs.
 
 ## Which of them know your repo's conventions
 
 Two tiers, and each skill says which it is in (ADR 0011):
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
-  `dror-prove`, `dror-repair`, `dror-review`, `dror-adr-repair`, `dror-guide`.
+  `dror-prove`, `dror-repair`, `dror-review`, `dror-review-repair`,
+  `dror-adr-repair`, `dror-guide`.
   They name no path and no tracker; whatever a repo
   declares reaches them through the facts. It does not mean free of **git**:
   `dror-review`'s scope is the unpushed work and `dror-implement-ticket`'s
   step 0 counts commits, and both say so.
 - **Convention-bound** — `dror-implement-adr`, which inherits the binding from
   `dror-show-tickets` by using its vocabulary, `dror-show-tickets`, which assumes GitHub issues
-  reachable by `gh` and ADRs at `docs/adr/<NNNN>-*.md`, and `dror-adr-review`,
-  which assumes the second of those. In a repo that does
+  reachable by `gh` and ADRs at `docs/adr/<NNNN>-*.md`, `dror-adr-review`,
+  which assumes the second of those, and `dror-adr-review-repair`, which inherits
+  it from `dror-adr-review` by taking an ADR by number. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 ## Why these skills exist beside Matt's

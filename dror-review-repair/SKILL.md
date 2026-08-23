@@ -177,13 +177,15 @@ step 4 answered. That is the whole state of the loop.
 Before round 1, mint a **run tag** — four hex characters from
 `openssl rand -hex 2`, or the last four of `date +%s` where that is not there —
 and use it for the whole run: the report is
-`<repo>/.claude/dror-skills/review-report-<tag>.md`, every round.
+`<repo>/.claude/dror-skills/review-report-<tag>.md`, every round. This is the
+caller naming the path, which `../dror-internal-shared/REPORT-STORE.md` makes the
+answer over any name the review would derive.
 
 **It is what makes two copies of this loop safe in one checkout.** A ticketless
-review takes the plain `review-report.md`, and its collision rules tell reports
-apart by ticket number alone — so two ticketless runs are indistinguishable and
-the second silently overwrites the first's findings, which is a report a repair
-is about to read. A tag costs one command and removes the case.
+review takes the plain `review-report.md`, and the reference tells reports apart
+by ticket number alone — so two ticketless runs are indistinguishable and the
+second silently overwrites the first's findings, which is a report a repair is
+about to read. A tag costs one command and removes the case.
 
 Say the tag once, on screen, before round 1. It is the only way a reader looking
 at a directory of reports can tell which file this run's is.

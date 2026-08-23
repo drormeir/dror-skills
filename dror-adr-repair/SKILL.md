@@ -48,31 +48,20 @@ not a failure of it.
 The last ADR review's report holds its findings with their quoted sentence, kind
 and evidence. Read it and work from it.
 
-**Which file it is depends on which ADR was reviewed.** A review names its
-report after its ADR, so with an ADR number in hand read
-`<repo>/.claude/dror-skills/adr-review-report-<n>.md`, and fall back to
-`<repo>/.claude/dror-skills/adr-review-report.md` only when that one is not there.
-Never read a *different* ADR's report because it is the only file present, and
-never guess a number to build a name from; a caller that names a path outright
-is the answer, whatever these rules would have picked.
+**Which file it is, and whether it is yours, the reference answers.**
+`../dror-internal-shared/REPORT-STORE.md` — the shelf beside this skill — holds
+the naming, identity, staleness, finding-id and log rules every `dror-*` report
+obeys, in one copy. Read it whole before working from a file. It is not restated
+here.
 
-The names are separate because two sessions review two ADRs in one checkout, and
-one store with one name means the second overwrites the first. So the file you
-read may not be the newest in the directory, and that is correct: the newest may
-be another ADR's.
+One thing it says is worth reading twice here: where the report's recorded `HEAD`
+— or the ADR's own last commit — has moved, the evidence as well as the line
+numbers came from another state of the tree, so locate each finding by the
+sentence it quotes rather than by the number.
 
 Its `## Refuted` section is **not** the list. Those findings were raised and then
 disproved, and repairing one is editing a true sentence to satisfy a mistake.
 The user has to name it explicitly before it counts.
-
-Two things about it are stale-prone, and both are checked before any work
-starts. Its recorded `HEAD`, or the ADR's own last commit, may differ from the
-current ones — then the line numbers and possibly the evidence came from another
-state of the tree, so say so and locate each finding by the sentence it quotes
-rather than by the number. And a finding it already carries as repaired was
-fixed by an earlier run: leave it and name it as already done. Nothing here
-commits, so an unchanged `HEAD` is the ordinary case and not evidence the report
-is fresh.
 
 ## Learn the project first
 
@@ -266,3 +255,45 @@ if any. Then mark the report — **the file this run read**, never the store's
 default name where they differ. Add to every finding this run handled a line
 saying what became of it, and leave the rest of the file as it stands, so a
 later run skips what is already done.
+
+## Say what became of each finding
+
+A review scores a finding as *survived* the moment a refuter fails to kill it,
+and nothing revisits that. This run is where a survivor meets the tree: one turns
+out not to be reproduced, another cannot be grounded at all. Until that is
+written where a later run can read it, every one of them stays on the record as a
+success.
+
+So for every finding that carried an **id** in the report, append one line to
+`~/.claude/dror-skills/repairs.tsv` — the same log `dror-repair` writes, on the
+store reference's terms for every log:
+
+`date` (ISO) · `repo` (the directory name) · `id`, copied whole from the report ·
+`outcome` (the word from this run's report: `Corrected (grounded)`,
+`Left — ungrounded`, `Not reproduced`, …) · `files_edited` (the repo-relative
+documents **this run** edited, joined by `+`, or `-` where it edited none) ·
+`production` (always `no`: this skill writes prose and nothing else, and the
+column stays so the two pools share one schema).
+
+A report whose findings carry no id — one written before ids existed, or one this
+skill was not given — records nothing here, and that is not a failure: the join
+has no key, and a line keyed on a guess is worse than an absent one.
+
+## Say whether another review is owed
+
+The last line of the run, and the one a **looping caller** reads: does the
+document this run leaves behind need reviewing again? Answer in a word with the
+grounds in half a sentence, and name what was edited.
+
+- **yes** — prose was written, so there are now sentences no review has read.
+  Strongest where an edit reached a document the findings never named, or where
+  an `echo` was synchronised across several copies.
+- **no** — nothing was written at all: every item was `Not reproduced`,
+  `Left — ungrounded`, `Left — needs a decision`, or handed to `dror-repair`. A
+  run that changed no file leaves nothing for a further pass to read.
+- **the user's call** — the document moved only in the narrow way each finding
+  described, and the run has nothing further to suggest.
+
+It is a **report, not a decision**: this skill neither reviews nor loops, and
+whether the next round is worth its cost belongs to whoever called. Answer it
+even when nobody asked — a caller that does not want it ignores one line.

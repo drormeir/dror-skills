@@ -78,10 +78,8 @@ each.
 
 This run reviews a working tree, and a working tree is shared. Another session's
 review, repair or implementation edits the same files, and its edits arrive in
-this run's diff indistinguishable from the work you were asked about. That is not
-hypothetical: `~/.claude/dror-skills/refutations.tsv` holds five finding ids
-minted twice at one commit inside one minute, from two runs on unrelated subject
-matter, and three of them now carry two different repair outcomes under one key.
+this run's diff indistinguishable from the work you were asked about. It is not
+hypothetical — ADR 0025 records the run where it happened.
 
 **Look before reviewing, and use what is already on disk.** List
 `<repo>/.claude/dror-skills/` for `review-report*.md`, and for each one that is
@@ -202,41 +200,16 @@ Survivors are the report.
 
 ## Write the report down
 
+`../dror-internal-shared/REPORT-STORE.md` — the shelf beside this skill — holds
+the naming, identity, finding-id and log rules every `dror-*` report obeys, in
+one copy. Read it whole before writing anything, and take this run's path from
+it. It is not restated here.
+
 Number the survivors: confirmed bugs first in severity order — the damage the
 failure scenario does, a crash or corrupted data above a cosmetic fault — latent
-hazards below. Save them to the store `dror-internal-project-facts` describes,
-overwriting the previous one. It is the run's record, and later work in this
-repo reads it instead of deriving the same findings again.
-
-**The report's path is a parameter of this run, and the caller owns it.** A
-caller that names one — a loop running several rounds, a second session sharing
-the checkout — is the answer, whatever the default would have been. Write there,
-create the directory if it is not there, and name the path you wrote on screen.
-This is the same rule `dror-repair` has for the file it reads, and the two
-together are what let one caller keep a review and its repair pointed at one
-file.
-
-**Undefined, the default applies**, and it is derived from what was reviewed: a
-run given a ticket writes `<repo>/.claude/dror-skills/review-report-<n>.md`,
-`<n>` being that ticket's number and nothing else — no `#`, no title, no slug, no
-`ticket-` in front of it — and a run given neither a path nor a ticket writes
-`<repo>/.claude/dror-skills/review-report.md`.
-
-**Take the default's own name first.** The one observed failure of this rule is a
-run that found `review-report.md` taken by another session and invented a third
-name for itself while `review-report-<n>.md` sat free — a file `dror-repair` then
-cannot find by the rule it is given. The ticket-scoped name is not a fallback for
-a collision; it is the name a ticketed run has.
-
-Only when the name it is entitled to is itself another run's is there a choice,
-and it is a **narrow** one: **never overwrite a report you were not asked to
-write**. A file there for *another* ticket is another run's, and a plain
-`review-report.md` holding another ticket's report is the same situation wearing
-the default name — keep your own findings, take a name of your own, and say on
-screen which file they went to and why. The concurrency this guards against is
-not hypothetical: the file being overwritten is one a repair run is about to
-read. A caller that minted a path has already removed the case, which is the
-reason to prefer passing one.
+hazards below. Save them under the name the reference gives, overwriting the
+previous one. It is the run's record, and later work in this repo reads it
+instead of deriving the same findings again.
 
 Front matter first: **the ticket this report is for** — `Ticket: <n>`, or
 `Ticket: none` for a review of no ticket — then the base the diff was taken
@@ -252,13 +225,6 @@ recorded because
 either one moving is what makes the line numbers stale — a repair run reads them
 to say so.
 
-**The ticket line is what makes the file's name checkable.** A file name can be
-taken by another run, mistyped or slugged, so a reader — and `dror-repair`
-above all — cannot trust it alone. The line inside can be compared: a repair
-holding ticket `<n>` reads the report it was pointed at, finds `Ticket:` and
-refuses a file that names another ticket, whatever it is called. Write it even
-where the name already carries the number; the point is that the two can be
-compared.
 Then, **where a ticket was named**, a `## Criteria` section: one line per
 criterion, in the ticket's own 1..N order, reading `met` / `unmet` / `not touched
 by this diff`. It is the whole record of this run's per-criterion judgement —
@@ -277,49 +243,16 @@ every `file:line` from the tree as it stands now: the lenses read it before the
 claims went in, and a claim inserted above a survivor has moved it. The project
 facts stay in `facts.md`, where they already are.
 
-**The id is `<head>-<tag>-<hhmm>-<n>`** — the short commit in the front matter,
-this run's tag, the report's own time from the front matter, and the finding's
-own number, so `9af24df-3f2a-1432-3`. It is what lets a later run say what became
-of *this* finding: the repair records its outcome under that id, and the log
-carries it in a column of its own. Nothing else joins them — the report carries
-no lens, and a `file:line` moves. Number the kills on from the
-survivors, in the order `## Refuted` lists them, so every merged finding has one
-and the two sections never mint the same id twice.
+**Every finding carries an id**, survivors and kills alike, minted by the
+reference's rule from the front matter's commit, this run's tag, the report's own
+time and the finding's number. Number the kills on from the survivors, in the
+order `## Refuted` lists them, so every merged finding has one and the two
+sections never mint the same id twice.
 
-**Three parts before the number, because each answers something the others
-cannot.** A repair never commits (ADR 0007), so `HEAD` does not move between a
-review, the repair that follows it and the review after that — and
-`dror-implement-ticket` runs that cycle up to three times in one run, at one
-`HEAD`. The **minute** is what separates those rounds: on `<head>-<n>` alone,
-round 1's third finding and round 2's third finding are one id in the log, and
-the repair outcomes recorded under it are two different defects'.
-
-The **tag** is what separates two runs that share the tree, which the minute
-cannot: two reviews at one commit inside one minute was written off as a case not
-worth carrying for, and it then happened — five ids minted twice at `22a7d02`,
-three of them now carrying two different repair outcomes each, from two
-concurrent runs on unrelated subject matter (ADR 0025). Rounds are minutes apart
-because a repair runs the suite between them; concurrent runs are not, and
-nothing about their timing is under anyone's control.
-
-Neither part is optional and neither replaces the other. A collision here is
-**silent** — an append-only log cannot notice that a key it already holds has
-arrived meaning something else — so the id is the one place in these skills where
-the cost of being wrong is paid entirely by a later reader.
-
-**Every finding carries one, survivors and kills alike, and this is not
-optional.** A report written without ids cannot be joined to anything: its
-repair records nothing (`dror-repair` writes no row it cannot key), and its log
-lines answer only the questions that need no id. If a finding is worth writing
-down it is worth a key, and the key costs one string.
-
-**A finding is about fifteen lines.** This file is read start to finish by a
-repair run and by you tomorrow, so it carries what is needed to act: the
-`file:line`, the failure scenario, the kind, and the one or two sentences of
-reasoning that make the scenario believable. What it does not carry is the
-refuter's route — the files traced, the call sites checked, the reasoning
-retold twice. A repair run redoes that work anyway, against the tree as it
-stands, and reading a stale account of it first is worse than reading none.
+**A finding is about fifteen lines** (ADR 0017): the `file:line`, the failure
+scenario, the kind, and the one or two sentences of reasoning that make the
+scenario believable — and not the refuter's route, which a repair redoes against
+the tree as it stands.
 
 **Then record the kills.** A last section, `## Refuted`, holding every finding
 that did *not* survive: its id, its `file:line`, the lens that raised it, what
@@ -334,14 +267,9 @@ these.
 
 The report is overwritten every run, and one run's kills are too few to read
 anything into. So every **merged finding**, survivor and kill alike, is also
-appended as one line to `~/.claude/dror-skills/refutations.tsv` — outside any repo,
-because the question it answers is about the lenses and not about a project.
-Create `~/.claude/dror-skills/` and the file with its header row when they are not
-there — this is the first run's ordinary case, since nothing else creates that
-directory. Write the header **only into a file that is absent or empty** — a
-header appended over a file that already has one is a data row whose `lens`
-column reads `lens`, and every later reading of the log then has to step around
-it. Append only; never rewrite what is already in it.
+appended as one line to `~/.claude/dror-skills/refutations.tsv`, on the
+reference's terms for every log: create it with its header where it is absent,
+append only, never block the run.
 
 Survivors go in as well as kills, because a lens's kill count says nothing on
 its own: what matters is the *share* of its findings that died, and that needs
@@ -357,19 +285,8 @@ refuted / unverified) · `claim` (was a claim comment written: yes / no) ·
 `summary` (under 80 characters, no tabs) · `id` (the report's
 `<head>-<tag>-<hhmm>-<n>`).
 
-**`id` is last, and a log written before it existed keeps every row it has.**
-Where the header does not name it, add it to the **header line only** — the one
-rewrite this file ever takes, bounded to that line and leaving every data row
-exactly as it stands. Those older rows then hold nine fields under ten columns,
-which is the truth about them: they have no id, they answer every question that
-does not need one, and they sit out the ones that do. Never restate an old row
-to fill it in — an id invented after the fact names a report nobody kept. A row
-carrying an id in either older shape — `<head>-<n>`, or `<head>-<hhmm>-<n>` — is
-left as it stands for the same reason; all three read as ids, and which one a row
-uses says when it was written. **A reader joining on the id must therefore not
-parse it into parts**: match it whole. The parts have grown twice and the field
-count is what tells the shapes apart, so a join that split on `-` and took
-position 2 as the minute would silently read a tag as a time.
+**`id` is last**, and where the header does not name it, add it to the header
+line only — the reference's rule for a column added since a file was written.
 
 **The `lens` column is a closed vocabulary**: a section name from `LENSES.md`,
 or the reserved `criterion` for an `unmet criterion` finding, which no lens
@@ -386,34 +303,28 @@ computed from it is missing its denominator. The report says which lenses were
 dropped; that fact dies with the report unless it is written where later runs
 can read it.
 
-So append one line to `~/.claude/dror-skills/runs.tsv`, created with its header on the
-same terms as the log above. A **separate file**, deliberately: the log's
-contract is one line per merged finding, and a run-level row inside it would be
-counted as a finding by everything that reads it.
+So append one line to `~/.claude/dror-skills/runs.tsv`, on the same terms as the
+log above. A **separate file**, deliberately: the log's contract is one line per
+merged finding, and a run-level row inside it would be counted as a finding by
+everything that reads it.
 
 `date` · `repo` · `head` · `lenses_run` (the closed names, joined by `+`) ·
 `lenses_dropped` (the same, or `-`) · `findings` (how many merged findings this
 run produced, kills included) · `run_tag` (this run's tag) · `concurrent` (the
-tags or names the check above saw, joined by `+`, or `-` for none seen).
+tags or names the check above saw, joined by `+`, or `-` for none seen — never
+`unchecked`, which is what a review that runs no check of its own writes there).
 
 **The last two columns are what make every rate in this file readable later.**
 Without them a run that shared its tree with another is pooled with one that had
 it to itself, and the difference is invisible: the neighbour's edits were in this
 run's diff, so its findings are partly about work this run was never asked to
 judge. A row cannot be corrected after the fact — the only moment anyone knows
-who else was here is now. Add both to the **header line only** where a file
-predates them, exactly as `refutations.tsv`'s `id` column was added, and leave
-every existing data row as it stands: those rows hold six fields under eight
-columns, which is the truth about them.
+who else was here is now. Where a file predates them, they arrive on the
+header line, as any added column does.
 
 One line per review, whether it found anything or not — a run that produced no
 findings is exactly the run the log cannot see, and the only one this file
 exists to record.
-
-Nothing here blocks the run: a log or a run file that cannot be written is one
-sentence to the user under the findings, and the report still stands. Both are
-disposable — deleting them costs `dror-review-retrospective` its history and nothing
-else.
 
 ## Present
 

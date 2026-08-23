@@ -1,6 +1,6 @@
 # Structure
 
-Fifteen skills over one way of working. Every description below is the skill's
+Sixteen skills over one way of working. Every description below is the skill's
 own `description:` line, verbatim.
 
 ## Four words, before anything else
@@ -65,8 +65,15 @@ would.
 flowchart TD
     ADR["ADR<br/>a decision, written down"]
 
-    ADR --> AR[dror-adr-review]
-    AR -->|text or hole| ARP[dror-adr-repair]
+    ADR --> ARR[dror-adr-review-repair]
+    ARR --> AR
+
+    subgraph adrloop ["converges, up to 3 rounds"]
+        AR[dror-adr-review] -->|text or hole| ARP[dror-adr-repair]
+        ARP -->|prose written| AR
+    end
+
+    ADR --> AR
     AR -->|breach| RP
     ARP -.-> ADR
 
@@ -118,16 +125,17 @@ rather than where control goes.
 | `dror-repair` | Findings already exist — from a review, from this conversation, from a colleague — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
 | `dror-review-repair` | Same as `dror-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — round after round while a round is still owed, at least two and up to seven. | whatever its two steps write |
 
-## The pair above the chain
+## Above the chain
 
-The chain starts at an ADR and takes it on trust. These two ask whether it
-deserves it. They are the same shape one level up: find, then fix, in two runs,
-with the finding refuted before it reaches you.
+The chain starts at an ADR and takes it on trust. These ask whether it deserves
+it. They are the same shape one level up: find, then fix, in two runs, with the
+finding refuted before it reaches you — and a loop over the two, as below.
 
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
 | `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against the code it decides about — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
 | `dror-adr-repair` | An ADR review returned `text` or `hole` findings and you want the document corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | the ADR's prose, and nothing else |
+| `dror-adr-review-repair` | Same as `dror-adr-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop ADR review and repair over one decision document until it converges — round after round while a round is still owed, up to three. | whatever its two steps write |
 
 Findings divide by **kind**, because two different hands fix them: a `text` or
 `hole` is the document's fault and goes to `dror-adr-repair`; a `breach` is the
@@ -140,7 +148,7 @@ until the user says which wins.
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-internal-shared` | Read it as documentation — the test-writing rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
+| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` is the first step of every skill in the chain; `shared` is a

@@ -104,6 +104,9 @@ holds the rules that go with them.
 
 ## The stores
 
+These words are the same in every `dror-*` run.
+`dror-internal-shared/REPORT-STORE.md` holds the rules that go with them.
+
 - **The store** — `<repo>/.claude/dror-skills/`, holding what these skills learn about
   a repo. Disposable: every value in it is re-derivable.
 - **Facts** — `facts.md` in the store: the five project facts, each run's answer
@@ -114,35 +117,32 @@ holds the rules that go with them.
   `review-report.md` for a review of no ticket): that review's survivors and
   kills, with the base and `HEAD` its line numbers came from. One file per
   ticket, so two sessions reviewing two tickets in one checkout cannot overwrite
-  each other; the repair run is handed the same number and reads the same name.
-  Its front matter carries a `Ticket:` line, which is the report's **identity**
-  — the name can be taken, mistyped or slugged, and only the line inside can be
-  compared against the ticket a reader was handed.
+  each other.
 - **ADR review report** — `adr-review-report-<adr>.md` in the store: the same for
   one ADR review, named the same way and for the same reason. A separate family
   from the code review's, so neither review can erase the other's findings.
+- **Identity line** — `Ticket: <n>` or `ADR: <n>` in a report's front matter,
+  and the report's identity: a name can be taken, mistyped or slugged, so only
+  the line inside can be compared against the number a reader was handed
+  (ADR 0021).
 - **Refutation log** — `~/.claude/dror-skills/refutations.tsv`, outside any repo: one
   line per merged finding, appended by every review and never rewritten.
 - **Run log** — `~/.claude/dror-skills/runs.tsv`: one line per review, naming the
   lenses run and the lenses dropped. The denominator the refutation log cannot
   hold, since a lens that finds nothing writes no finding.
 - **Repair log** — `~/.claude/dror-skills/repairs.tsv`: one line per finding a repair
-  handled, keyed by the report's finding id, carrying that run's outcome and the
+  handled, appended by `dror-repair` and by `dror-adr-repair`, keyed by the
+  report's finding id, carrying that run's outcome and the
   files that run edited. What
   says whether a survivor was a real defect once somebody tried to fix it — and,
   read across a head's rounds, which findings a round had in scope and did not
   return.
 - **Finding id** — `<head>-<tag>-<hhmm>-<n>`: the short commit a report was
   written at, the run's tag, the minute it was written, and the finding's number
-  in it. The one key
-  joining a report, the refutation log
-  and the repair log; the report carries no lens and a `file:line` moves. The
-  minute is in it because a repair never commits, so several reviews of one
-  thing share one `HEAD` — the three rounds of `dror-implement-ticket` above
-  all; the tag is in it because two runs can share a working tree, which no
-  amount of time resolution separates (ADR 0025). Older rows carry
-  `<head>-<hhmm>-<n>` or `<head>-<n>`, so an id is matched **whole** and never
-  split into parts.
+  in it. The one key joining a report, the refutation log and the repair log;
+  the report carries no lens and a `file:line` moves. Two older shapes are in the
+  logs — `<head>-<hhmm>-<n>` and `<head>-<n>` — so an id is matched **whole** and
+  never split into parts (ADR 0025).
 - **Run tag** — four hex characters minted per review run. Names the *run* in a
   report's front matter and in `runs.tsv`; it is not the report's file name,
   which ADR 0021 derives from the ticket.

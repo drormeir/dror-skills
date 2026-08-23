@@ -32,14 +32,16 @@ against, what a review judges, and what a closed ticket means.
 | `dror-review-repair` | Loop the two until it converges |
 
 Above the chain, `dror-adr-review` and `dror-adr-repair` ask whether the decision
-deserved the trust the chain gives it. Beside it, `dror-review-retrospective`
+deserved the trust the chain gives it, and `dror-adr-review-repair` loops the two
+over one ADR the way `dror-review-repair` loops the pair below.
+Beside it, `dror-review-retrospective`
 reads the refutation log across runs and says which lens is producing false
 positives.
 
 `dror-internal-project-facts` and `dror-internal-shared` are named for what they
 are: the first is invoked by every skill in the chain as its first step, the
-second is a shelf of reference material — the test-writing rules, the glossary,
-the map and the decision records behind the design.
+second is a shelf of reference material — the test-writing rules, the report
+store's rules, the glossary, the map and the decision records behind the design.
 
 Three skills work at the level of the session itself: `dror-guide` governs
 step-by-step answers, `brief` resets the answering style, and `screen-capture`

@@ -146,6 +146,9 @@ number is not evidence of good recall. It is also unavailable before
 `concurrent` column is what says which runs those were. Where either is missing,
 say the question cannot be answered for those rows rather than approximating the
 repair's reach from the previous round's findings, which overstates it.
+**`unchecked` in that column is missing, not empty** — it is the word a review
+that runs no neighbour check of its own writes (ADR 0027), and reading it as
+"nobody else was here" is the confound the column exists to prevent.
 
 **Where the code keeps needing claims.** Group the `claim = yes` lines by
 `path`. A file that repeatedly makes reviewers reach the wrong conclusion is a

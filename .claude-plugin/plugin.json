@@ -28,6 +28,7 @@
     "./dror-review-retrospective",
     "./dror-adr-review",
     "./dror-adr-repair",
+    "./dror-adr-review-repair",
     "./dror-internal-project-facts",
     "./dror-internal-shared",
     "./dror-guide",

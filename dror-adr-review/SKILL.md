@@ -171,34 +171,37 @@ A finding a refuter could not settle says so on its line and keeps its kind.
 
 ## Write the report down
 
+`../dror-internal-shared/REPORT-STORE.md` — the shelf beside this skill — holds
+the naming, identity, finding-id and log rules every `dror-*` report obeys, in
+one copy. Read it whole before writing anything, and take this run's name from
+it. It is not restated here.
+
 Number the survivors: `conflict` first — it is the kind that blocks
 somebody — then `breach` in the order of the damage a violation does, then
 `text`, then `hole`, then `revisit` last, which is the only kind that asks for
-nothing to be fixed. Save them to the store `dror-internal-project-facts` describes,
-overwriting the previous one. It is a separate file from the code review's on
-purpose: a code review and an ADR review are started for different reasons and
-neither should be able to erase the other's findings.
+nothing to be fixed. Save them under the name the reference gives, overwriting
+the previous one. It is a separate file from the code review's on purpose: a code
+review and an ADR review are started for different reasons and neither should be
+able to erase the other's findings.
 
-**The file is named after the ADR reviewed**:
-`<repo>/.claude/dror-skills/adr-review-report-<n>.md`, `<n>` being that ADR's number
-and nothing else — no title, no slug. Only a run that somehow has no number
-writes the bare `<repo>/.claude/dror-skills/adr-review-report.md`, which for this skill
-is close to unreachable, since an ADR is what it is invoked on.
+Front matter first: **the ADR this report is for** — `ADR: <n>`, the identity
+line — with its title and path; the commit `HEAD` was at; the commit and date the
+ADR itself last moved; **the time this report was written** (`date +%H%M`, the
+same call the log's date comes from); and **this run's tag**. Both commits are
+recorded because either one moving is what makes a finding stale — a repair run
+reads them to say so; the time and the tag are what the finding id below is built
+from.
 
-The reason is the same one that separates this file from the code review's, one
-step further: two sessions reviewing two ADRs in one checkout both reach for the
-store, and the second overwrites the first's work-product — a report a repair
-run is about to read. One name per ADR keeps them apart, and it costs nothing,
-since the reader is handed the same number. **Never overwrite a report you were
-not asked to write**: a file already there for another ADR is another run's.
-
-Front matter first: the ADR's number, title and path; the commit `HEAD` was at;
-the commit and date the ADR itself last moved. Both commits are recorded because
-either one moving is what makes a finding stale — a repair run reads them to say
-so.
+**Mint a run tag** — four hex characters from `openssl rand -hex 2`, or the last
+four of `date +%s` where that is not there — unless the caller gave one, in which
+case that is the tag. It does not change the report's name, which the reference
+derives from the ADR; it identifies the *run*, so two reviews of one ADR at one
+commit inside one minute cannot mint one id twice.
 
 Then one section per finding, numbered as on screen, each with:
 
+- its **id**, minted by the reference's rule from the front matter's commit, this
+  run's tag, the report's own time and the finding's number;
 - the **ADR line or quoted sentence** it is about, and the `file:line` in the
   code it was judged against;
 - its **kind**;
@@ -214,23 +217,19 @@ refuter's route. Also name the lenses that were **not** run, since a reader
 cannot tell an area that came back clean from one nobody looked at.
 
 **Then record the kills.** A last section, `## Refuted`, holding every finding
-that did *not* survive: the sentence it was about, the lens that raised it, what
-it claimed, and why the refuter killed it. One short paragraph each, no
+that did *not* survive: its id, the sentence it was about, the lens that raised
+it, what it claimed, and why the refuter killed it. Number the kills on from the
+survivors, so every merged finding has an id and the two sections never mint the
+same one twice. One short paragraph each, no
 scenarios — nothing downstream acts on these. It is the run's only record of its
 own precision.
 
 ## Append to the log
 
 The report is overwritten every run, so every **merged finding**, survivor and
-kill alike, is also appended as one line to `~/.claude/dror-skills/refutations.tsv` —
-the same log `dror-review` writes, outside any repo, because the question it
-answers is about the lenses and not about a project. The `lens` column keeps the
-two pools apart; nothing else has to.
-
-Create `~/.claude/dror-skills/` and the file with its header row when they are not
-there. Write the header **only into a file that is absent or empty** — a header
-appended over a file that already has one is a data row whose `lens` column
-reads `lens`. Append only; never rewrite what is already in it.
+kill alike, is also appended as one line to `~/.claude/dror-skills/refutations.tsv`
+— the same log `dror-review` writes, on the reference's terms for every log. The
+`lens` column keeps the two pools apart; nothing else has to.
 
 One tab-separated line per finding, the columns `dror-review` owns, in its
 order: `date` (from `date -I`) · `repo` (the directory name) · `head` (short
@@ -238,16 +237,48 @@ commit) · `lens` · `path` — **the ADR's repo-relative path**, which is what 
 run reviewed, even for a `breach` whose evidence sits in code · `kind` (text /
 hole / breach / conflict / revisit) · `verdict` (survived / refuted / unverified) ·
 `claim` (always `no`: this skill writes no claim comments, and the column stays
-so the two pools share one schema) · `summary` (under 80 characters, no tabs).
+so the two pools share one schema) · `summary` (under 80 characters, no tabs) ·
+`id` (the report's `<head>-<tag>-<hhmm>-<n>`, copied whole).
+
+**The `id` column is what lets a `breach` be followed.** A breach goes to
+`dror-repair`, which writes a `repairs.tsv` row only for a finding that carried
+an id — so an ADR review that minted none put its findings beyond every question
+the logs exist to answer, while sharing their schema. Where the header does not
+name `id`, it arrives on the header line, as any added column does.
 
 **The `lens` column is a closed vocabulary**: a section name from this skill's
 [`LENSES.md`](LENSES.md), or one from `dror-review`'s. Nothing else may be
-written there — a name outside those sets silently corrupts every rate
-`dror-review-retrospective` computes. Where the merge joined several, join their names
-with `+`.
+written there — a name outside that set silently corrupts every rate
+`dror-review-retrospective` computes. The two vocabularies are disjoint, which is
+what lets one log hold both pools and a reader tell them apart. Where the merge
+joined several, join their names with `+`.
 
-Nothing here blocks the run: a log that cannot be written is one sentence to the
-user under the findings, and the report still stands.
+## Record the run itself
+
+A lens that ran and found nothing writes no line above, so the log alone cannot
+tell an ADR that came back clean from one nobody looked at, and every rate
+computed from it is missing its denominator. The report says which lenses were
+dropped; that fact dies with the report unless it is written where later runs can
+read it.
+
+So append one line to `~/.claude/dror-skills/runs.tsv`, on the same terms as the
+log above — the same file `dror-review` writes, whose rows the disjoint lens
+names keep readable apart:
+
+`date` · `repo` · `head` · `lenses_run` (the closed names, joined by `+`) ·
+`lenses_dropped` (the same, or `-`) · `findings` (how many merged findings this
+run produced, kills included) · `run_tag` (this run's tag) · `concurrent`
+(**`unchecked`**, or the tags a caller told this run it saw, joined by `+`).
+
+**Never `-` here.** In `dror-review`'s rows that value means *a check ran and saw
+nobody*; this skill runs no check of its own, and writing `-` would put "looked
+and found none" and "never looked" under one value in one column. `unchecked` is
+the honest word, and a caller that did look — `dror-adr-review-repair` does, once
+before its first round — passes what it saw, which is then written instead.
+
+One line per review, whether it found anything or not — a run that produced no
+findings is exactly the run the log cannot see, and the only one this file exists
+to record.
 
 ## Present
 
@@ -258,10 +289,21 @@ say in one sentence which findings are this chain's next work and whose: the
 because somebody must choose, the second because nothing is broken. Then stop and wait.
 
 Name the report file this run wrote, since a repair run has to be pointed at it
-and only this run knows which name it took.
+and only this run knows which name it took, and say this run's tag once.
+
+Then **one line saying whether a repair should follow**, and why in half a
+sentence. It is a judgement the count cannot make: a stale sentence and a
+decision nobody may repair are one survivor each, and only this run has met them.
+Three answers — *yes*, naming which findings need the edit; *no*, where every
+survivor is something to know rather than something to change; *the user's call*,
+where a `conflict` or a `revisit` is the whole list and choosing is theirs. It
+binds nobody; a looping caller reads this line to decide whether to spend a
+repair at all.
 
 Done when every lens has returned, the findings have been merged, every merged
 finding has faced a refuter, this run's report file holds the survivors and the
-refuted, every merged finding has a line in `~/.claude/dror-skills/refutations.tsv`,
-and that same list is on screen — with no line of the ADR and no line of code
+refuted with an id each, every merged finding has a line in
+`~/.claude/dror-skills/refutations.tsv`, the run has its line in
+`~/.claude/dror-skills/runs.tsv`, the repair-or-not line is on screen, and
+that same list is on screen — with no line of the ADR and no line of code
 changed.
