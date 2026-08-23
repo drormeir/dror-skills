@@ -1,0 +1,23 @@
+{
+  "name": "drormeir",
+  "owner": {
+    "name": "drormeir",
+    "url": "https://github.com/drormeir"
+  },
+  "description": "A propose-then-refute working chain for Claude Code, as an installable plugin.",
+  "plugins": [
+    {
+      "name": "dror-skills",
+      "source": "./",
+      "description": "An ADR states a decision, tickets carry the pieces, and every finding is refuted before it reaches you. Prove, review, repair.",
+      "category": "engineering",
+      "keywords": [
+        "engineering",
+        "skills",
+        "code-review",
+        "adr",
+        "testing"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "dror-skills",
+  "version": "1.0.0",
+  "description": "A propose-then-refute working chain for Claude Code: an ADR states a decision, tickets carry the pieces, and every finding is refuted before it reaches you. Prove, review, repair.",
+  "author": {
+    "name": "drormeir",
+    "url": "https://github.com/drormeir"
+  },
+  "homepage": "https://github.com/drormeir/dror-skills",
+  "repository": "https://github.com/drormeir/dror-skills",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "skills",
+    "code-review",
+    "adr",
+    "tickets",
+    "testing"
+  ],
+  "skills": [
+    "./dror-show-tickets",
+    "./dror-implement-adr",
+    "./dror-implement-ticket",
+    "./dror-prove",
+    "./dror-review",
+    "./dror-repair",
+    "./dror-review-repair",
+    "./dror-review-retrospective",
+    "./dror-adr-review",
+    "./dror-adr-repair",
+    "./dror-internal-project-facts",
+    "./dror-internal-shared",
+    "./dror-guide",
+    "./brief",
+    "./screen-capture"
+  ]
+}

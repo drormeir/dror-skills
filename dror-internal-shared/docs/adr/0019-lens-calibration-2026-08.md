@@ -26,8 +26,8 @@ real cost: an observable stale read whose reader lies outside the lens's boundar
 by a refuter. If a later retrospective shows `state`'s survivor count falling
 with its rate, that is the trade going the wrong way and the sentence comes out.
 
-The claim counts pointed somewhere no lens edit reaches: `seismic_sub_win.py`
-took 13 of the 54 claim comments ever written, `display_area.py` 5. Checking the
+The claim counts pointed somewhere no lens edit reaches: one large module took 13
+of the 54 claim comments ever written, and a second one 5. Checking the
 tree afterwards, **every one of those invariants is in the code** — the refuters
 wrote them at the time, and they survived. So a high claim count reads as the
 mechanism working, not as a backlog: it says a file was hard to read *before*

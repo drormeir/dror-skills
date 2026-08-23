@@ -11,14 +11,14 @@ That rule assumed the review before it had seen the diff. It had not.
 `~/.claude/dror-skills/refutations.tsv` measures a single review pass against the
 round that follows it, by asking which files a later round's findings name:
 
-- `8681800` — round 1 returned 4 findings in `top_view_panel.py` /
-  `top_view_sub_win.py`; round 2 returned **15** in `project_directory.py` /
-  `project_tree.py`, files round 1 never opened and its repair never touched.
+- `8681800` — round 1 returned 4 findings in two of the diff's modules; round 2
+  returned **15** in two others, files round 1 never opened and its repair never
+  touched.
 - `94cb2b6` — round 1's one finding was a gap in cover, repaired with a test and
   no production edit at all. Under the old rule that is **optional** and a stop.
   Round 2 then found 9 findings across four files nobody had looked at.
-- `67d2a48` — round 1 covered the top_view files; round 2 returned 7 in
-  `project_tree.py` / `project_watch.py`.
+- `67d2a48` — round 1 covered one pair of modules; round 2 returned 7 in another
+  pair it had not opened.
 
 So the loop's second round was never buying what the file said it bought — a
 look at the code the repair wrote. It was finishing the review. Its value is
