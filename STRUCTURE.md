@@ -8,6 +8,19 @@ closed ticket means.
 
 Every description below is the skill's own `description:` line, verbatim.
 
+## The names
+
+`dror-` is a **namespace, not a category**. Installed skills share one flat `/`
+list, so the prefix is what keeps these from colliding with another author's
+`review` or `prove` — and what lets you see, at the moment you pick one, whose
+opinion about reviewing you are about to run. `brief` and `screen-capture` carry
+no prefix because they belong to no chain and claim no method.
+
+Inside the namespace, `dror-internal-` marks a skill **another skill runs, not
+you**. That is a second namespace and not a warning: the two are perfectly
+runnable by hand, they just answer a question the chain asks rather than one you
+would.
+
 ## The flow
 
 ```mermaid
