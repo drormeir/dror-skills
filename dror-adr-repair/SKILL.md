@@ -1,0 +1,268 @@
+---
+name: dror-adr-repair
+description: Repair an ADR's text from findings already made - every corrected sentence grounded in the code it describes, and no decision rewritten. Use when asked to fix an ADR review's findings, or to bring a named decision document back in line with the tree.
+---
+
+# dror-adr-repair
+
+Repair the ADR text this conversation has already found fault with. Runs start
+to finish without stopping.
+
+**It writes prose and nothing else.** No production code, no tests. A finding
+that says the *code* is wrong is not this run's to fix — it is named and handed
+on. Prose wherever it lives counts: the ADR, the conventions doc, the glossary,
+a README index, a module docstring. A docstring is edited only when a finding
+names it and only as text; the line below it is not this run's. That is the same split as everywhere in this chain, and it is what keeps a
+document repair from quietly changing behaviour to make a sentence true.
+
+**Every finding is on the list.** The default is the whole report, or everything
+the conversation named. The user subtracts from it — "skip 3", "leave the
+holes" — and may add a finding of their own; naming a few is not a way of
+choosing only those. Work that list and only that list; discovering further
+faults is `dror-adr-review`'s run.
+
+## The one thing this skill may not do
+
+**It may not change what was decided.** An ADR is a record of a decision taken
+at a moment, and rewriting the decision to match today is not a repair — it is a
+new decision with no author and no date, written into a file that claims
+somebody approved it.
+
+So the line is drawn at the sentence's job:
+
+- A sentence that **describes** — the code, the layout, a number, a mechanism, a
+  name — is repaired freely, to whatever the tree says now.
+- A sentence that **decides** — what was chosen, over what, and what follows — is
+  left alone. Where it has become wrong, what is added is a note saying so, in
+  the document's own voice, naming what changed and when. The decision stays
+  legible; the record grows a line.
+- A **conflict** between two decisions is not repaired at all. It goes back to
+  the user with both passages quoted.
+
+Where a finding cannot be repaired without crossing that line, say so and leave
+it: an item recorded as `Needs a decision` is a finished outcome of this run,
+not a failure of it.
+
+## Start from the written report if there is one
+
+The last ADR review's report holds its findings with their quoted sentence, kind
+and evidence. Read it and work from it.
+
+**Which file it is depends on which ADR was reviewed.** A review names its
+report after its ADR, so with an ADR number in hand read
+`<repo>/.claude/dror-skills/adr-review-report-<n>.md`, and fall back to
+`<repo>/.claude/dror-skills/adr-review-report.md` only when that one is not there.
+Never read a *different* ADR's report because it is the only file present, and
+never guess a number to build a name from; a caller that names a path outright
+is the answer, whatever these rules would have picked.
+
+The names are separate because two sessions review two ADRs in one checkout, and
+one store with one name means the second overwrites the first. So the file you
+read may not be the newest in the directory, and that is correct: the newest may
+be another ADR's.
+
+Its `## Refuted` section is **not** the list. Those findings were raised and then
+disproved, and repairing one is editing a true sentence to satisfy a mistake.
+The user has to name it explicitly before it counts.
+
+Two things about it are stale-prone, and both are checked before any work
+starts. Its recorded `HEAD`, or the ADR's own last commit, may differ from the
+current ones — then the line numbers and possibly the evidence came from another
+state of the tree, so say so and locate each finding by the sentence it quotes
+rather than by the number. And a finding it already carries as repaired was
+fixed by an earlier run: leave it and name it as already done. Nothing here
+commits, so an unchanged `HEAD` is the ordinary case and not evidence the report
+is fresh.
+
+## Learn the project first
+
+Invoke the `dror-internal-project-facts` skill. The **domain vocabulary** is the one that
+matters most here — a repaired sentence is written in the project's own words,
+and a repair that introduces a synonym for a term the glossary already fixes has
+made the document worse while making it true. The declared scope matters too: a
+sentence describing a retired directory is repaired to say it is retired, not
+updated to track it.
+
+That skill is a **step of this one**, not a hand-off: the moment the facts are
+in hand, continue at **Step 1 — Ground** in the same turn.
+
+## The evidence a document repair stands on
+
+A code repair proves itself by watching a test go **red** and then **green**.
+There is no such thing for a sentence, and pretending otherwise is how a
+plausible correction ships. So this skill's evidence is different in kind, and
+it has its own two words:
+
+- **grounded** — the corrected sentence was read out of the tree as it stands
+  now, and the run can quote the `file:line`, the command output or the file
+  listing that says it. Every sentence this run writes is grounded.
+- **ungrounded** — nothing in the tree settles it. The sentence is **not
+  written**. What the run produces instead is the question, put to the user.
+
+The report's own evidence is not enough on its own. It was gathered by a refuter
+in an earlier run against a tree that may have moved, and it was written down in
+fifteen lines. Step 1 re-reads it. That re-reading is the whole of this skill's
+rigour: a document repair has no suite to catch it.
+
+## Step 1 — Ground
+
+For every item, go to the code and settle what the sentence should say. Produce,
+per item: the quoted sentence, the `file:line` (or command output) that settles
+it, and the corrected **fact** — still not the prose.
+
+An item that comes back **ungrounded** is carried to step 2 and written into
+nothing. An item whose finding turns out to be **wrong** — the tree says what
+the document already said — is carried the same way and reported as not
+reproduced, with the evidence quoted. Neither is an error; both are the ordinary
+outcome of checking.
+
+A `breach` item is grounded like the others and then **stops here**: confirm the
+site still violates the rule, quote it, and carry it as work for `dror-repair`.
+Nothing is written for it. A `revisit` item stops here too, and for the opposite
+reason: nothing is wrong, so there is no sentence to correct — re-read the two
+numbers it carries, confirm they still read that way, and carry it to the report
+as a question for the user.
+
+### Fan out, one agent per item
+
+This step is read-only, so it parallelizes cleanly: spawn one subagent per item,
+all at once. Each is told: the finding with its quoted sentence and kind, the
+project facts, the ADR's path, and that it **writes nothing** — not the ADR, not
+source, not a scratch note in the tree. It returns the corrected fact with its
+evidence, or `ungrounded` with what could not be settled, or `not reproduced`
+with the passage of code that agrees with the document.
+
+Grouping is by item and not by file because every edit lands in one document,
+which is precisely why the *writing* below is not parallelized.
+
+Done when every item is grounded, ungrounded, not reproduced, or carried as a
+`breach`, with the evidence on screen for each.
+
+## Step 2 — Write
+
+**This step is serial and stays in this context**, and that is a decision rather
+than an omission. Every edit lands in one file, and a document's edits are not
+separable the way test files are: two corrections meeting in one paragraph is
+the ordinary case, and the second writer would be editing text the first has
+already moved. Prose consistency is also a judgement about the whole document,
+which an agent holding one sentence cannot make.
+
+- **Edit the sentence, not the section.** The smallest change that makes it
+  true. A rewritten paragraph hides the correction inside a diff nobody can
+  read, and it costs the document its author's voice.
+- **Match the document's voice.** Its tense, its terminology, its level of
+  detail. An ADR that speaks in short declaratives does not acquire a bulleted
+  list because this run prefers one.
+- **Use the project's words** — the glossary's term, not a synonym.
+- A **`hole`** is filled with the grounded sentence and no more. Where filling
+  it means recording an alternative or a consequence, it is written as what it
+  is: a fact recovered now, not a claim about what the authors weighed then.
+- **Fix what the fix makes untrue.** A corrected name that appears three times
+  in the document is corrected three times; a link that the correction breaks is
+  repaired. Grep the document for the old spelling before moving on.
+- **Never delete a decision.** Superseded text is marked as superseded, with
+  what replaced it. Deleting it destroys the only record that the question was
+  ever settled the other way.
+- **An `echoes` item is repaired in every copy it names**, in one pass, before
+  the next item starts. Repairing three of four leaves the fourth to be found
+  again next quarter, and the ADR is rarely the copy that governs behaviour —
+  the conventions doc is, because that is what gets read on every run. Each copy
+  is corrected in *its own* register: the ADR keeps its detail, a one-line
+  paraphrase stays one line, a docstring stays at the site's level. Making them
+  identical is not the goal; making none of them say something different is.
+  Where the finding says a copy is **missing**, write it where the finding says
+  it should be echoed, in that document's own form.
+
+The ADR's own metadata — its title, number and any status line the project keeps
+— is left alone unless a finding named it.
+
+Done when every grounded item has an edit behind it and every other item has a
+recorded reason it has none.
+
+## Step 3 — Check
+
+The document has no suite, so the check is a reading and two searches:
+
+1. **Read the ADR whole, top to bottom, after the edits.** A document repaired
+   sentence by sentence acquires contradictions between the repaired sentences.
+   This is the one step that catches them, and it cannot be delegated to an
+   agent that saw only its own item.
+2. **Resolve every link** the document carries — relative paths to other ADRs
+   and to source files. A repair that renames a path in prose and leaves the
+   link is the defect this run was called to fix.
+3. **Search the tree for the old spelling** of anything renamed, in `CLAUDE.md`,
+   `CONTEXT.md`, the README index and the other ADRs. A hit a finding named is
+   already repaired by then, under its `echo` item. A hit **no finding named** is
+   the review's miss, not this run's licence: name it in the report and leave it,
+   because an edit nobody refuted is exactly what this chain's two-run split
+   exists to prevent. Where there are several, say so plainly — it is the signal
+   that the next `dror-adr-review` should run `echoes`.
+
+Where the project declares a docs check of its own — a link checker, a
+formatter, a spell pass — run it and paste its output.
+
+The run ends here, with the changes uncommitted. Committing is the user's.
+
+## Report
+
+Two things per item, answered separately, because what the review named and what
+this run did about it are different facts. The finding is a neutral observation;
+the outcome carries the verdict.
+
+- **What was found** — the kind of thing, in a word. An open vocabulary; the
+  usual ones:
+  - `stale` — the document described a tree that has moved.
+  - `wrong` — the document was never right.
+  - `unclear` — true but readable two ways.
+  - `hole` — something a decision record must carry was missing.
+  - `echo` — the rule is right here and wrong in a copy of it elsewhere.
+  - `breach` — the code violates the document's rule. The document is fine.
+  - `conflict` — two decisions disagree.
+  - `revisit` — nothing is wrong and what the decision predicted has not held.
+- **Repair's outcome** — what this run did. Also open; the usual ones:
+  - `Corrected (grounded)` — the strong claim: the fact was read out of the tree
+    this run, and the sentence now says it. The note carries the `file:line`.
+  - `Filled (grounded)` — a `hole` closed with a sentence the tree supports.
+  - `Marked superseded` — a decision that has been overtaken; the text stays and
+    a line records what replaced it.
+  - `Synchronised` — an `echo`: every copy the finding named now says the same
+    thing. The note lists them, and a copy left alone says why.
+  - `Left — needs a decision` — repairing it would rewrite what was decided, or
+    it is a `revisit` and nothing is broken. Names the question the user has to
+    answer, and for a `revisit` both numbers.
+  - `Left — ungrounded` — nothing in the tree settles it. Names what is missing.
+  - `Not reproduced` — the tree agrees with the document. Nothing changed, and
+    the evidence is quoted.
+  - `For dror-repair` — a `breach`, confirmed and handed on, with its
+    `file:line`.
+  - `Duplicate of N` — it and item N are one fault; N carries the repair.
+  - `Deferred` — real, and left on the **user's** instruction.
+
+Never pair a finding with an outcome that contradicts it:
+
+- `breach` ends in `For dror-repair` or `Not reproduced`, never in a
+  `Corrected` — editing the document to match code that breaks its rule is how a
+  rule is lost.
+- `conflict` and `revisit` end in `Left — needs a decision`, never in a
+  `Corrected` — the first because somebody must choose, the second because there
+  was never a wrong sentence to correct.
+- `echo` ends in `Synchronised`, never in a bare `Corrected (grounded)` — the
+  outcome has to say that every copy was reached, since reaching one is the
+  failure this finding exists to prevent.
+- A `Corrected (grounded)` with no `file:line` in its note is not grounded, and
+  the row is wrong.
+
+Run `printenv CLAUDE_CODE_ENTRYPOINT`. If it is `claude-vscode`, report one row
+per item: **Item | Sentence | What was found | Repair's outcome | Evidence |
+Note**. `Sentence` is the quoted fragment, shortened. `Evidence` is the
+`file:line` or `—`.
+
+Otherwise report the same rows as one line each, in the same order, reading
+`<item> — found: <kind> — outcome: <outcome> — evidence: <file:line or none> —
+<note>`.
+
+Below the rows: the other-document hits from step 3 and the docs-check output,
+if any. Then mark the report — **the file this run read**, never the store's
+default name where they differ. Add to every finding this run handled a line
+saying what became of it, and leave the rest of the file as it stands, so a
+later run skips what is already done.

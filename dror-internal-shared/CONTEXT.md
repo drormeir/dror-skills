@@ -1,0 +1,148 @@
+# Glossary
+
+The words the `dror-*` skills use. One entry per term, and nothing else — why a
+skill behaves as it does is in [`docs/adr/`](docs/adr/), and what each skill is
+for is in [`DROR-SKILLS.md`](DROR-SKILLS.md).
+
+## The work being described
+
+- **ADR** — a written decision. In a project, `docs/adr/<NNNN>-*.md`; for these
+  skills, the files under `docs/adr/` beside this one. **Two numbering spaces,
+  one word and one path shape**: a project's ADR 0011 and the skills' ADR 0011
+  are unrelated documents, and a bare number is ambiguous outside the file that
+  writes it. Inside a `dror-*` skill or its ADRs, a bare `ADR 0011` is the
+  skills' own; anywhere a project is being discussed, say which set — "the
+  skills' ADR 0018", "the repo's ADR 0002" — because a reader who looks in the
+  wrong directory finds either the wrong decision or none.
+- **Spec issue** — the parent issue that turns one ADR into work. Carries no
+  acceptance criteria of its own.
+- **Ticket** — a child issue of a spec issue, carrying one piece of the work.
+- **Acceptance criterion** — one `- [ ]` line in a ticket's *Acceptance
+  criteria* section. The contract: what a test is written against, what a review
+  judges, and what a closed ticket means.
+- **Criterion number** — the position of a criterion in its ticket's list,
+  1..N, in the order the body lists them. Every `dror-*` skill numbers the same
+  ticket the same way, so a test name, a review verdict and a report row all
+  name the same criterion.
+- **Unpushed work** — the commits a branch is ahead of its base by, plus staged,
+  unstaged and untracked source. What `dror-review` reviews.
+- **Base** — the commit a diff is taken against.
+
+## Findings
+
+- **Finding** — one defect, hazard or gap named by a review, after merging.
+- **Bug** — production code is wrong. A finding already named in the
+  conversation; `dror-repair` discovers none of its own.
+- **Latent hazard** — code correct today that this diff made fragile, naming the
+  future change that would break it.
+- **Gap in cover** (also **cover**, as a finding's kind) — named behaviour that
+  no test would catch the loss of. Nothing is broken, so nothing is fixed; the
+  test alone is the deliverable.
+- **Unmet criterion** — a criterion the diff claims and misses. Neither a bug
+  nor a gap in cover.
+- **Lens** — one review perspective, defined by a section of
+  `dror-review/LENSES.md` or of `dror-adr-review/LENSES.md`, run as one agent
+  that proposes findings.
+- **Refuter** — the agent handed one merged finding whose job is to kill it.
+- **Claim** — a comment written into source recording an invariant that is
+  invisible at the site. Written by a refuter, verified rather than trusted by a
+  later lens.
+
+## Findings about an ADR
+
+The four kinds `dror-adr-review` returns. They are separate words because each
+names a different hand as the one that fixes it.
+
+- **Text** — the document says something about the code that is not true, or
+  says something true that a reader acts wrongly on. `dror-adr-repair` fixes it.
+- **Hole** — something a decision record must carry is missing: the alternative,
+  a consequence, the scope, the migration. Filled only where it can be grounded.
+- **Breach** — the code breaks a rule the ADR states, at a named `file:line`.
+  The document is right; `dror-repair` fixes the code.
+- **Conflict** — two decisions disagree, in one document or across two. Nobody
+  repairs it without the user, because picking a side is deciding.
+- **Revisit** — nothing is wrong, and what the decision predicted has not held:
+  the measurement it stood on now reads differently, or the reason its rejected
+  alternative lost no longer applies. Carries both numbers, the predicted and
+  the measured. Nobody repairs it either — reopening a decision is the user's.
+- **Echo** — a copy of an ADR's rule living where the rule is actually read: the
+  conventions doc, the glossary, a docstring at the site, a README index. The
+  copy that gets read is the one that governs, so a correct ADR beside a stale
+  copy is a rule not in force. An `echo` finding names every copy and is
+  repaired in all of them at once.
+
+## Evidence for a document
+
+A sentence has no suite, so the two words below stand where **red** and
+**green** stand for code.
+
+- **grounded** — the corrected sentence was read out of the tree as it stands
+  now, and the run can quote the `file:line` or command output that says it.
+  Every sentence `dror-adr-repair` writes is grounded.
+- **ungrounded** — nothing in the tree settles it. The sentence is not written;
+  the question goes to the user.
+
+## Evidence
+
+These words are the same in every `dror-*` run. `dror-internal-shared/WRITING-TESTS.md`
+holds the rules that go with them.
+
+- **red** — the test was run and its failing assertion pasted, with the run's
+  summary line.
+- **green** — the test was run after the code exists and its passing summary
+  line pasted.
+- **red by mutation** — red earned in a copy of the repo in the scratchpad, with
+  the named behaviour broken there. How an item whose code already works gets
+  the same evidence.
+- **unproven** — the mutation cannot be staged. The test is kept and named; what
+  is missing is the evidence, not the test.
+- **untestable** — no reasonable test can catch it at all. No test is written,
+  and the reason is recorded.
+- **covered** — a bug that went red and then green.
+- **enrich** — extend a test that already exists so it also covers a new item,
+  rather than adding a file.
+
+## The stores
+
+- **The store** — `<repo>/.claude/dror-skills/`, holding what these skills learn about
+  a repo. Disposable: every value in it is re-derivable.
+- **Facts** — `facts.md` in the store: the five project facts, each run's answer
+  to what this repo declares, ending in a stamp.
+- **Stamp** — the list of files a gather read, each with its size and `cksum`
+  checksum, plus the facts file's own size.
+- **Review report** — `review-report-<ticket>.md` in the store (bare
+  `review-report.md` for a review of no ticket): that review's survivors and
+  kills, with the base and `HEAD` its line numbers came from. One file per
+  ticket, so two sessions reviewing two tickets in one checkout cannot overwrite
+  each other; the repair run is handed the same number and reads the same name.
+  Its front matter carries a `Ticket:` line, which is the report's **identity**
+  — the name can be taken, mistyped or slugged, and only the line inside can be
+  compared against the ticket a reader was handed.
+- **ADR review report** — `adr-review-report-<adr>.md` in the store: the same for
+  one ADR review, named the same way and for the same reason. A separate family
+  from the code review's, so neither review can erase the other's findings.
+- **Refutation log** — `~/.claude/dror-skills/refutations.tsv`, outside any repo: one
+  line per merged finding, appended by every review and never rewritten.
+- **Run log** — `~/.claude/dror-skills/runs.tsv`: one line per review, naming the
+  lenses run and the lenses dropped. The denominator the refutation log cannot
+  hold, since a lens that finds nothing writes no finding.
+- **Repair log** — `~/.claude/dror-skills/repairs.tsv`: one line per finding a repair
+  handled, keyed by the report's finding id, carrying that run's outcome and the
+  files that run edited. What
+  says whether a survivor was a real defect once somebody tried to fix it — and,
+  read across a head's rounds, which findings a round had in scope and did not
+  return.
+- **Finding id** — `<head>-<tag>-<hhmm>-<n>`: the short commit a report was
+  written at, the run's tag, the minute it was written, and the finding's number
+  in it. The one key
+  joining a report, the refutation log
+  and the repair log; the report carries no lens and a `file:line` moves. The
+  minute is in it because a repair never commits, so several reviews of one
+  thing share one `HEAD` — the three rounds of `dror-implement-ticket` above
+  all; the tag is in it because two runs can share a working tree, which no
+  amount of time resolution separates (ADR 0025). Older rows carry
+  `<head>-<hhmm>-<n>` or `<head>-<n>`, so an id is matched **whole** and never
+  split into parts.
+- **Run tag** — four hex characters minted per review run. Names the *run* in a
+  report's front matter and in `runs.tsv`; it is not the report's file name,
+  which ADR 0021 derives from the ticket.
