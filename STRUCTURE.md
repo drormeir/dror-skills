@@ -14,11 +14,11 @@ decision: what was decided, and what it was chosen *over*. The alternative
 matters as much as the choice — six months later, the question is never "what did
 we do", it is "why didn't we do the obvious thing", and an ADR that skipped the
 alternative cannot answer. They live as numbered files, `docs/adr/0007-*.md`, and
-they are prose, not tickets: no dates, no assignees, no status.
+they are prose — read start to finish, and still true after the work ships.
 
 **A spec issue turns one ADR into work.** It is the parent issue that says "this
-decision is now being built". It carries no criteria of its own — it exists to
-hold the tickets together and to point back at the ADR they came from.
+decision is now being built". What it carries is the link back to the ADR and the
+list of its children; the criteria live one level down, in the tickets.
 
 **A ticket is one piece of that work.** A child issue of the spec issue, small
 enough that one person, or one agent, can finish it in a sitting. Its number is
@@ -50,8 +50,9 @@ mechanical, and stop at the parts that are judgement.
 `dror-` is a **namespace, not a category**. Installed skills share one flat `/`
 list, so the prefix is what keeps these from colliding with another author's
 `review` or `prove` — and what lets you see, at the moment you pick one, whose
-opinion about reviewing you are about to run. `brief` and `screen-capture` carry
-no prefix because they belong to no chain and claim no method.
+opinion about reviewing you are about to run. `brief` and `screen-capture` sit
+outside the namespace: each is a single-purpose tool, doing one thing on request,
+and the plain name is the whole of what it offers.
 
 Inside the namespace, `dror-internal-` marks a skill **another skill runs, not
 you**. That is a second namespace and not a warning: the two are perfectly
@@ -139,15 +140,16 @@ until the user says which wins.
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-internal-shared` | Never as a run — read it as documentation when you want the test-writing rules or the reasoning behind a skill. | Reference material the `dror-*` skills read — the test-writing rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
+| `dror-internal-shared` | Read it as documentation — the test-writing rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` is the first step of every skill in the chain; `shared` is a
-shelf and has no procedure at all.
+shelf of documents those skills read as they work.
 
 ## Style and tools
 
-These belong to no chain and read no store.
+These work at the level of the session itself: two change how answers come back
+to you, one changes what Claude can see.
 
 | Skill | Reach for it when | Description |
 |---|---|---|
