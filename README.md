@@ -13,6 +13,9 @@ the survivors are reported.
 
 ## The chain
 
+[`STRUCTURE.md`](STRUCTURE.md) has the whole picture — every skill with its own
+description, and a diagram of how they run into each other.
+
 An **ADR** states a decision, a **spec issue** turns it into work, **child
 tickets** carry the pieces, and each ticket's **acceptance criteria** are
 checkboxes in its body. The criteria are the contract — what a test is written
