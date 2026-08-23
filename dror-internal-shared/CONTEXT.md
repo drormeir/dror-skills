@@ -1,8 +1,8 @@
 # Glossary
 
-The words the `dror-*` skills use. One entry per term, and nothing else — why a
-skill behaves as it does is in [`docs/adr/`](docs/adr/), and what each skill is
-for is in [`DROR-SKILLS.md`](DROR-SKILLS.md).
+The words the `dror-*` skills use, one entry per term. Two neighbours carry the
+rest: why a skill behaves as it does is in [`docs/adr/`](docs/adr/), and what
+each skill is for is in [`DROR-SKILLS.md`](DROR-SKILLS.md).
 
 ## The work being described
 
@@ -73,8 +73,8 @@ names a different hand as the one that fixes it.
 
 ## Evidence for a document
 
-A sentence has no suite, so the two words below stand where **red** and
-**green** stand for code.
+A sentence is settled by reading the tree, so the two words below stand where
+**red** and **green** stand for code.
 
 - **grounded** — the corrected sentence was read out of the tree as it stands
   now, and the run can quote the `file:line` or command output that says it.

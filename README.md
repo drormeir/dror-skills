@@ -41,9 +41,9 @@ are: the first is invoked by every skill in the chain as its first step, the
 second is a shelf of reference material — the test-writing rules, the glossary,
 the map and the decision records behind the design.
 
-Two skills stand apart from all of it: `dror-guide` governs step-by-step answers,
-`brief` resets the answering style, and `screen-capture` lets Claude see your
-screen.
+Three skills work at the level of the session itself: `dror-guide` governs
+step-by-step answers, `brief` resets the answering style, and `screen-capture`
+lets Claude see your screen.
 
 ## Why it is shaped this way
 

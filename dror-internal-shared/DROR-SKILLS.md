@@ -51,10 +51,10 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
 - **`dror-review-retrospective`** reads the refutation log across runs and says which
   lens is producing false positives and what wording to change. It proposes and
   stops.
-- **`dror-guide`** governs the style of step-by-step answers. It belongs to no
-  chain and reads no store.
+- **`dror-guide`** governs the style of step-by-step answers. It works at the
+  level of the session, on whatever is being discussed.
 
-`dror-internal-shared` is not a skill you run: it is the shelf holding
+`dror-internal-shared` is the shelf the others read from, holding
 [`WRITING-TESTS.md`](WRITING-TESTS.md), this map, the glossary and the ADRs.
 
 ## Which of them know your repo's conventions
@@ -107,8 +107,8 @@ The chain's three verbs read in the order they run: **prove**, **review**,
 
 `dror-prove` is deliberately not called `coverage`: coverage normally means lines
 and branches from a tool, and it is satisfied by a test that asserts nothing —
-the one thing this skill refuses. What it delivers is not a percentage but
-evidence, every criterion seen to fail before it counts as met.
+the one thing this skill refuses. What it delivers is evidence: every criterion
+seen to fail before it counts as met.
 
 It is also deliberately not called `tdd`. The skill usually runs *after* the
 implementation, as an audit, and a name next to Matt's `/tdd` invites reaching
