@@ -1,12 +1,49 @@
 # Structure
 
-Fifteen skills over one way of working. An **ADR** states a decision, a **spec
-issue** turns it into work, **child tickets** carry the pieces, and each ticket's
-**acceptance criteria** are checkboxes in its body. The criteria are the contract
-— they are what a test is written against, what a review judges, and what a
-closed ticket means.
+Fifteen skills over one way of working. Every description below is the skill's
+own `description:` line, verbatim.
 
-Every description below is the skill's own `description:` line, verbatim.
+## Four words, before anything else
+
+If ADRs and tickets are already how you work, skip this section. If they are not,
+these four words are the whole idea, and the skills are just machinery around
+them.
+
+**An ADR is a decision, written down before the code.** One short document per
+decision: what was decided, and what it was chosen *over*. The alternative
+matters as much as the choice — six months later, the question is never "what did
+we do", it is "why didn't we do the obvious thing", and an ADR that skipped the
+alternative cannot answer. They live as numbered files, `docs/adr/0007-*.md`, and
+they are prose, not tickets: no dates, no assignees, no status.
+
+**A spec issue turns one ADR into work.** It is the parent issue that says "this
+decision is now being built". It carries no criteria of its own — it exists to
+hold the tickets together and to point back at the ADR they came from.
+
+**A ticket is one piece of that work.** A child issue of the spec issue, small
+enough that one person, or one agent, can finish it in a sitting. Its number is
+what you hand a skill: `dror-implement-ticket 42`.
+
+**Acceptance criteria are the contract.** Checkboxes in the ticket's body:
+
+```markdown
+## Acceptance criteria
+
+- [ ] An empty directory records nothing and is not an error
+- [ ] A missing input file is refused by name, not silently skipped
+- [ ] Opening the same file twice reads the cached index, not the source
+```
+
+Everything downstream is those lines and nothing else. `dror-prove` writes one
+test per checkbox and ticks it only after seeing that test *fail* first.
+`dror-review` judges the diff against them. `dror-repair` unticks one when its
+test goes red again. A closed ticket means every box is ticked and every tick was
+earned — which is why the criteria have to be written as things that can be
+observed, not as intentions like "handles the edge cases properly".
+
+That is the loop: **decide, split, agree what done means, then build until the
+boxes are honestly ticked.** The skills below automate the parts of it that are
+mechanical, and stop at the parts that are judgement.
 
 ## The names
 
