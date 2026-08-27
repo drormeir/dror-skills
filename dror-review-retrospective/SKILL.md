@@ -23,6 +23,23 @@ read here are `date`, `repo`, `lens`, `path`, `verdict`, `claim` and `summary`;
 a header missing one of those makes the questions that need it unanswerable,
 which is said rather than guessed around.
 
+**`summary` is what a finding claimed, never why it died.** Under eighty
+characters there is no room for the refuter's ground, so the question below
+about a recurring assumption reads only the beliefs the claim itself names, and
+the ones a summary leaves implicit are invisible to it. Say so when answering
+that question: an assumption you could not see is not an assumption that was not
+there.
+
+**Where a row carries `report`, the ground may still be on disk.** That column
+holds the path the run wrote its report to, and its `## Refuted` section gives a
+paragraph per kill — the id joins them. Reports are **overwritten by the next
+run of the same ticket or ADR**, so this reaches the current report for each and
+nothing older: it is a pointer, never a history, and most rows will point at a
+file that has moved on. Read the ones that answer, count them, and say how many
+of the refuted findings you could reach that way against how many there are. A
+path that no longer resolves is a miss and never an error, and a row with no
+`report` column at all predates it.
+
 `lens` is the lens that raised it, or several joined by `+` where the merge
 folded them together. It is a **closed vocabulary** — a section name from
 `dror-review/LENSES.md` or from `dror-adr-review/LENSES.md`, or the reserved
@@ -87,6 +104,23 @@ imprecise because it has many kills — the busiest lens has the most of both.
 Only the *share* is the signal, and only against the others: a lens killing at
 twice the rate of its neighbours is the one whose section is too loose. Report
 the rates side by side so the reader can see the baseline.
+
+**Split the rate by `kind` before ranking any lens on it.** A lens's rate pools
+bugs, hazards and gaps in cover, and those die at very different rates, so a
+lens that raises mostly hazards reads as loose when what is loose is the kind.
+Report refuted-over-total per kind first, then the per-lens rates *within* the
+kind that dominates — on one measured log the per-lens spread collapsed to a
+single band once hazards were set aside, which is a different answer entirely
+from the one the pooled rates gave. A lens ranked on a pooled rate is ranked on
+its mix.
+
+**One standing trial to report on.** `dror-review/LENSES.md` requires a hazard to
+name the live caller that reaches it, a gate added on this log's evidence and
+explicitly unproven: it buys precision with recall, and no file here records
+recall. So each run of this skill says what became of hazards since — the count
+raised, the count that survived, and the survivors' rate — and states plainly
+whether the survivors fell with the kills. A gate that cut both is a gate to
+argue for removing, and saying so is this skill's job, not a later reader's.
 
 **Say what this question cannot see, every time you answer it.** It scores a
 lens on the share of its findings that died, so every reading of it argues for

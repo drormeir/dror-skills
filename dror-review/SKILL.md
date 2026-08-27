@@ -283,10 +283,23 @@ commit) · `lens` (the one that raised it; the merge's every-lens list joined by
 break grouping) · `kind` (bug / hazard / cover) · `verdict` (survived /
 refuted / unverified) · `claim` (was a claim comment written: yes / no) ·
 `summary` (under 80 characters, no tabs) · `id` (the report's
-`<head>-<tag>-<hhmm>-<n>`).
+`<head>-<tag>-<hhmm>-<n>`) · `report` (the path this run's report was written
+to, as you named it on screen).
 
-**`id` is last**, and where the header does not name it, add it to the header
-line only — the reference's rule for a column added since a file was written.
+**`id` and `report` are last, in that order**, and where the header does not
+name one, add it to the header line only — the reference's rule for a column
+added since a file was written.
+
+**Why the path is worth a column.** The log's `summary` holds what a finding
+*claimed*; the `## Refuted` section above holds **why it died**, which is the one
+thing a retrospective needs and cannot reconstruct — a measurement over
+nineteen days could read the ground from about ten kills in a hundred and forty,
+because a summary under eighty characters has no room for it. The report is
+overwritten by the next run of the same thing, so this is not a history and does
+not pretend to be one: it points at a file that is there until the next run on
+that ticket, and gone after. That is still every run whose report is current,
+which is where a retrospective's freshest evidence sits, and a dead path is a
+miss and never an error.
 
 **The `lens` column is a closed vocabulary**: a section name from `LENSES.md`,
 or the reserved `criterion` for an `unmet criterion` finding, which no lens

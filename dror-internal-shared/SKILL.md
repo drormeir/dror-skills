@@ -15,6 +15,11 @@ that sharpening a rule sharpens every run that obeys it.
   line that makes the name checkable, the finding id, and the discipline of the
   logs. Read whole by the reviews that write a report and the repairs that read
   one.
+- [`WORKTREE.md`](WORKTREE.md) — where an ADR's worktree goes and what it is
+  called, the three guards a project must satisfy before one may sit inside it,
+  what is symlinked in, the preflight that proves the environment, and how a
+  later run adopts what it finds. Read whole by the drains that create or resume
+  one.
 - [`CONTEXT.md`](CONTEXT.md) — the glossary. One entry per word these skills use.
 - [`DROR-SKILLS.md`](DROR-SKILLS.md) — the map: what each skill is for and how
   they chain.

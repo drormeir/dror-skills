@@ -247,6 +247,22 @@ you have from the rest of this run. Then:
 - **The unclear subject.** A rule in the passive or with no actor: who does
   this, at what moment, on whose behalf. "The record is written on close" —
   by which of the two writers, and which close.
+
+  **A missing actor is not the finding; a wrong action is.** The test is whether
+  a reader, not knowing who acts, would *do the wrong thing* — write to the
+  wrong store, run at the wrong moment, skip a step they owned. Where the
+  sentence records a **decision** and the actor is the implementation of it, the
+  ADR is silent on purpose: a decision that named its call site would have to be
+  rewritten every time the code moved, which is the drift these documents exist
+  to avoid. "This names no site", "this names no reader", "this constant is
+  unattributed", "the resolver is unnamed" — none of those is a finding on its
+  own, and each was refuted repeatedly across five documents and eight days for
+  the same reason. Ask what the reader does wrongly; if you cannot say, there is
+  nothing here.
+
+  What this loses is the genuinely ambiguous rule whose wrong action is real but
+  awkward to state in one line. Take the awkward sentence over the drop where
+  you can write it at all.
 - **The soft modal.** `should`, `may`, `prefer`, `generally`, where the project
   actually treats it as `must` or `never`. The evidence is the tree: a rule
   every site obeys without exception is a `must` written weakly, and the weak

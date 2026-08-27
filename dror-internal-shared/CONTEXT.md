@@ -34,7 +34,9 @@ each skill is for is in [`DROR-SKILLS.md`](DROR-SKILLS.md).
 - **Bug** — production code is wrong. A finding already named in the
   conversation; `dror-repair` discovers none of its own.
 - **Latent hazard** — code correct today that this diff made fragile, naming the
-  future change that would break it.
+  future change that would break it **and the live caller that reaches it now**.
+  Where every path in is clamped, guarded upstream or has no caller, it is not a
+  hazard (ADR 0030).
 - **Gap in cover** (also **cover**, as a finding's kind) — named behaviour that
   no test would catch the loss of. Nothing is broken, so nothing is fixed; the
   test alone is the deliverable.
@@ -102,6 +104,31 @@ holds the rules that go with them.
 - **enrich** — extend a test that already exists so it also covers a new item,
   rather than adding a file.
 
+## The ADR worktree
+
+`dror-internal-shared/WORKTREE.md` holds the rules that go with these.
+
+- **ADR worktree** — `<repo>/.claude/adr-wip/<repo>-adr-<N>`, a `git worktree`
+  holding one ADR's work so it is never another run's review scope. Beside the
+  repo, `../<repo>-adr-<N>`, in trees made before the placement changed
+  (ADR 0029).
+- **ADR branch** — `adr-<N>`, the branch that worktree is on, with `<N>` the ADR's
+  number unpadded. Local and remote carry the same name.
+- **Guard** — one condition a project must satisfy before a worktree may sit
+  inside it: `.claude/` gitignored, pytest's `norecursedirs` naming it, mypy's
+  `exclude` covering it. A guard that does not hold stops the run.
+- **Preflight** — the four checks run from inside a worktree before the first
+  ticket: which interpreter, which tree imports resolve to, whether there is an
+  upstream, and whether the guards still hold. It proves the environment rather
+  than building it, and it runs on an adopted worktree too.
+- **Drain state file** — `drain-<ADR>.json` in that worktree's store: the drain's
+  current position, not a history. The work list, what remains, which numbers
+  were attempted, and one entry per round.
+- **Round outcome** — `picked` when a ticket is taken, rewritten to `finished`,
+  `skipped` or `stopped` when its round ends. An entry left at `picked` is an
+  interrupted round, and it is the only thing that distinguishes one from a
+  completed ticket (ADR 0031).
+
 ## The stores
 
 These words are the same in every `dror-*` run.
@@ -126,7 +153,9 @@ These words are the same in every `dror-*` run.
   the line inside can be compared against the number a reader was handed
   (ADR 0021).
 - **Refutation log** — `~/.claude/dror-skills/refutations.tsv`, outside any repo: one
-  line per merged finding, appended by every review and never rewritten.
+  line per merged finding, appended by every review and never rewritten. Its
+  `summary` is what a finding *claimed*; why it died is in the report the
+  `report` column points at, for as long as that report is the current one.
 - **Run log** — `~/.claude/dror-skills/runs.tsv`: one line per review, naming the
   lenses run and the lenses dropped. The denominator the refutation log cannot
   hold, since a lens that finds nothing writes no finding.

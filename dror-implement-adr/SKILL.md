@@ -40,64 +40,18 @@ stays free for the work they are doing by hand.
 
 ## 0. Prepare the branch and the worktree
 
-The isolation is `git worktree`: a second working directory backed by the same
-`.git`. Nothing is cloned and the object store is shared.
+`../dror-internal-shared/WORKTREE.md` — the shelf beside this skill — holds the
+naming, placement, guards, environment and re-entry rules for an ADR worktree, in
+one copy. Read it whole before creating or adopting anything, and take this run's
+path and branch from it. It is not restated here.
 
-From the user's checkout:
+What this skill owes it is the number: the worktree is `<repo>-adr-<N>` on branch
+`adr-<N>`, both from the ADR this run was given.
 
-```
-git fetch origin
-git worktree add ../<repo>-adr-<N> -b adr-<N> <the remote's default branch>
-git -C ../<repo>-adr-<N> push -u origin adr-<N>
-```
-
-Three things that look optional and are not:
-
-- **Off the remote's default branch, not `HEAD`.** The user's checkout may hold
-  uncommitted work and unpushed commits. Starting from the remote head is what
-  makes the branch's contents exactly this ADR's work. `origin/main` above is the
-  common case and not a rule: resolve it the way the rest of the chain does —
-  `origin/HEAD`, then `origin/main`, then `origin/master` — since many clones
-  never ran `git remote set-head` and a repo whose default is `master` would
-  otherwise fail at the first command.
-- **Beside the repository, never inside it.** A worktree under the checkout is
-  walked by the parent's own tools — a pytest configured past its default
-  hidden-directory skip collects it, mypy does not read `.gitignore` at all,
-  and repo-wide greps sweep it. Whether the repo in hand is configured that way
-  is not worth finding out; beside is safe everywhere.
-- **Pushed, with upstream set.** `dror-review` derives its base from
-  `git merge-base @{upstream} HEAD` **where there is an upstream**, and falls
-  back to the remote's default branch where there is none — which for this
-  branch would be every ticket's work at once, so the `-u` is what picks the
-  first of those two. With the branch tracking `origin/adr-<N>`
-  and every finished ticket pushed, each ticket's review sees that ticket's work
-  and nothing earlier. Tracking `origin/main` instead would have ticket five
-  reviewed together with tickets one to four, and `dror-repair` would then repair
-  their findings under ticket five's number.
-
-**Then carry the ignored things across.** A worktree contains tracked files
-only, and everything a run needs to verify with is ignored: the virtualenv, the
-agent settings and hooks, the local data directory. Symlink them one by one from
-the user's checkout — the venv, the settings file, any hook scripts it names,
-the data directory. **Do not symlink the whole agent directory**: its
-`dror-skills/` store holds `facts.md` and the review reports, and sharing those is
-sharing exactly what the isolation was for.
-
-**And check the venv for an editable install before trusting its symlink.** A
-project installed with `pip install -e` resolves imports through the venv back
-to the checkout it was installed from — the user's — so the worktree's edit to
-an existing module is silently not the code under test. A new module fails
-loud; a changed one tests the wrong tree with everything green. `pip show
-<package>` says which install it is in one command; where it is editable, give
-the worktree a venv of its own, with the project installed from the worktree.
-
-A ticket that changes the dependency file needs a virtualenv of its own rather
-than the symlink, because installing into the shared one reaches every other
-session.
-
-**Re-entry.** A worktree that is already there is resumed, not recreated: check
-for the directory and the branch first, and adopt them. Report the path either
-way — every later step, and every command in it, runs in that directory.
+**Its preflight is a step of this one, not a hand-off.** Run it before the first
+ticket and report its four lines; a failure stops the run here, which is the
+whole point of asking at a moment when there is nothing to blame the answer on.
+Everything past §0a assumes an environment that was proved rather than built.
 
 ## 0a. Carry the path into every delegated prompt
 
@@ -234,6 +188,65 @@ and ask, rather than reporting a drained ADR with an undecided ticket in it. A r
 whose status this skill genuinely cannot read is a stop the same way, at the
 moment the list is built rather than at the end.
 
+### What an earlier session left, if anything
+
+**A virgin ADR pays nothing for this section.** No state file, no branch ahead of
+its remote, no open ticket with every box ticked — the three questions below all
+answer "nothing", in one `gh` call the scan already made and one `git` call, and
+the list §3 built stands as it is. Run them anyway: their cost is a sentence, and
+what they prevent is a resumed drain working *around* a finished ticket for the
+rest of the ADR.
+
+The `attempted` set is written **before** a ticket's work starts (step 3 below),
+which is what makes it survive a session that dies — and is also what makes a
+ticket that was interrupted look exactly like one that completed. A session
+killed mid-round cannot record that it was killed. So a resumed run does not
+trust `attempted`; it reconstructs, from three pieces of evidence that outlive
+any session (ADR 0031):
+
+1. **The round's own outcome.** Each round entry carries an `outcome` — see the
+   state file below — set to `picked` when the ticket is taken and rewritten to
+   `finished`, `skipped` or `stopped` when the round ends. **A round still
+   reading `picked` is an interrupted round**, whatever `attempted` says. Take
+   its ticket out of `attempted` and put it at the **front** of the list, for the
+   same reason §3a's stopped ticket goes first: the session ended in the middle
+   of it, and everything after it in the list was planned on the assumption it
+   was done.
+
+2. **The tracker, which is the authority when the file is not there.** The state
+   file is disposable and may be absent, stale, or from a drain that never wrote
+   outcomes. §2's table has the fact that does not depend on it: **a ticket that
+   is open with every acceptance criterion ticked is implemented and unclosed**.
+   That ticket goes to the front of the list on the strength of the boxes alone,
+   with no state file needed.
+
+   **Except where a round entry says `finished`.** This drain never closes a
+   ticket — step 7 leaves closing to the user — so "open with every box ticked"
+   is also exactly what a *completed* round leaves behind, waiting on a gesture
+   that is not this skill's to make. So the test is: a round entry reading
+   `finished` settles it and the ticket stays done; a round entry reading
+   `picked` means interrupted; and **no entry at all** — no file, or a file from
+   a drain that wrote no outcomes — means the boxes are the only evidence there
+   is, and a ticket in that state goes to the front. Re-attempting a finished
+   ticket costs one round and changes nothing; walking past an unfinished one
+   costs the rest of the ADR. Name which of the three cases each ticket fell into.
+
+3. **The tree, for whose work is sitting in it.** A dirty worktree at the start
+   of a resumed run belongs to the ticket whose round reads `picked`. Name that
+   ticket before anything is committed — the rule at §3's end says what happens
+   next, and it turns on whether that ticket's boxes are ticked.
+
+**Then check you are in the right place.** The state file records the `worktree`
+and the `branch` it was written under. The shelf's re-entry rules adopted a
+directory and a
+branch of its own accord; where either disagrees with the file, stop and say both
+— a drain resumed onto the wrong branch commits this ADR's work somewhere nobody
+will look for it, and the file is the only thing that can catch it.
+
+Say in one line what this section found, including when it found nothing: a
+resumed drain that prints no such line is indistinguishable from one that never
+looked.
+
 ### The clock
 
 You have no clock of your own, so the drain reads one: `date +%s`, epoch
@@ -295,8 +308,10 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
    queue: a ticket whose run left criteria unproven is not re-picked by this loop,
    and nothing ever returns to a member, so there is no order to keep — what the
    set is for is the resumed run, which reads it back from the state file.
-3. Write the state file (below) with the ticket marked attempted, before the work
-   starts, not after.
+3. Write the state file (below) with the ticket marked attempted **and its round
+   entry's `outcome` set to `picked`**, before the work starts, not after. Step 7
+   rewrites that one word when the round ends; until it does, the entry says a
+   ticket was taken and never finished, which is exactly what it means.
 4. Invoke `dror-implement-ticket` with that number, its prompt opening with
    §0a's sentence. "In the worktree" is not a place this skill can put it — that
    run's own step 0 asks `git status` and `git merge-base` in whatever directory
@@ -441,6 +456,18 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
    this same chain. Some unticked: say which, leave the ticket open, and carry
    on.
 
+   **Rewrite this round's `outcome`** from `picked` to `finished`, `skipped` or
+   `stopped`, in the same write as the counts below. This is the round's only
+   claim to have ended, and a resumed run reads nothing else for it — a round
+   that reports on screen and never rewrites the word is a round the next session
+   will correctly treat as interrupted.
+
+   Note the shape this leaves: a ticket whose boxes are all ticked and which the
+   user has not yet closed is `finished` here and **open** on the tracker. That
+   is the one case the resume section's tracker test would misread as
+   interrupted, so it is settled by the state file, which says `finished` — the
+   tracker wins only where the file has nothing to say.
+
    **Then read the clock again and close the round with step 1's counter, two
    lines:**
 
@@ -498,12 +525,28 @@ had — there, termination rested on **attempted** growing.
 list, what is left of it, and which numbers were attempted — and "tried and
 stalled" is indistinguishable from "never tried" when read back from the tracker.
 So write it to `<worktree>/.claude/dror-skills/drain-<ADR>.json` each round: the
-ADR, the work list as built, what remains of it, the attempted and skipped
+ADR, **the worktree path and the branch**, the work list as built, what remains
+of it, the attempted and skipped
 numbers, one line per round saying what happened, **the run's start and each
 round's start and end in epoch seconds**, and — where §3a ended the run —
 **which ticket stopped it and what was asked**. Read it at the start of a run for
 the attempted and skipped numbers, the stopped ticket, and the earlier rounds'
 durations that the ETA's mean is built from.
+
+**Every round entry carries an `outcome`, and it is written twice.** `picked`
+when the ticket is taken, in the same write that adds it to `attempted`; then
+rewritten in place to `finished`, `skipped` or `stopped` when the round ends.
+Both writes matter and neither is the other's substitute: the first is what makes
+a dead session's ticket recoverable, and the second is the only thing that
+distinguishes a ticket this drain completed from one it was interrupted in the
+middle of. A round entry left at `picked` **is** that signal, and the resume
+section above is what reads it.
+
+**Rewriting a round entry is allowed here and nowhere else.** These are the logs'
+opposite: `refutations.tsv` and its neighbours are append-only histories, and
+this file is a *current position* that is rewritten every round by design. It
+holds no history worth protecting — losing it costs one re-attempted ticket, as
+below.
 
 **A resumed run still runs §2's scan, and builds its list fresh.** Sessions are
 separated by however long the user took to answer, and the tracker moved in
@@ -563,12 +606,29 @@ than a promise.
 and `dror-implement-ticket`'s own step 0 refuses a dirty tree — so a stall left
 uncommitted jams the very next ticket. Commit it under the ticket's number,
 marked as the partial work it is, push it with the rest, and skip step 6: there
-is no verdict on a ticket that was never implemented. The same applies at the
-top of a **resumed** run — a tree that is dirty when the loop starts is the
-previous session's interrupted ticket, and it is committed the same way before
-anything new is picked — the state file says whose it was, which is the one thing
-that separates it from the pre-existing dirt above, and the reason that file is
-written before the work starts rather than after.
+is no verdict on a ticket that was never implemented.
+
+**A resumed run's dirty tree is not automatically partial, and this is where the
+distinction is made.** A tree that is dirty when the loop starts is the previous
+session's interrupted ticket — the state file says whose, which is the one thing
+separating it from the pre-existing dirt above, and the reason that file is
+written before the work starts rather than after. What it is *worth*, though,
+depends on the ticket, and there are two cases that must not be run together:
+
+- **Boxes still unticked** — the session died mid-implementation. This is the
+  partial work the paragraph above describes: commit it under the number, marked
+  partial, and it is skipped like any stall.
+- **Every box ticked, ticket still open** — the session died *after* the work and
+  the proof and *before* the review-repair loop and the close. Nothing here is
+  partial. Committing it as partial and moving on abandons a finished ticket one
+  step from done, and leaves the rest of the ADR built on top of a ticket the
+  drain believes it never did. **Resume that ticket instead**: it goes to the
+  front of the list, and its round runs from where it was cut off.
+
+`dror-implement-ticket` is a whole run and will re-tread what it must; the boxes
+it already proved are ticked and its step 4 reads them off the ticket rather than
+off memory, so a resumed ticket costs the review-repair loop and not the
+implementation. Say which of the two cases fired, and on which number.
 
 ## 4. Merge nothing, remove nothing
 
@@ -581,12 +641,13 @@ Say what the merge would be, and do not run it:
 
 ```
 git -C <the user's checkout> merge --ff-only adr-<N>
-git worktree remove --force ../<repo>-adr-<N>
+git -C <the user's checkout> worktree remove --force .claude/adr-wip/<repo>-adr-<N>
 ```
 
 `--ff-only` rather than a plain merge, so a checkout that has moved on refuses
-instead of quietly making a merge commit. `--force` on the removal because the
-symlinks are untracked files; it removes the links and never their targets.
+instead of quietly making a merge commit. The removal is `git worktree remove`
+and never `rm -rf`, and what `--force` is for, is on the shelf under **Leaving
+it** — including what dies with the directory and what does not.
 
 ## Present
 

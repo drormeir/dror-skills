@@ -108,6 +108,7 @@ flowchart TD
     SH[["dror-internal-shared<br/>rules, glossary, ADRs"]]
     SH -.-> PV
     SH -.-> RP
+    SH -.->|worktree rules| IA
 ```
 
 Solid arrows are the run order. Dotted arrows are what each step reads or writes
@@ -118,7 +119,7 @@ rather than where control goes.
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
 | `dror-show-tickets` | You are deciding what to do next, or want to know whether an ADR is finished. Read it before and after the rest. | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
-| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree, a branch, one commit per ticket |
+| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree at `.claude/adr-wip/<repo>-adr-<N>`, a branch `adr-<N>`, one commit per ticket, a drain state file |
 | `dror-implement-ticket` | One ticket, start to closable, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closable — implement it, prove its criteria, loop review and repair until it converges, then prove whatever is still unticked. | code, then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
 | `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. | a review report; a per-criterion comment |
@@ -148,7 +149,7 @@ until the user says which wins.
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
+| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` is the first step of every skill in the chain; `shared` is a

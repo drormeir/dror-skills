@@ -41,7 +41,8 @@ positives.
 `dror-internal-project-facts` and `dror-internal-shared` are named for what they
 are: the first is invoked by every skill in the chain as its first step, the
 second is a shelf of reference material — the test-writing rules, the report
-store's rules, the glossary, the map and the decision records behind the design.
+store's rules, the ADR worktree's rules, the glossary, the map and the decision
+records behind the design.
 
 Three skills work at the level of the session itself: `dror-guide` governs
 step-by-step answers, `brief` resets the answering style, and `screen-capture`

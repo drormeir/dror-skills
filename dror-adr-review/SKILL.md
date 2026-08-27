@@ -243,7 +243,10 @@ run reviewed, even for a `breach` whose evidence sits in code · `kind` (text /
 hole / breach / conflict / revisit / echo) · `verdict` (survived / refuted / unverified) ·
 `claim` (always `no`: this skill writes no claim comments, and the column stays
 so the two pools share one schema) · `summary` (under 80 characters, no tabs) ·
-`id` (the report's `<head>-<tag>-<hhmm>-<n>`, copied whole).
+`id` (the report's `<head>-<tag>-<hhmm>-<n>`, copied whole) · `report` (the path
+this run's report was written to, as you named it on screen — it is where the
+`## Refuted` grounds sit until the next run on this ADR overwrites them, and a
+summary under eighty characters has no room for those).
 
 **The `id` column is what lets a `breach` be followed.** A breach goes to
 `dror-repair`, which writes a `repairs.tsv` row only for a finding that carried
