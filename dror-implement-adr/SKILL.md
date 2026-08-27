@@ -234,14 +234,62 @@ and ask, rather than reporting a drained ADR with an undecided ticket in it. A r
 whose status this skill genuinely cannot read is a stop the same way, at the
 moment the list is built rather than at the end.
 
+### The clock
+
+You have no clock of your own, so the drain reads one: `date +%s`, epoch
+seconds, arithmetic without a date library. Three moments and no others —
+**once** here before the first round, then once at each round's step 1 and once
+at its step 7. Every duration below is a subtraction between two of them, so a
+round costs two `date` calls and the run costs one more.
+
+The first round's step 1 reading is the run's start, near enough: drop the
+`elapsed` field from that one line rather than printing `elapsed 0m`.
+
+Write all three into the state file — the run's start, and per round its start,
+its end and the ticket's number — because a mid-drain compaction loses them
+exactly as it loses the work list, and an elapsed time recomputed from a
+half-remembered start is worse than none.
+
+**A resumed run starts its own clock, and inherits the durations.** Wall-clock
+between sessions is however long the user took to answer, so elapsed is always
+*this* run's; but a ticket that took eleven minutes yesterday is still a sample
+of how long a ticket takes here, so the ETA's mean reads the earlier rounds out
+of the state file along with this run's. Say `elapsed 20m this run` where the
+file shows earlier ones, or the number reads as the whole ADR's cost.
+
 ### Then, each round
 
 1. Take the next ticket off the list. Empty: the loop is done — go to §4.
+
+   **Then read the clock and say where the drain is, on one line, before
+   anything else in the round:**
+
+   ```
+   [ADR <N>] ticket <i>/<total> · #<ticket> · starting · elapsed <so far>
+   ```
+
+   `<i>` counts every ticket this loop has taken off the list including this one,
+   and `<total>` is the work list's length as §3 built it — not the ADR's ticket
+   count, which includes the ones the graph excluded. Neither number is computed
+   from anything new: the list, what remains of it and the attempted set are
+   already in hand, and already written to the state file at step 3.
+
+   This line is not decoration and it is not optional. A round is one
+   `dror-implement-ticket` run, which is minutes of a chain of sub-skills each
+   reporting on itself, and §Present's table does not arrive until the whole ADR
+   is done — so a user watching a drain has, without this line, no way to tell a
+   run on its second ticket from one on its last. **Emit it as your own text, not
+   inside a tool call**, or it is written where only you can read it.
 2. **Skip it where the ticket itself says to.** The list is a plan made once and
    the tree has moved under it: a ticket already closed by hand mid-run, or one
    whose blocker ended up stalled, is skipped with a line saying which. This is
    the one thing the dropped rescan used to catch, and reading the ticket at the
    moment it is picked catches it for one ticket's cost instead of the table's.
+
+   A skipped ticket still gets step 7's closing line, with `skipped — <why>` in
+   place of the verdict. It spent a round's place in the list, so it advances the
+   count like any other; a skip that prints only step 1's line reads as a ticket
+   still running.
 
    Keep the skipped numbers, and keep a set of **attempted** ones. A set, not a
    queue: a ticket whose run left criteria unproven is not re-picked by this loop,
@@ -393,6 +441,54 @@ moment the list is built rather than at the end.
    this same chain. Some unticked: say which, leave the ticket open, and carry
    on.
 
+   **Then read the clock again and close the round with step 1's counter, two
+   lines:**
+
+   ```
+   [ADR <N>] <done>/<total> done · <left> left · <stalled> stalled · #<ticket> <verdict>
+   [ADR <N>] #<ticket> took <d> · elapsed <total so far> · ETA ~<estimate> for <left> left
+   ```
+
+   `<done>` counts the rounds that finished — worked or skipped — `<left>` is
+   what remains on the list, and `<stalled>` counts the tickets that ended
+   unfinished so far, which is the number that says whether the drain is going
+   well or merely going. `<verdict>` is the word step 6 recorded, as that loop
+   gave it, or `skipped — <why>`; §Present's rule against re-wording it holds
+   here for the same reason.
+   The counts are the state file's, written the same round, so the line and the
+   file cannot disagree.
+
+   `<d>` is this round's step 7 reading minus its step 1 reading, and
+   `<elapsed>` is step 7's minus the run's start. Round both to something a human
+   reads at a glance — `12m`, `1h 40m` — since a drain measured to the second
+   claims a precision it does not have.
+
+   **The ETA is a mean of the worked rounds, times what is left**, and the two
+   words in that sentence are what keeps it honest:
+
+   - **Worked.** A skipped round takes seconds and is not a sample of anything;
+     averaging it in halves the estimate and the drain then runs twice as long as
+     it promised. Skips are excluded from the mean, and so are stalls — a ticket
+     that stopped early spent less than one that finished. Where a round was
+     skipped or stalled, that line's ETA carries `(from <k> worked)` so the
+     reader can see how thin the mean is.
+   - **Mean, not a trend.** Tickets differ by more than any curve fitted to three
+     of them can predict, so take the plain mean and do not weight the recent
+     ones. The `~` is doing real work in that line.
+
+   **One worked round is not an estimate.** Print `ETA — one sample` rather than
+   a number, and start estimating at the second. And where every round so far was
+   skipped or stalled, there is no mean at all: print `ETA — none yet`, never a
+   number derived from the elapsed time divided by rounds, which is the same
+   mistake with the arithmetic hidden.
+
+   The estimate assumes every remaining ticket is worked. Some will be skipped,
+   so the ETA is an upper bound rather than a guess — worth saying once, in the
+   summary, not on every line.
+
+   A stop at §3a prints this line too, before §3a's three lines: the last thing
+   on screen should say how much of the ADR the stop leaves untouched.
+
 Termination: every round takes one ticket off the list and none puts one back,
 and the extra review rounds inside a ticket are capped at two. The list is built
 once and only shrinks, which is a stronger guarantee than the rescanning loop
@@ -403,9 +499,11 @@ list, what is left of it, and which numbers were attempted — and "tried and
 stalled" is indistinguishable from "never tried" when read back from the tracker.
 So write it to `<worktree>/.claude/dror-skills/drain-<ADR>.json` each round: the
 ADR, the work list as built, what remains of it, the attempted and skipped
-numbers, one line per round saying what happened, and — where §3a ended the run —
+numbers, one line per round saying what happened, **the run's start and each
+round's start and end in epoch seconds**, and — where §3a ended the run —
 **which ticket stopped it and what was asked**. Read it at the start of a run for
-the attempted and skipped numbers and the stopped ticket.
+the attempted and skipped numbers, the stopped ticket, and the earlier rounds'
+durations that the ETA's mean is built from.
 
 **A resumed run still runs §2's scan, and builds its list fresh.** Sessions are
 separated by however long the user took to answer, and the tracker moved in
@@ -495,15 +593,20 @@ symlinks are untracked files; it removes the links and never their targets.
 The worktree path and the branch, then the work list as it was built and one line
 per ticket on it: its
 number, whether it finished, stalled or was **skipped** at step 2 and why, how many criteria are proven of how
-many, and its round verdict — the word its settling loop returned, as that loop
-gave it, with the report tag where a step 6 loop ran. A drain is many tickets
+many, its round verdict — the word its settling loop returned, as that loop
+gave it, with the report tag where a step 6 loop ran — and **how long it took**,
+which is the one column that says where the ADR's cost actually went. A drain is many tickets
 and the per-round lines belong to the ticket's own summary, so they stay there;
 what travels up is the word, and re-wording it is how a reader loses track of
 which layer said what. Then the tickets still blocked, marking any that
 are **blocked behind a stall** — a different answer from blocked, and usually
 the most useful line in the report — and any that are **waiting on the user's
 call**, which is not blocked either and is the one row a reader can clear
-themselves. Then **the spec issue's own line** — can close, or the children it
+themselves. Then **the run's total** — elapsed since it started, marked as this
+run's where the state file shows earlier sessions — and, where tickets are still
+left, the last ETA with the one sentence §3's step 7 keeps off the per-round
+lines: it assumes every remaining ticket is worked, so it is an upper bound.
+Then **the spec issue's own line** — can close, or the children it
 still awaits — since it is the row that says whether the ADR itself is finished
 and the only one no ticket line covers. Then the one sentence that matters: what
 is left to do on this ADR, and stop.
