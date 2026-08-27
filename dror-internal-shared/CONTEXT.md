@@ -50,7 +50,7 @@ each skill is for is in [`DROR-SKILLS.md`](DROR-SKILLS.md).
 
 ## Findings about an ADR
 
-The four kinds `dror-adr-review` returns. They are separate words because each
+The kinds `dror-adr-review` returns. They are separate words because each
 names a different hand as the one that fixes it.
 
 - **Text** — the document says something about the code that is not true, or

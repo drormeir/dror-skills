@@ -1,6 +1,6 @@
 ---
 name: dror-implement-adr
-description: Work one ADR's ticket list to exhaustion on a branch of its own - a side worktree off the remote head, one ticket at a time through dror-implement-ticket, one commit each, stopping for the user the moment a ticket raises a question only they can answer. Use when the user names an ADR number and asks to implement it, drain it, or work its remaining tickets.
+description: Work one ADR's ticket list to exhaustion on a branch of its own - a side worktree off the remote head, one ticket at a time through dror-implement-ticket, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. Use when the user names an ADR number and asks to implement it, drain it, or work its remaining tickets.
 disable-model-invocation: true
 ---
 
@@ -61,9 +61,10 @@ Three things that look optional and are not:
   never ran `git remote set-head` and a repo whose default is `master` would
   otherwise fail at the first command.
 - **Beside the repository, never inside it.** A worktree under the checkout is
-  collected by the parent's own test run — this repository's pytest
-  configuration replaces pytest's default hidden-directory skip, so even a
-  dot-directory is walked, and mypy does not read `.gitignore` at all.
+  walked by the parent's own tools — a pytest configured past its default
+  hidden-directory skip collects it, mypy does not read `.gitignore` at all,
+  and repo-wide greps sweep it. Whether the repo in hand is configured that way
+  is not worth finding out; beside is safe everywhere.
 - **Pushed, with upstream set.** `dror-review` derives its base from
   `git merge-base @{upstream} HEAD` **where there is an upstream**, and falls
   back to the remote's default branch where there is none — which for this
@@ -81,6 +82,14 @@ the user's checkout — the venv, the settings file, any hook scripts it names,
 the data directory. **Do not symlink the whole agent directory**: its
 `dror-skills/` store holds `facts.md` and the review reports, and sharing those is
 sharing exactly what the isolation was for.
+
+**And check the venv for an editable install before trusting its symlink.** A
+project installed with `pip install -e` resolves imports through the venv back
+to the checkout it was installed from — the user's — so the worktree's edit to
+an existing module is silently not the code under test. A new module fails
+loud; a changed one tests the wrong tree with everything green. `pip show
+<package>` says which install it is in one command; where it is editable, give
+the worktree a venv of its own, with the project installed from the worktree.
 
 A ticket that changes the dependency file needs a virtualenv of its own rather
 than the symlink, because installing into the shared one reaches every other
@@ -123,22 +132,22 @@ never at risk.
 
 ## 1. The project facts warm themselves
 
-**Do not invoke `dror-internal-project-facts` on its own.** `dror-show-tickets`
-invokes it at §2 and `dror-implement-ticket` invokes it every round; all three
-read one cached `facts.md`, so a separate call here buys nothing the next step
-does not buy anyway — it is one whole skill run spent to reach a cache that §2
-fills a moment later.
+**Do not invoke `dror-internal-project-facts` on its own.**
+`dror-implement-ticket` invokes it as its own first step, every ticket, and
+every ticket after the first reads the cached `facts.md` — so a separate call
+here buys nothing the first ticket does not buy anyway. (`dror-show-tickets`
+does not use it: it is convention-bound and names its own commands.)
 
 What matters is not *that* it runs but **where**: the cache lives in the store of
 whatever checkout the gather ran in, so a gather in the user's tree leaves the
-worktree paying for its own every round. §0a's sentence on §2's prompt is what
-puts it in the right place, and that sentence is on every prompt regardless.
+worktree paying for its own every round. §0a's sentence on every delegated
+prompt is what puts it in the right place.
 
 ## 2. Map the ADR
 
 Invoke `dror-show-tickets` for ADR `<N>`, with §0a's sentence — it reads the
-tracker rather than the tree, but it reaches the repo for the facts and for what
-landed, and one skill in this run answering from a different checkout is how a
+tracker rather than the tree, but it reaches the repo for the ADR file and for
+what landed, and one skill in this run answering from a different checkout is how a
 row comes back `Ready` that is not. Its table is the loop's input: which tickets
 are `Ready`, which are blocked and behind what, which can close.
 
@@ -191,6 +200,14 @@ named in the summary and on no list.
 already on the list, append it, and continue until no node is left. Lowest-numbered
 is the tie-break and nothing more — it keeps the order stable, reproducible
 across runs, and as close to the table's own as the graph permits.
+
+**The spec issue is no node either.** It is the ADR's parent, it carries no
+criteria of its own, and `dror-show-tickets` answers its status from the child
+set — `Awaiting` every open child, and `Can close` once none are left. So there
+is nothing on it for `dror-implement-ticket` to implement, and its dependencies
+are the whole list by construction. Leave it out of the sort, and report it at
+the end: **can close** where the drain closed every child, and otherwise which
+children it is still waiting on.
 
 **Set-aside nodes leave first, with everything downstream of them.** A node
 waiting on a ticket that is not workable here — outside the ADR, or `Needs your
@@ -256,6 +273,11 @@ moment the list is built rather than at the end.
    skill's own act: `dror-implement-ticket` ends uncommitted by contract and
    `dror-repair` never commits (ADR 0007), so the commit belongs to the caller
    that wants ticket-sized history.
+
+   **The store stays out of the commit.** `<worktree>/.claude/dror-skills/`
+   holds this run's state file and review reports, and nothing gitignores it
+   for you — stage the ticket's files by path, never `git add -A`, or the
+   drain's bookkeeping lands in the branch's history.
 
    **Name the ticket, never with a closing keyword.** `Closes #N`, `Fixes #N`,
    `Resolves #N` are not references — where the tracker reads commit messages
@@ -338,6 +360,9 @@ moment the list is built rather than at the end.
      runs none, and it writes: a test for a box that had none, production code
      for a criterion no repair took. So where it changed anything, run the
      project's full suite, plus lint and the type-check, and name that run.
+     **And where the prove left the gate criterion unticked as waiting on a
+     later run, this run is that run**: green, it settles the gate — tick it,
+     since no step after this one will.
      Otherwise this ticket's commit is pushed carrying code nothing has run,
      the next ticket is written on top of it, and the first full suite to see it
      is the one that fails under a later ticket's number.
@@ -418,8 +443,8 @@ step 2's business and never a stop.
 thing the stop is worth: an answer given now applies to a tree with one ticket of
 work in it, while the same answer given after four more tickets applies to a tree
 whose later work was written against the guess. So: finish the ticket's
-bookkeeping — commit **whatever this run wrote** and nothing else, push it, write
-the state file — then say in three lines what stopped, on which ticket, and what
+bookkeeping — commit **whatever this run wrote to the tree** and nothing else
+(the store stays out, as at step 5), push it, write the state file — then say in three lines what stopped, on which ticket, and what
 the choice is. Then stop, and wait. Resuming is a fresh run of this skill; the
 state file makes it cheap.
 
@@ -478,8 +503,10 @@ which layer said what. Then the tickets still blocked, marking any that
 are **blocked behind a stall** — a different answer from blocked, and usually
 the most useful line in the report — and any that are **waiting on the user's
 call**, which is not blocked either and is the one row a reader can clear
-themselves. Then the one sentence that matters: what is left to do on this ADR,
-and stop.
+themselves. Then **the spec issue's own line** — can close, or the children it
+still awaits — since it is the row that says whether the ADR itself is finished
+and the only one no ticket line covers. Then the one sentence that matters: what
+is left to do on this ADR, and stop.
 
 A run that ended at §3a says so **first**, above the table of tickets: which
 ticket stopped it, what the question is, and that the rest of the ADR is
@@ -491,6 +518,7 @@ Done when the work list is empty, or §3a stopped the run and its question is on
 screen; and every
 delegated prompt named the worktree as the directory its
 commands run in, every commit this skill pushed was made over a tree a full
-suite had seen, every attempted ticket has a commit and a pushed state, the
+suite had seen — except a stall's partial commit, which §3a names as partial —
+every attempted ticket has a commit and a pushed state, the
 state file matches what happened, nothing is merged, and that summary is on
 screen.

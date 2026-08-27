@@ -14,10 +14,10 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | Skill | Question it answers | Writes |
 |---|---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? | nothing |
-| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | a worktree, a branch, one commit per ticket, `drain-<ADR>.json` |
+| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | a worktree, a branch, each ticket's commits, `drain-<ADR>.json` |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code; then whatever the three below write |
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
-| `dror-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`; a per-criterion comment |
+| `dror-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
 | `dror-repair` | Fix what the review found, each one red then green | code and tests; unticks a red box |
 | `dror-review-repair` | Loop the two until it converges, up to seven rounds | whatever its two steps write |
 
@@ -102,8 +102,8 @@ One writer per direction, because a tick is a claim about evidence (ADR 0004):
 
 - **`dror-prove` ticks**, and only what it saw go green.
 - **`dror-repair` unticks**, and only a box whose test it just saw go red.
-- **`dror-review` touches no box.** It posts its per-criterion verdicts as a
-  comment instead.
+- **`dror-review` touches no box.** Its per-criterion verdicts go into its own
+  report; nothing is posted to the tracker.
 
 ## Naming
 

@@ -319,7 +319,10 @@ answer, not a retry: say so and leave it unticked.
 **If this step changed the tree, the full suite is owed again**, by step 3's own
 rule: `dror-prove` does not run one, so a test file or a line of production code
 added here has been seen by targeted runs alone. Run it before the summary and
-name it as the run that counted.
+name it as the run that counted. And where the prove left the gate criterion
+unticked as waiting on a later run, this run is that run: green, it settles the
+gate — tick it, as the closing rule below settles one — since no step follows
+this one.
 
 **A box this step leaves unticked is where the run ends, and no round follows
 it.** The loop is behind us: a criterion that failed here for the same reason it

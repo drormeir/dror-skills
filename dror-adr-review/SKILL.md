@@ -157,6 +157,11 @@ is next:
 - **`conflict`** — two decisions disagree: this ADR against another, or against
   itself. **Nobody repairs this without the user.** Which side is right is a
   decision, and a skill that picks one has written an ADR nobody approved.
+- **`echo`** — the rule is right here and a copy of it elsewhere has drifted:
+  the conventions doc, the glossary, a docstring at the site, a README index.
+  The copy that gets read is the one that governs, so the finding names
+  **every** copy with its `file:line`, and `dror-adr-repair` synchronises all
+  of them at once. The `echoes` lens is what raises it.
 - **`revisit`** — nothing is wrong. The document is true, coherent and obeyed,
   and what it **predicted** has not held: the measurement it stood on now reads
   differently, the consequence it promised did not arrive, the cost it accepted
@@ -178,7 +183,7 @@ it. It is not restated here.
 
 Number the survivors: `conflict` first — it is the kind that blocks
 somebody — then `breach` in the order of the damage a violation does, then
-`text`, then `hole`, then `revisit` last, which is the only kind that asks for
+`text`, then `hole`, then `echo`, then `revisit` last, which is the only kind that asks for
 nothing to be fixed. Save them under the name the reference gives, overwriting
 the previous one. It is a separate file from the code review's on purpose: a code
 review and an ADR review are started for different reasons and neither should be
@@ -235,7 +240,7 @@ One tab-separated line per finding, the columns `dror-review` owns, in its
 order: `date` (from `date -I`) · `repo` (the directory name) · `head` (short
 commit) · `lens` · `path` — **the ADR's repo-relative path**, which is what this
 run reviewed, even for a `breach` whose evidence sits in code · `kind` (text /
-hole / breach / conflict / revisit) · `verdict` (survived / refuted / unverified) ·
+hole / breach / conflict / revisit / echo) · `verdict` (survived / refuted / unverified) ·
 `claim` (always `no`: this skill writes no claim comments, and the column stays
 so the two pools share one schema) · `summary` (under 80 characters, no tabs) ·
 `id` (the report's `<head>-<tag>-<hhmm>-<n>`, copied whole).
@@ -284,7 +289,7 @@ to record.
 
 Show the same numbered list, in that order, each line naming its kind. Under it,
 say in one sentence which findings are this chain's next work and whose: the
-`text` and `hole` ones go to `dror-adr-repair`, the `breach` ones to
+`text`, `hole` and `echo` ones go to `dror-adr-repair`, the `breach` ones to
 `dror-repair`, and a `conflict` or a `revisit` waits for the user — the first
 because somebody must choose, the second because nothing is broken. Then stop and wait.
 
