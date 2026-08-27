@@ -54,7 +54,9 @@ Per issue, from `gh issue view <n> --json body,state,labels`:
   - `Can close` where the issue is OPEN, it defines at least one criterion, and
     every one of them is ticked. The work is done and only the user's close is
     missing, so this outranks the blocker question too: a ticket whose criteria
-    are all met is not waiting on anything.
+    are all met is not waiting on anything. **The spec issue reaches this answer
+    through its children instead**, since it usually defines no criteria of its
+    own: an open spec whose every child is CLOSED can close.
   - `Awaiting #NN` — **blocked for closing only**: the work may go on freely,
     but the ticket cannot close until that one does. It says that every
     criterion still unticked belongs to another open ticket, a discovery made
@@ -70,11 +72,23 @@ Per issue, from `gh issue view <n> --json body,state,labels`:
     closing sentence that the row was inferred. A criterion nobody else owns is
     unfinished work, and the row is `Ready`. Two such tickets can name each
     other, and that is a real fact about the pair, not an error to resolve.
+
+    **The open spec issue is the largest case of this, and it is read from the
+    child set rather than from any section.** A parent carries no checkboxes, so
+    it owns no unfinished work of its own and its close waits on every child that
+    is still OPEN — which is `Awaiting` exactly, and for the whole list of them:
+    `Awaiting #12, #13, #14`. Shorten a long list to the first few and `+N more`
+    rather than dropping any. This is the one row whose blockers no `## Blocked
+    by` section names, so a spec left to the sections alone comes back looking
+    workable when it is the last thing in the ADR that can close — and a caller
+    ordering the tickets by this column would put it first.
   - `Blocked by #12, #34` where the `## Blocked by` section names issues that
     are still OPEN, shortened to those numbers alone.
   - `Ready` where every blocker is CLOSED, or there are none.
-  - `—` for a row the question does not apply to, like an open spec issue that
-    is nothing but a parent.
+  - `—` for a row the question does not apply to. **An open spec issue is not
+    one of them**: it is answered above, by its children. What is left for `—` is
+    a row where the question is genuinely empty — an issue that is neither the
+    spec nor a child of it, swept in by an inferred ticket set.
 - **Criteria done** — `- [x]` count over `- [x]` + `- [ ]` count, both literal
   greps of the body. Never infer a tick from the code; the number is what
   GitHub holds. A ticket with none reads `none defined`.
