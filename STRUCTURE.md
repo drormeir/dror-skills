@@ -65,39 +65,54 @@ would.
 
 ## The flow
 
+One decision goes in at the top and finished, closed tickets come out at the
+bottom. The two stages run in that order, and the first one is optional.
+
 ```mermaid
 flowchart TD
     ADR["ADR<br/>a decision, written down"]
 
-    ADR --> ARR[dror-adr-review-repair]
-    ARR --> AR
+    subgraph sharpen ["STAGE 1 · sharpen the decision — optional, and before any ticket is written"]
+        ARR[dror-adr-review-repair]
 
-    subgraph adrloop ["converges, up to its cap"]
-        AR[dror-adr-review] -->|text or hole| ARP[dror-adr-repair]
-        ARP -->|prose written| AR
+        subgraph adrloop ["converges, up to its cap"]
+            AR[dror-adr-review] -->|"text · hole · echo"| ARP[dror-adr-repair]
+            ARP -->|prose written| AR
+        end
+
+        ARR --> AR
     end
 
-    ADR --> AR
+    ADR --> ARR
+    ADR -->|"one pass, no fixing"| AR
+    ARP -.->|corrected prose| ADR
+
+    AXES["an ADR is judged against five things<br/>the code it governs · itself<br/>other documents · its tickets · the reader"]
+    AXES -.->|only 3 of 10 lenses read code| AR
+
+    AR -.->|"conflict · revisit"| YOU(["your call — nobody repairs these"])
+
+    subgraph build ["STAGE 2 · build it — one ticket at a time"]
+        ST[dror-show-tickets] --> IA[dror-implement-adr]
+        IA -->|one ticket at a time| IT[dror-implement-ticket]
+        ST -->|one ticket by hand| IT
+
+        IT --> IMPL["implement<br/>the ticket's code"]
+        IMPL --> PV[dror-prove]
+        PV --> RR[dror-review-repair]
+
+        subgraph loop ["converges, floor to cap"]
+            RV[dror-review] -->|survivors| RP[dror-repair]
+            RP -->|anything edited| RV
+        end
+
+        RR --> RV
+        RP --> PV2["dror-prove<br/>whatever is still unticked"]
+        PV2 --> CM["commit, push,<br/>close the ticket"]
+    end
+
+    ADR ==>|"the decision is now trusted"| ST
     AR -->|breach| RP
-    ARP -.-> ADR
-
-    ADR --> ST[dror-show-tickets]
-    ST --> IA[dror-implement-adr]
-    IA -->|one ticket at a time| IT[dror-implement-ticket]
-    ST -->|one ticket by hand| IT
-
-    IT --> IMPL["implement<br/>the ticket's code"]
-    IMPL --> PV[dror-prove]
-    PV --> RR[dror-review-repair]
-
-    subgraph loop ["converges, floor to cap"]
-        RV[dror-review] -->|survivors| RP[dror-repair]
-        RP -->|anything edited| RV
-    end
-
-    RR --> RV
-    RP --> PV2["dror-prove<br/>whatever is still unticked"]
-    PV2 --> CM["commit, push,<br/>close the ticket"]
 
     RV -.->|one line per finding| LOG[("refutations.tsv")]
     LOG -.-> RETRO[dror-review-retrospective]
@@ -108,6 +123,7 @@ flowchart TD
     PF -.-> PV
     PF -.-> RV
     PF -.-> RP
+    PF -.-> AR
 
     SH[["dror-internal-shared<br/>rules, glossary, ADRs"]]
     SH -.-> PV
@@ -115,8 +131,17 @@ flowchart TD
     SH -.->|worktree rules| IA
 ```
 
-Solid arrows are the run order. Dotted arrows are what each step reads or writes
-rather than where control goes.
+Solid arrows are the run order. The thick arrow is the hand-off between the two
+stages. Dotted arrows are what each step reads or writes rather than where
+control goes.
+
+**Stage 1 is skippable and it is not free.** Skipping it is the ordinary choice
+for a decision written this week; taking it is what you do before cutting tickets
+from a decision the tree has moved under, because everything in stage 2 takes the
+ADR on trust — the tickets are cut from it, the tests are written against its
+criteria, the review judges the diff by them. A sentence that quietly stopped
+being true becomes a rule broken by somebody following instructions correctly,
+and by then the tickets are wrong too.
 
 ## The chain
 

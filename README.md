@@ -34,6 +34,19 @@ against, what a review judges, and what a closed ticket means.
 Above the chain, `dror-adr-review` and `dror-adr-repair` ask whether the decision
 deserved the trust the chain gives it, and `dror-adr-review-repair` loops the two
 over one ADR the way `dror-review-repair` loops the pair below.
+
+**Reach for them before you write tickets against an ADR**, not after. Everything
+downstream takes the decision on trust — the tickets are cut from it, the tests
+are written against the criteria, the review judges the diff by them — so a
+sentence that has quietly stopped being true is a rule about to be broken by
+somebody following instructions correctly. The pass is optional and it is
+cheapest here: correcting the document costs one run, while correcting it after
+its tickets are built costs the tickets too.
+
+An ADR is checked against five different things, which is why one read is worth
+it: the **code** it governs, **itself**, **other documents** that restate its
+rules, **its own tickets**, and **the reader** who will act on it. Only three of
+the ten lenses read code at all.
 Beside it, `dror-review-retrospective`
 reads the refutation log across runs and says which lens is producing false
 positives.
