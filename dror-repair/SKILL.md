@@ -235,13 +235,14 @@ So for every finding that carried an **id** in the report, append one line to
 `~/.claude/dror-skills/repairs.tsv`, on the store reference's terms for every log:
 create it with its header where it is absent, append only, never block the run.
 
-`date` (ISO) · `repo` (the directory name) · `id` · `outcome` (the word from
-this run's report: `Fixed (red→green)`, `Couldn't reproduce`, `Ruled out`, …) ·
-`files_edited` (the repo-relative files **this run** edited, joined by `+`, or
-`-` where it edited none; more than six is the first six and `+N more`) ·
-`production` (did any of them sit in the production path: yes / no).
+The columns and their order are the store reference's (`REPORT-STORE.md`, "The
+logs"), stated there once, including the rule that the same `files_edited` and
+`production` go on every row this run appends. This run's own values: `outcome`
+is the word from this run's report — `Fixed (red→green)`, `Couldn't reproduce`,
+`Ruled out`, … — and `production` is answered yes or no, since this skill edits
+production code.
 
-**Those last two are the same answer this run already gives its caller** — the
+**`files_edited` and `production` are the same answer this run already gives its caller** — the
 files it edited and whether any is production code — written down instead of
 spoken once. They are what lets a later reading ask the question no other column
 can: a finding raised in a file the *previous* round's repair never touched is
@@ -249,11 +250,11 @@ one the previous round's review had in scope and did not return. That is the
 only recall proxy these logs can carry, and it is unavailable retrospectively —
 the run that edited the files is the only one that knows which they were.
 
-Write the same list on **every** row this run appends, including a
-`Ruled out` or a `Couldn't reproduce`: the columns describe the run, not the
-finding, and a per-finding attribution would claim a precision this skill does
-not have — step 2 is deliberately serial and shared helpers are edited for
-several findings at once.
+The reference's rule that those two carry the **same** list on every row this run
+appends — a `Ruled out` and a `Couldn't reproduce` included — has a reason that
+is this skill's own: step 2 is deliberately serial and a shared helper is edited
+for several findings at once, so a per-finding attribution would claim a
+precision this skill does not have.
 
 **Copy the id whole, exactly as the report spells it**, by the store reference's
 rule.
@@ -261,9 +262,6 @@ rule.
 A report whose findings carry no id — an older one, or one this skill was not
 given — records nothing here, and that is not a failure: the join has no key,
 and a line keyed on a guess is worse than an absent one.
-
-Where the header does not name `files_edited` and `production`, they arrive on
-the header line, as any added column does.
 
 Nothing is committed — committing is the user's. Two things are still owed
 before the run ends: the report below, and the review-owed line after it.

@@ -32,6 +32,13 @@ conventions. Read that for the roster and this for the rule. The rule is what
 binds: **each skill says in its own text which tier it is in**, so a reader
 holding one skill never has to consult a list at all.
 
+**The rule reaches every skill that acts on a repo, and stops there.** A shelf of
+documents (`dror-internal-shared`) and a skill whose whole subject is the logs
+outside any repo (`dror-review-retrospective`) are in neither tier, because the
+question the tiers answer — what does this assume about *your* project — does not
+arise for them. Saying so is not a third tier; it is the rule declining to
+apply. Every other skill in the set answers it, session-style ones included.
+
 Two things the rule did not anticipate, both now stated where they apply.
 Repo-agnostic means "names no tracker, no path and no runner **of its own**" —
 it has never meant free of `git`, which `dror-review`'s scope and

@@ -1,6 +1,6 @@
 ---
 name: dror-adr-review
-description: Review one ADR document against the code it decides about - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names an ADR and asks whether it is still true, still coherent, or still obeyed.
+description: Review one ADR document against itself, its tickets and the code it governs - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names an ADR and asks whether it is still true, still coherent, or still obeyed - most often as a preliminary pass, sharpening the decision before its tickets are implemented.
 ---
 
 # dror-adr-review
@@ -8,25 +8,41 @@ description: Review one ADR document against the code it decides about - every f
 This skill **finds**, in a written decision. It produces a report and STOPS,
 editing neither the ADR nor a line of code.
 
-An ADR is reviewed in two directions at once, and they are not the same
-question:
+**An ADR is not reviewed against one thing.** Sometimes it is checked against
+itself, sometimes against its own tickets, sometimes against the code it was
+written to govern — and usually some combination, because one read of the
+document settles several of them at once. The lens pool is organised on that:
+five **axes**, each admitting a different kind of evidence, set out in
+[`LENSES.md`](LENSES.md)'s preamble.
 
-- **The document about the code** — a sentence that describes a tree that has
-  moved on. The document is wrong.
-- **The code about the document** — a site that breaks a rule the ADR states.
-  The document is right and the code is wrong.
+- **Against the code**, in both directions, which are not the same question: a
+  sentence describing a tree that has moved on (the document is wrong), and a
+  site that breaks a rule the ADR states (the document is right and the code
+  is).
+- **Against itself** — a decision never taken sharply enough to write down, two
+  passages that disagree, a consequence the decision forces and the document
+  leaves unanswered.
+- **Against other documents** — a sibling ADR deciding the same question
+  differently, or a copy of this rule in the conventions doc or the glossary
+  that has drifted from it.
+- **Against its tickets** — a criterion that no longer matches the rule, which
+  is a rule about to be broken by somebody following instructions correctly.
+- **Against the reader** — a sentence that is true and gets acted on wrongly,
+  which nothing downstream ever catches.
 
-Both are findings here because one read settles both, and they are told apart by
-their **kind**, because they are repaired by different hands: the first by
-`dror-adr-repair`, the second by `dror-repair`, which fixes code and this
-skill's companion never does.
+Only three of the ten lenses read code, so **a `file:line` is not what a finding
+owes** — it is what one axis's findings owe. They are told apart by their
+**kind**, because they are repaired by different hands: the document's fault
+goes to `dror-adr-repair`, the code's to `dror-repair`, which fixes code and
+this skill's companion never does.
 
 ## What this skill assumes
 
-Like `dror-show-tickets`, this one is **convention-bound**: it assumes ADRs at
-`docs/adr/<NNNN>-*.md`, four digits, zero padded. A repo that keeps its
-decisions somewhere else gets one sentence saying so, and the user may name a
-path instead — a path given explicitly is always honoured, whatever the layout.
+Like `dror-show-tickets`, this one is **convention-bound**: it assumes ADRs in
+one of the conventional decision directories. How the number given becomes a
+file there — and how a repo that keeps its decisions elsewhere is answered — is
+`../dror-internal-shared/ADR-FILE.md`, the shelf beside this skill, which owns
+that rule for every skill taking an ADR by number.
 
 Everything else about the project arrives through the facts below.
 
@@ -42,7 +58,7 @@ in hand, continue at **Read the ADR** in the same turn.
 
 ## Read the ADR
 
-Find `docs/adr/<NNNN>-*.md` for the number given, or open the path given. No
+Resolve the number given, or open the path given, by `ADR-FILE.md`'s rule. No
 match ends the run: say so and stop, and do not guess which decision was meant.
 
 **Read it whole, here, before anything is spawned.** It is one document of a few
@@ -103,8 +119,12 @@ asks whether it will be obeyed as meant, which nothing downstream ever catches.
 `model: "sonnet"` to every lens agent and leave the refuters on the session's
 own. Spend the tokens where the judgement is.
 
-**Cap what a lens reads.** The ADR, and the files it names plus their direct
-callers. A lens that cannot reach a verdict inside that boundary says so and
+**Cap what a lens reads, on its own axis.** A code-axis lens gets the ADR, the
+files it names and their direct callers. A lens on any other axis gets the ADR
+plus the thing it is judged against and nothing more — the sibling ADRs and the
+copies for `neighbours` and `echoes`, the issue bodies already in its prompt for
+`tickets`, and for the three that read the document against itself, the document
+alone. A lens that cannot reach a verdict inside its own boundary says so and
 returns the question rather than widening — reading a subsystem to settle one
 sentence is the refuter's budget to spend, on one finding.
 
@@ -206,14 +226,18 @@ Then one section per finding, numbered as on screen, each with:
 
 - its **id**, minted by the reference's rule from the front matter's commit, this
   run's tag, the report's own time and the finding's number;
-- the **ADR line or quoted sentence** it is about, and the `file:line` in the
-  code it was judged against;
+- the **ADR line or quoted sentence** it is about, and **what it was judged
+  against**, in the form its axis takes: a `file:line` in the code, the other
+  passage of this document with its line number, the other document's own
+  `file:line`, the ticket by number, or the wrong action a reader takes. A
+  finding with no `file:line` is the ordinary case here, not an incomplete one;
 - its **kind**;
 - what is wrong, in one or two sentences;
-- for a `text` or `hole`, **what would make it true** — the corrected fact, with
-  the evidence the refuter stood on. Not the replacement prose; that is the
-  repair's writing, and a review that drafts it has done the repair badly and in
-  the wrong run.
+- for a `text`, `hole` or `echo` — the three the repair writes prose for —
+  **what would make it true**: the corrected fact, with the evidence the refuter
+  stood on, and for an `echo` the `file:line` of **every** copy it names. Not the
+  replacement prose; that is the repair's writing, and a review that drafts it
+  has done the repair badly and in the wrong run.
 
 **A finding is about fifteen lines.** This file is read start to finish by a
 repair run and by you tomorrow, so it carries what is needed to act and not the
@@ -266,12 +290,12 @@ read it.
 
 So append one line to `~/.claude/dror-skills/runs.tsv`, on the same terms as the
 log above — the same file `dror-review` writes, whose rows the disjoint lens
-names keep readable apart:
+names keep readable apart. The columns and their order are the store reference's
+(`REPORT-STORE.md`, "The logs"), stated there once.
 
-`date` · `repo` · `head` · `lenses_run` (the closed names, joined by `+`) ·
-`lenses_dropped` (the same, or `-`) · `findings` (how many merged findings this
-run produced, kills included) · `run_tag` (this run's tag) · `concurrent`
-(**`unchecked`**, or the tags a caller told this run it saw, joined by `+`).
+This run's own values: `lenses_run` and `lenses_dropped` carry the closed names
+from this skill's [`LENSES.md`](LENSES.md); `concurrent` is **`unchecked`**, or
+the tags a caller told this run it saw, joined by `+`.
 
 **Never `-` here.** In `dror-review`'s rows that value means *a check ran and saw
 nobody*; this skill runs no check of its own, and writing `-` would put "looked

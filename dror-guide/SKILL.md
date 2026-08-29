@@ -8,6 +8,10 @@ description: Answer as a step-by-step guide in plain words, assuming nothing. Us
 Turn the answer into a guide the user can follow straight through, without
 stopping to work out what something means.
 
+It is **repo-agnostic** (ADR 0011) and barely a repo skill at all: it names no
+tracker and no path, and governs the shape of an answer about whatever is being
+discussed.
+
 ## Shape
 
 A numbered list of steps, and the list is the whole message. This shape wins

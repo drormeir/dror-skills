@@ -8,7 +8,9 @@ condensed pointer, and that file owns the term.
 
 ## The work being described
 
-- **ADR** — a written decision. In a project, `docs/adr/<NNNN>-*.md`; for these
+- **ADR** — a written decision. In a project, a numbered file in a conventional
+  decision directory ([`ADR-FILE.md`](ADR-FILE.md) owns which, and how the
+  number resolves); for these
   skills, the files under `docs/adr/` beside this one. **Two numbering spaces,
   one word and one path shape**: a project's ADR 0011 and the skills' ADR 0011
   are unrelated documents, and a bare number is ambiguous outside the file that

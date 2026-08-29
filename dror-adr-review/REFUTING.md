@@ -1,16 +1,42 @@
 # Refuting
 
 You are handed one finding about a written decision. **Your job is to kill it.**
-Default to refuted: the finding dies unless the document, or the code, is
-genuinely at fault. You read the repo and may run code; you change no line of
-the ADR and no line of source.
+Default to refuted: the finding dies unless something is genuinely at fault. You
+read the repo and may run code; you change no line of the ADR and no line of
+source.
 
 Refuted means **nothing is wrong**, not that the sentence was clumsy. A finding
 whose wording is off but whose defect is real comes back a survivor, restated.
 
+**Kill it on its own axis.** The lens that raised this had one comparison target
+— the code, the document against itself, another document, the ticket set, or
+the reader who acts on it — and only three of the pool's ten read code at all.
+So "the tree says what the document says" refutes a `claims` finding and refutes
+**nothing** raised by `coherence`, `decision`, `reach`, `tickets` or
+`misreading`: those were never claims about the code, and the code cannot speak
+to them. What kills each kind is below, and where the finding's axis is not the
+code, the section for its kind says what evidence stands in place of a
+`file:line`. A refuter that reaches for the tree by reflex kills most of this
+pool by category, which is the one failure this file is written against.
+
 ## What kills each kind
 
-**`text`** — the document asserts something about the code. Find the code and
+**`text`** — the document is wrong, or is acted on wrongly. **This kind arrives
+off three different axes and each is killed differently**, so read the finding
+before reaching for the tree:
+
+- from `claims` or `outcome`, it asserts something **about the code**, and the
+  rest of this section applies;
+- from `coherence`, it says one passage of this document is a **stale copy of
+  another** — killed by reading both passages in full and finding they agree, or
+  that they govern different scopes, not by anything the tree says;
+- from `tickets`, it says the ADR's own sentence is the stale one **against an
+  issue body** — killed by re-reading that ticket, as the `conflict` paragraph
+  below sets out;
+- from `misreading`, it claims a reader **acts wrongly**, which has its own
+  paragraph after this one.
+
+For the code axis: find the code and
 read it. The finding dies the moment the tree still says what the document says
 — quote the `file:line` that proves it. Two things kill it especially often, and
 both are worth checking before anything else:
@@ -114,6 +140,9 @@ leaves the document alone.
 
 ## Return
 
-The verdict — survived, refuted or unverified — one sentence of why, the
-`file:line` you stood on, the corrected fact where you have one, and the kind
-if you are returning it under a different one than you were handed.
+The verdict — survived, refuted or unverified — one sentence of why, **what you
+stood on in the form its axis takes** (a `file:line` in the code, the other
+passage of this document, the other document's `file:line`, the ticket you
+re-read, or the wrong action you could or could not state), the corrected fact
+where you have one, and the kind if you are returning it under a different one
+than you were handed.

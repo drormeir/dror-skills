@@ -3,9 +3,13 @@
 `REPORT-STORE.md` holds what every `dror-*` run has to agree on about a report:
 which name the file takes, the identity line that makes the name checkable
 (ADR 0021), the finding id and its match-whole rule (ADR 0025), and the
-discipline every log obeys (ADR 0009). It is read whole by `dror-review` and
-`dror-adr-review`, which write reports, by `dror-repair` and `dror-adr-repair`,
-which read them, and by `dror-review-repair`, which names the path both ends use.
+discipline every log obeys (ADR 0009). Its readers are defined by **role, not by
+a list**: a run that writes a report, one that reads one, one that names the path
+both ends use, and one that joins the logs by finding id. At the moment this was
+decided that was five skills — `dror-review`, `dror-adr-review`, `dror-repair`,
+`dror-adr-repair` and `dror-review-repair` — and **the roster has grown since**
+and will again; the shelf's own `SKILL.md` says which files each document is read
+whole by, and that is the current answer. The role test is what binds.
 
 Those rules used to be restated in each of the five, and they had already
 drifted. `dror-adr-repair` still carried the bare-name fallback ADR 0021 removed,
@@ -30,8 +34,20 @@ itself, in order, at the moment it writes the file.
 ## Consequences
 
 What a report *contains* stays with the skill that writes it — the ordering of
-findings, the sections, and each log's own columns. The shelf holds only what
-more than one run must agree on, which is the line between the two.
+findings and the sections. The shelf holds only what more than one run must agree
+on, which is the line between the two.
+
+**That line moved once, and the same way.** The shelf originally carried
+`refutations.tsv`'s columns alone, on the grounds that it had two writers, and
+left `runs.tsv` and `repairs.tsv` to their skills as single-writer files. Both
+have two writers as well — the code review and the ADR review write the first,
+the code repair and the ADR repair the second — and by the time anyone checked,
+the two `repairs.tsv` copies had drifted: one capped `files_edited` at six files
+and `+N more`, the other did not, and neither said the difference was meant. So
+all three column lists live on the shelf now, and each writer states only its own
+**values** — its `kind`, its `outcome` vocabulary, what it may write in
+`concurrent` or `production`. Those genuinely differ per writer, and that is the
+sharper form of the line: a schema is shared, a vocabulary is owned.
 
 `dror-adr-review` now writes `ADR: <n>` in its front matter, and
 `dror-adr-repair` checks it and no longer falls back to a bare

@@ -6,14 +6,43 @@ never raises — but account for every bullet as you work: each one applied, or
 skipped for a reason. Return your findings plus only the bullets you skipped,
 each with its reason.
 
-**The document is not the evidence.** Every finding is settled against the tree
-as it stands now, not against what the ADR says about it, and it carries the
-`file:line` it was judged at. A finding whose only support is another sentence
-of the same document is a reading, not a defect.
+**Your lens has one comparison target, and your heading names it.** An ADR is
+not reviewed against a single thing. Some lenses read it against the code, some
+against itself, some against other documents, one against its tickets, one
+against the reader who will act on it — and **the evidence each axis admits is
+different**. Find yours before you raise anything:
+
+- **Against the code** — `claims`, `breach`, `outcome`. The tree as it stands
+  now is the evidence, and every finding carries the `file:line` it was judged
+  at. What the ADR says about the code is never the evidence for it, and a
+  finding whose only support is another sentence of the same document is a
+  reading, not a defect.
+- **Against itself** — `decision`, `coherence`, `reach`. The evidence is this
+  document: two passages that disagree, or one passage and the question it
+  forces and leaves unanswered, each quoted with its line number. **There is no
+  `file:line` to carry and none is owed** — the sentence above about the same
+  document is the code axis's rule and is exactly wrong here.
+- **Against other documents** — `neighbours`, `echoes`. The evidence is the
+  other file, quoted with its own `file:line`: a sibling ADR, the conventions
+  doc, the glossary, a docstring, a README index.
+- **Against the tickets** — `tickets`. The evidence is the issue body you were
+  handed, quoted by number. Never the code — whether the work is *done* is
+  another skill's table.
+- **Against the reader** — `misreading`. The evidence is the wrong action a
+  competent newcomer takes after reading the sentence, stated concretely.
+  Neither the code agreeing with the document nor the document agreeing with
+  itself bears on it.
+
+Five axes, and a finding is settled on **its own lens's** and no other. Judging
+your finding by a neighbouring axis's standard is how a true one dies: most of
+these lenses can produce no `file:line` at all, and a run that demanded one from
+every lens would return only the three that read code.
 
 Every finding carries:
 
 - the **sentence** it is about, quoted, with its line number in the ADR;
+- the **evidence its axis admits**, above — never a `file:line` invented to
+  satisfy a rule that is not yours;
 - the **kind** — `text` (the document is wrong, or is acted on wrongly), `hole`
   (the document is missing something it must carry), `breach` (the code breaks a
   rule the document states), `conflict` (two decisions disagree), `echo` (a copy

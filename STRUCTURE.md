@@ -72,7 +72,7 @@ flowchart TD
     ADR --> ARR[dror-adr-review-repair]
     ARR --> AR
 
-    subgraph adrloop ["converges, up to 3 rounds"]
+    subgraph adrloop ["converges, up to its cap"]
         AR[dror-adr-review] -->|text or hole| ARP[dror-adr-repair]
         ARP -->|prose written| AR
     end
@@ -90,7 +90,7 @@ flowchart TD
     IMPL --> PV[dror-prove]
     PV --> RR[dror-review-repair]
 
-    subgraph loop ["converges, 2 to 7 rounds"]
+    subgraph loop ["converges, floor to cap"]
         RV[dror-review] -->|survivors| RP[dror-repair]
         RP -->|anything edited| RV
     end
@@ -138,12 +138,13 @@ finding refuted before it reaches you — and a loop over the two, as below.
 
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
-| `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against the code it decides about — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
-| `dror-adr-repair` | An ADR review returned `text` or `hole` findings and you want the document corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | the ADR's prose, and nothing else |
-| `dror-adr-review-repair` | Same as `dror-adr-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop ADR review and repair over one decision document until it converges — `dror-adr-review`, then `dror-adr-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
+| `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against itself, its tickets and the code it governs — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
+| `dror-adr-repair` | An ADR review returned `text`, `hole` or `echo` findings and you want the documents corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | prose, wherever an `echo` says the rule is read — the ADR, the conventions doc, the glossary, a docstring |
+| `dror-adr-review-repair` | Same as `dror-adr-review`, but you want the correcting done too and do not want to be asked between rounds — the usual way to sharpen an ADR before implementing it. | Loop ADR review and repair over one decision document until it converges — `dror-adr-review`, then `dror-adr-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
-Findings divide by **kind**, because two different hands fix them; the routing
-lives in [`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md),
+Findings divide by **kind** — six of them — because different hands fix them:
+the routing for all six lives in
+[`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md),
 the definitions in the glossary.
 
 ## Beside the chain
@@ -152,7 +153,7 @@ the definitions in the glossary.
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, the map and the decision record. A shelf, read by the skills that run. |
+| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, how an ADR number resolves to a file, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` is the first step of every skill in the chain; `shared` is a
@@ -187,8 +188,8 @@ One writer per direction, because a tick is a claim about evidence:
   through the facts.
 - **Convention-bound** — `dror-show-tickets` and `dror-implement-adr` assume
   GitHub issues reachable by `gh`; `dror-show-tickets`, `dror-implement-adr`,
-  `dror-adr-review` and `dror-adr-review-repair` assume ADRs at
-  `docs/adr/<NNNN>-*.md`. In a repo that does
+  `dror-adr-review` and `dror-adr-review-repair` assume ADRs in a conventional
+  decision directory, resolved by the shelf's `ADR-FILE.md`. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 The reasons behind all of it are one file per decision in

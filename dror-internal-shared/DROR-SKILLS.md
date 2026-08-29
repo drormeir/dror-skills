@@ -23,7 +23,7 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
 | `dror-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
 | `dror-repair` | Fix what the review found, each one red then green | code and tests; unticks a red box |
-| `dror-review-repair` | Loop the two until it converges, up to seven rounds | whatever its two steps write |
+| `dror-review-repair` | Loop the two until it converges, up to its own cap | whatever its two steps write |
 
 ## Above the chain
 
@@ -33,15 +33,24 @@ it, and they are the same shape one level up: find, then fix, in two runs
 
 | Skill | Question it answers | Writes |
 |---|---|---|
-| `dror-adr-review` | Is this decision still true, still coherent, still obeyed? | `adr-review-report-<adr>.md` |
-| `dror-adr-repair` | Bring the document back in line with the tree | the ADR's prose, and nothing else |
-| `dror-adr-review-repair` | Loop the two over one ADR until it converges, up to three rounds | whatever its two steps write |
+| `dror-adr-review` | Is this decision still true, still coherent, still obeyed — usually asked before implementing it? | `adr-review-report-<adr>.md` |
+| `dror-adr-repair` | Bring the document, and every drifted copy of its rules, back in line with the tree | the ADR's prose, and any other document an `echo` names |
+| `dror-adr-review-repair` | Loop the two over one ADR until it converges, up to a cap of its own — lower than the loop below it, and with no round-1 floor | whatever its two steps write |
 
-They divide the findings by **kind**, because two different hands fix them: a
-`text` or `hole` is the document's fault and goes to `dror-adr-repair`; a
-`breach` is the code's and goes to `dror-repair`; a `conflict` between two
-decisions is nobody's until the user says which wins. Neither skill writes code,
-and neither may rewrite what was decided — see ADR 0020.
+They divide the findings by **kind**, because different hands fix them. Six
+kinds, and this is where each one goes:
+
+- `text`, `hole` and `echo` are the document's fault and go to
+  `dror-adr-repair`. An `echo` is a rule the ADR states correctly and a copy of
+  it elsewhere has drifted, so it names every copy and is repaired in all of
+  them at once — the copy that gets read is the one that governs.
+- `breach` is the code's and goes to `dror-repair`.
+- `conflict` between two decisions is nobody's until the user says which wins.
+- `revisit` is nobody's either, for the opposite reason: nothing is wrong, and
+  what the decision predicted has not held. Whether to reopen it is the user's.
+
+Neither skill writes code, and neither may rewrite what was decided — see
+ADR 0020. The glossary defines the six; `dror-adr-review` mints them.
 
 A typical ticket: implement → `dror-prove` → the review-repair loop →
 `dror-prove` on whatever is still unticked → commit, push, close — which is what
@@ -79,7 +88,7 @@ Two tiers, and each skill says which it is in (ADR 0011):
   step 0 counts commits, and both say so.
 - **Convention-bound** — `dror-implement-adr`, which inherits the binding from
   `dror-show-tickets` by using its vocabulary, `dror-show-tickets`, which assumes GitHub issues
-  reachable by `gh` and ADRs at `docs/adr/<NNNN>-*.md`, `dror-adr-review`,
+  reachable by `gh` and ADRs in a conventional decision directory, `dror-adr-review`,
   which assumes the second of those, and `dror-adr-review-repair`, which inherits
   it from `dror-adr-review` by taking an ADR by number. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.

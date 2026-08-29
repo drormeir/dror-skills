@@ -305,17 +305,19 @@ dropped; that fact dies with the report unless it is written where later runs
 can read it.
 
 So append one line to `~/.claude/dror-skills/runs.tsv`, on the same terms as the
-log above. A **separate file**, deliberately: the log's contract is one line per
-merged finding, and a run-level row inside it would be counted as a finding by
-everything that reads it.
+log above — the columns and their order are the store reference's
+(`REPORT-STORE.md`, "The logs"), stated there once. A **separate file**,
+deliberately: the refutation log's contract is one line per merged finding, and a
+run-level row inside it would be counted as a finding by everything that reads
+it.
 
-`date` · `repo` · `head` · `lenses_run` (the closed names, joined by `+`) ·
-`lenses_dropped` (the same, or `-`) · `findings` (how many merged findings this
-run produced, kills included) · `run_tag` (this run's tag) · `concurrent` (the
-tags or names the check above saw, joined by `+`, or `-` for none seen — never
-`unchecked`, which is what a review that runs no check of its own writes there).
+This run's own values: `lenses_run` and `lenses_dropped` carry the closed names
+from [`LENSES.md`](LENSES.md), and `concurrent` carries the tags or names the
+check above saw, joined by `+`, or **`-` for none seen** — never `unchecked`,
+which is what a review that runs no check of its own writes there.
 
-**The last two columns are what make every rate in this file readable later.**
+**`run_tag` and `concurrent` are what make every rate in this file readable
+later.**
 Without them a run that shared its tree with another is pooled with one that had
 it to itself, and the difference is invisible: the neighbour's edits were in this
 run's diff, so its findings are partly about work this run was never asked to

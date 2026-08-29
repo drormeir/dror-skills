@@ -32,6 +32,14 @@ conventions doc, the glossary, a README index, a docstring at the site — becau
 the ADR is rarely the copy that governs behaviour. That is still "text only": no
 line below a docstring is touched.
 
+> **Extended since.** The list above is four kinds; there are six. `echo` was
+> added later and is the named form of the paragraph immediately above it — a
+> rule the ADR states correctly whose copy elsewhere has drifted. It is the
+> document's fault and goes to `dror-adr-repair`, which synchronises every copy
+> the finding names in one pass. The split this document draws is unchanged;
+> `echo` is on the `text` and `hole` side of it. The current routing for all six
+> is in [`DROR-SKILLS.md`](../../DROR-SKILLS.md).
+
 ## The decision itself is not repairable
 
 A repair may correct what a document *describes* and may not change what it
@@ -84,6 +92,7 @@ comparable.
 The report is its own family of files, `adr-review-report-<adr>.md`, so a code review and an ADR
 review cannot overwrite each other.
 
-`dror-adr-review` is convention-bound (ADR 0011): it assumes `docs/adr/<NNNN>-*.md`,
-and honours an explicit path anywhere. `dror-adr-repair` is repo-agnostic — it
+`dror-adr-review` is convention-bound (ADR 0011): it assumes ADRs in a
+conventional decision directory, resolved by the shelf's `ADR-FILE.md`, and
+honours an explicit path anywhere. `dror-adr-repair` is repo-agnostic — it
 is handed a document.

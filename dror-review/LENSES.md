@@ -7,8 +7,20 @@ account for every bullet as you work: each one applied, or skipped for a
 reason. Return your findings plus only the bullets you skipped, each with its
 reason — the applied ones need no line in the return.
 
-Every finding carries a concrete failure scenario — specific input or state →
-wrong output or crash — and an exact `file:line`.
+Every finding carries a concrete failure scenario and an exact `file:line`.
+**What counts as a failure scenario depends on your lens**, and there are two
+kinds in this pool:
+
+- **A defect that runs.** Specific input or state → wrong output or crash. Five
+  of the six lenses raise these, and `logic`, `domain`, `state`, `clone` and
+  `collateral` are all judged on them.
+- **A regression that ships unnoticed.** `tests` alone raises this one: the code
+  is *correct*, and the scenario is the specific future edit that breaks it with
+  the suite still green. "The code is fine" is not a defence against it — that
+  is what the finding already says.
+
+Do not judge your finding by the other kind's standard. A `tests` finding held
+to "show me the crash" dies every time, and the whole lens with it.
 
 **Read around the hunk.** The diff is the scope, but a line's reason often sits
 outside it: read the enclosing function and the immediate callers before raising

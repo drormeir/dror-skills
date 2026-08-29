@@ -12,14 +12,16 @@ deliverable.
 ## What this skill assumes
 
 Unlike the rest of the `dror-*` chain, this one is **convention-bound** and says
-so rather than pretending otherwise: it assumes ADRs at `docs/adr/<NNNN>-*.md`
-and issues in GitHub, reachable by `gh`. A repo that does neither gets one
+so rather than pretending otherwise: it assumes ADRs in a conventional decision
+directory, resolved by `../dror-internal-shared/ADR-FILE.md`, and issues in
+GitHub, reachable by
+`gh`. A repo that does neither gets one
 sentence saying which assumption failed, and no table — an inferred table over a
 tracker this skill cannot read would be a guess wearing a table's authority.
 
 ## Step 1 — find the ADR
 
-`docs/adr/<NNNN>-*.md`, four digits, zero padded. If no file matches, say so and
+Resolve the number by `ADR-FILE.md`'s rule. If no file matches, say so and
 stop — do not guess which decision the user meant. An ADR that exists only as an
 untracked file still counts; note that in the closing sentence.
 

@@ -14,8 +14,10 @@ facts" means carry them into the rest of that run and keep going; only a run
 that was started for the facts themselves ends here. Nothing below stops a
 caller's remaining work.
 
-Works in any repo and any language: everything comes from the project itself,
-and this skill carries knowledge of none.
+It is **repo-agnostic** (ADR 0011), and it is the case that makes the tier
+obvious: it works in any repo and any language, naming no tracker and no path of
+its own, because everything it returns comes from the project itself and this
+skill carries knowledge of none.
 
 ## The store
 

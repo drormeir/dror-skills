@@ -238,11 +238,11 @@ has it read twice and invites two numberings of one contract.
 **The two options in that prompt are the whole interface.** "A prove follows" is
 what lets the ticket travel down at all — without it the loop deliberately runs
 ticketless, so that no box is left unticked with nobody to tick it back. Three
-rounds rather than the loop's own seven is this chain paying for the rounds twice
-over: it has an implementation and two proves around them.
+rounds rather than the loop's own default cap is this chain paying for the rounds
+twice over: it has an implementation and two proves around them.
 
-**Three rounds is measured, not guessed** — a *cap*, over a floor of
-two that the loop enforces itself (ADR 0023): rounds 1 and 2 are one
+**Three rounds is measured, not guessed** — a *cap*, sitting above the round-1
+floor the loop enforces itself (ADR 0023): rounds 1 and 2 are one
 review split in two, and round 3 is the first that is really a second look.
 The loop reports **owed** at its cap where a case for
 continuing is still live, and hands over the command; that answer travels into

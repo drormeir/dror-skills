@@ -123,8 +123,12 @@ about a project, and one repo's runs are too few to read anything into (ADR
 - `runs.tsv` — one line per review run.
 - `repairs.tsv` — one line per finding a repair handled.
 
-**`refutations.tsv` has two writers** — `dror-review` and `dror-adr-review` —
-so its columns live here, once, in this order:
+**Every one of the three has two writers**, so all three column lists live here,
+once. A skill that appends to one of these files points at this section and does
+not restate the list; what it does say in its own file is what its own **values**
+are, which is the part that genuinely differs between the two writers.
+
+**`refutations.tsv`** — written by `dror-review` and `dror-adr-review`:
 
 `date` (ISO, from `date -I`) · `repo` (the directory name) · `head` (short
 commit) · `lens` (the one that raised it; a merge's every-lens list joined by
@@ -136,8 +140,33 @@ report's finding id, copied whole) · `report` (the path this run's report was
 written to, as named on screen). **`id` and `report` are last, in that order.**
 Each writer says in its own file what its `kind`, `path` and `claim` values are.
 
-A single-writer file's columns belong to the skill that writes it. What follows
-holds for all three.
+**`runs.tsv`** — written by `dror-review` and `dror-adr-review`:
+
+`date` · `repo` · `head` · `lenses_run` (the writer's own closed lens names,
+joined by `+`) · `lenses_dropped` (the same, or `-`) · `findings` (how many
+merged findings this run produced, kills included) · `run_tag` (this run's tag) ·
+`concurrent` (what the run knows about who else was in the tree). Each writer
+says in its own file what it may write in `concurrent` — the two differ, and the
+difference is the point: a review that runs a neighbour check of its own can
+write `-` for *looked and saw nobody*, and one that runs none writes `unchecked`,
+which is not the same fact.
+
+**`repairs.tsv`** — written by `dror-repair` and `dror-adr-repair`:
+
+`date` (ISO) · `repo` (the directory name) · `id` (copied whole from the report,
+by the rule above) · `outcome` (the word from this run's own report) ·
+`files_edited` (the repo-relative files **this run** edited, joined by `+`, or
+`-` where it edited none; **more than six is the first six and `+N more`**) ·
+`production` (did any of them sit in the production path: yes / no). Each writer
+says in its own file what its `outcome` vocabulary is and what it may write in
+`production`.
+
+The **same list on every row a run appends**, including a row whose finding was
+ruled out or not reproduced: `files_edited` and `production` describe the *run*,
+not the finding, and a per-finding attribution would claim a precision no repair
+has, since a shared helper is edited for several findings at once.
+
+What follows holds for all three.
 
 **Create the directory and the file with its header row when they are not
 there** — the first run's ordinary case, since nothing else creates that

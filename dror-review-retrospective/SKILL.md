@@ -6,19 +6,25 @@ disable-model-invocation: true
 
 # dror-review-retrospective
 
-This skill **reads history**. It says what `dror-review`'s lenses are getting
-wrong across runs and what to change about them, and it stops there: no lens
-section is edited until the user says which.
+This skill **reads history**. It says what the lenses are getting wrong across
+runs and what to change about them, and it stops there: no lens section is
+edited until the user says which.
+
+**Both pools are in scope** — `dror-review`'s lenses and `dror-adr-review`'s —
+because both write the one log. What they are never allowed is to be read
+against each other: their rates answer different questions, and the rule for
+keeping them apart is in "The log" below.
 
 One run's kills say nothing — a lens that got one finding wrong on one diff got
 one finding wrong. What this reads is the accumulation.
 
 ## The log
 
-`~/.claude/dror-skills/refutations.tsv`, one line per merged finding, appended by every
-`dror-review` run and never rewritten. Tab-separated; the columns are whatever
-its own header row names — `dror-review` owns the schema and this skill assumes
-none of it, so the log stays self-describing if the schema grows. The columns
+`~/.claude/dror-skills/refutations.tsv`, one line per merged finding, appended by
+every `dror-review` and every `dror-adr-review` run and never rewritten.
+Tab-separated; the columns are whatever its own header row names — the shelf's
+`REPORT-STORE.md` owns the schema and this skill assumes none of it, so the log
+stays self-describing if the schema grows. The columns
 read here are `date`, `repo`, `lens`, `path`, `verdict`, `claim` and `summary`;
 a header missing one of those makes the questions that need it unanswerable,
 which is said rather than guessed around.
@@ -50,7 +56,15 @@ how many rows were dropped and under what names.
 The two pools answer different questions and their rates are **not comparable**
 (ADR 0020): a code lens's finding is about a diff, an ADR lens's is about a
 sentence, and a document's `hole` is refuted on grounds no code finding faces.
-Report them apart, and never rank a lens of one against a lens of the other. The log written before this rule
+Report them apart, and never rank a lens of one against a lens of the other.
+
+**Inside the ADR pool the same split runs again, along its five axes** (ADR
+0033). Only `claims`, `breach` and `outcome` are judged against the code; the
+rest are judged against the document itself, against other documents, against
+the ticket set, or against the reader. Those refute on grounds that have nothing
+to do with each other, so ranking `coherence` against `claims` measures the axis
+and not the lens. Group the ADR pool by axis before comparing anything within
+it, and say which axis a rate belongs to whenever you print one. The log written before this rule
 carries five rows under `spec`. `verdict` is `survived`, `refuted` or `unverified`. Every
 merged finding faces a refuter, so a line is never here unjudged. `claim` says
 whether a claim comment was written where the refutation turned on an invisible
@@ -203,12 +217,23 @@ because a lens edited on it gets narrower for no reason.
 For each finding above, name the concrete change and quote the current wording.
 Three things can be the target, and the question decides which:
 
-- A lens raising false positives is a section of
-  `~/.claude/skills/dror-review/LENSES.md` — name the sentence or bullet.
-- Refuters killing real bugs, or letting weak findings through, is
-  `~/.claude/skills/dror-review/REFUTING.md`.
+- A lens raising false positives is a section of that lens's own `LENSES.md` —
+  name the sentence or bullet. **Which file that is follows from the lens's
+  pool**, the same disjoint naming that kept the two apart in every count above:
+  a code lens is `dror-review/LENSES.md`, an ADR lens is
+  `dror-adr-review/LENSES.md`. A proposal aimed at the wrong pool's file edits a
+  lens that never raised the finding.
+- Refuters killing real bugs, or letting weak findings through, is that pool's
+  `REFUTING.md` — `dror-review/REFUTING.md` or `dror-adr-review/REFUTING.md`,
+  chosen the same way.
 - A file that keeps needing claims is neither: the change belongs in **that
-  project's code**, as a comment, and no skill edit will help.
+  project's code**, as a comment, and no skill edit will help. This one is a
+  code-pool answer only; an ADR review writes no claim comments.
+
+**Name these by their path relative to this skill's own directory** —
+`../dror-review/LENSES.md` — and open them there to quote from. An absolute
+path under the author's checkout is wrong for every installed copy, and the
+quotation this section requires is a read that then fails.
 
 **Recall is what a wording change spends.** A lens narrowed until it stops
 producing false positives stops producing findings, and the review's misses are

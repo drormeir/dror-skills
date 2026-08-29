@@ -7,15 +7,18 @@ description: Loop ADR review and repair over one decision document until it conv
 
 One run, one loop: `dror-adr-review` → `dror-adr-repair`, judged at the end of
 each round, and round again while a round is still owed and the cap allows. **Up
-to three rounds.** Nothing else — no code is read for anything but evidence, no
+to three rounds.** It is the optional pass **before** an ADR is implemented —
+sharpen the decision, then drain its tickets — and never a step inside a drain. Nothing else — no code is read for anything but evidence, no
 test is written, no `dror-repair`.
 
 This file adds the order, the document the run starts from and the judgement of
 when to stop, and nothing else. Both steps are invoked as themselves and each
 fetches what it needs. It is **convention-bound** (ADR 0011), inheriting the
-binding from `dror-adr-review`: it takes an ADR by number, so it assumes ADRs at
-`docs/adr/<NNNN>-*.md`. A path named explicitly is always honoured, and a repo
-that keeps its decisions elsewhere gets a sentence saying so rather than a guess.
+binding from `dror-adr-review`: it takes an ADR by number, so it assumes ADRs in
+a conventional decision directory, resolved by
+`../dror-internal-shared/ADR-FILE.md`, which owns
+that rule — including the path escape hatch and what a repo keeping its
+decisions elsewhere is told.
 
 ## What this run is given
 
@@ -59,10 +62,9 @@ stop.
 ## 0. Know what is already in the tree
 
 **Resolve the number to a path first**, since every command below needs one and
-round 1 has not run yet: a path the caller named outright is the answer, and
-otherwise glob `docs/adr/<NNNN>-*.md` with the number zero-padded to four. Two
-hits or none is a sentence and a stop, not a guess — a repo that keeps its
-decisions elsewhere is told so rather than reviewed at the wrong file.
+round 1 has not run yet: `../dror-internal-shared/ADR-FILE.md` holds the rule,
+and its stop on zero hits or two is this run's stop as well — a repo that keeps
+its decisions elsewhere is told so rather than reviewed at the wrong file.
 
 Then read the ADR's own state before round 1, and say what you find:
 
@@ -246,8 +248,8 @@ Answer in **one of three words**, with the grounds in a sentence:
 
 **The cap is three rounds and the run's own judgement does not raise it.** A
 document converges faster than a diff — one file, one writer, and every
-correction grounded before it is written — so seven rounds here would be seven
-readings of the same paragraphs. **A caller may name a lower one**, and a lower
+correction grounded before it is written — so the code loop's cap would be that
+many readings of the same paragraphs. **A caller may name a lower one**, and a lower
 cap binds exactly as three does, reported by number in every round's announcement
 (`round 2 of at most 2`). A cap above three is refused, whoever asks. At the cap
 the word is reported and the loop ends whatever it says — an **owed** at round 3
