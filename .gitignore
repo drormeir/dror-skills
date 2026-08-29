@@ -1,0 +1,5 @@
+# The dror-skills store: facts.md, review reports, a drain's state file.
+# Disposable by design (REPORT-STORE.md) and rewritten every run, so it is
+# never committed — and WORKTREE.md's first guard requires this line before an
+# ADR worktree may sit under .claude/adr-wip/.
+.claude/
