@@ -136,8 +136,10 @@ property — issue numbers usually agree with dependency order and are not requi
 to — so derive the order rather than assuming it.
 
 **The graph.** Take every row of §2's table that is not `Closed` and not
-`Can close`; those two are done, and `Can close` is the user's gesture (step 7),
-not work. Each remaining row is a node. Its edges come from its status: a
+`Can close`; those two are done. A `Can close` row is a ticket some earlier run
+finished and did not close — no gate of this run's has been over it, so it is
+neither implemented again nor closed here: report it, and let the user close it
+or re-run its ticket. Each remaining row is a node. Its edges come from its status: a
 `Blocked by #NN` or `Awaiting #NN` row **depends on `#NN`** — one edge per number
 named, since a row may name several. `Ready` names none, which is what `Ready`
 means. No other column is read for edges, and no ticket body is opened to look
@@ -220,10 +222,10 @@ any session (ADR 0031):
    That ticket goes to the front of the list on the strength of the boxes alone,
    with no state file needed.
 
-   **Except where a round entry says `finished`.** This drain never closes a
-   ticket — step 7 leaves closing to the user — so "open with every box ticked"
-   is also exactly what a *completed* round leaves behind, waiting on a gesture
-   that is not this skill's to make. So the test is: a round entry reading
+   **Except where a round entry says `finished`.** Step 7 closes a ticket it
+   finished, so "open with every box ticked" is ordinarily a round that did not
+   reach its close — but not always: a round whose gate came back red ticks
+   nothing further, leaves the ticket open and still ends. So the test is: a round entry reading
    `finished` settles it and the ticket stays done; a round entry reading
    `picked` means interrupted; and **no entry at all** — no file, or a file from
    a drain that wrote no outcomes — means the boxes are the only evidence there
@@ -332,129 +334,120 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
 
    Where it ends stopped — the user declined the override, or it was one of the
    two nobody can override — the drain stops with it: see §3a.
-5. **Commit, and do not push yet.** One commit, naming the ticket. This is this
-   skill's own act: `dror-implement-ticket` ends uncommitted by contract and
-   `dror-repair` never commits (ADR 0007), so the commit belongs to the caller
-   that wants ticket-sized history.
+5. **Check the ticket's commit and its push.** Both are
+   `dror-implement-ticket`'s own steps 6 and 7 — one commit naming the ticket,
+   staged by path, its message answering to the boxes as they stood, pushed to
+   `origin/adr-<N>`. So this step **verifies** rather than acts: `git log
+   --oneline <the previous ticket's tip>..HEAD` for that commit,
+   `git status --porcelain` for a clean tree, and `git rev-list --count
+   @{upstream}..HEAD` for `0`. All three hold, and there is nothing to do here;
+   record the sha with the round.
 
-   **The store stays out of the commit.** `<worktree>/.claude/dror-skills/`
-   holds this run's state file and review reports, and nothing gitignores it
-   for you — stage the ticket's files by path, never `git add -A`, or the
-   drain's bookkeeping lands in the branch's history.
+   **A dirty tree, no commit, or an unpushed one is this skill's to finish** — a
+   run that stopped early, one whose commit missed a file, or one that refused
+   the push because the branch had no upstream. Commit what is left under the
+   ticket's number and push it, by that skill's rules and for its reasons, which
+   are worth keeping in front of you:
 
-   **Name the ticket, never with a closing keyword.** `Closes #N`, `Fixes #N`,
-   `Resolves #N` are not references — where the tracker reads commit messages
-   they *are* the close, performed by the push, whatever the boxes say. Step 7
-   below leaves closing to the user deliberately, and a keyword written here
-   overrides that the moment this branch reaches the default one, silently and
-   long after anyone is reading. Write `#N` or `for #N`.
+   - **Read step 6's word before pushing.** A commit the ticket run left
+     unpushed on a verdict of **owed** is unpushed on purpose: the hand-back
+     command it returned is `/dror-review` over the unpushed work, and a push
+     here would leave that command an empty diff to read. Leave it, and let
+     step 6 stop the drain with the command and the push both in the user's
+     hands.
+   - **A green full suite before the commit.** The chain's rule is that the
+     suite is owed to the last code change, and a run that stopped early may
+     have made none since its last edit: run the project's full suite, lint and
+     the type-check, and name the run. Red, commit all the same, marked partial
+     — step 7 then leaves the ticket open on the gate. Otherwise the commit is
+     pushed carrying code nothing has run, the next ticket is written on top of
+     it, and the first full suite to see it fails under a later ticket's number.
 
-   **Read the ticket's boxes before committing**, which is
-   `dror-implement-ticket`'s own rule for the commit it does not make: a `- [ ]`
-   still open is either unfinished work or a verdict nobody recorded, and a
-   commit made over it destroys the distinction. Step 7 re-reads them after the
-   push for the drain's report; this reading is the one that decides whether the
-   commit message may claim the ticket is done.
+   - **Read the boxes first.** A `- [ ]` still open is either unfinished work or
+     a verdict nobody recorded, and a commit that reads as finished over one
+     destroys the distinction. This reading decides what the message may claim;
+     step 7 reads them again, for a different question — whether the ticket
+     closes.
+   - **The store stays out of the commit.** `<worktree>/.claude/dror-skills/`
+     holds this run's state file and review reports, and nothing gitignores it
+     for you — stage by path, never `git add -A`, or the drain's bookkeeping
+     lands in the branch's history.
+   - **Name the ticket, never with a closing keyword.** `Closes #N`, `Fixes #N`,
+     `Resolves #N` are not references — where the tracker reads commit messages
+     they *are* the close, performed by the push, whatever the boxes say. The
+     ticket does get closed — by the ticket run's step 8, or by step 7 here —
+     and that is exactly why the keyword must not do it: those two read the
+     boxes, the gate and the push first, while a keyword closes the moment this
+     branch reaches the default one, silently, long after anyone is reading, and
+     with none of the three checked. Write `#N` or `for #N`.
 
-   **The push waits for step 6**, and that is not tidiness. `dror-review` takes
-   its base from `git merge-base @{upstream} HEAD`, so a ticket pushed the moment
-   it is committed has `@{upstream}` equal to `HEAD` and an empty diff — the
-   extra round in step 6 would find nothing to review and end, every time. While
-   the push waits, `@{upstream}` is still the previous ticket's tip, which is
-   exactly this ticket's diff.
-6. **Settle the ticket before the next one starts.**
-   `dror-implement-ticket` ends by saying whether another `dror-review` /
-   `dror-repair` round is **owed**, **optional** or **no**. Record the word and
-   its grounds in the state file, and act on it here rather than at the end of
-   the drain:
+   **What the push settles, and why nothing after it reviews.** `dror-review`
+   takes its scope from `git merge-base @{upstream} HEAD`, so once the ticket is
+   pushed its diff is `@{upstream}..HEAD` and empty: no round run from here can
+   see it. That is why every round this ticket gets is spent inside the ticket
+   run, its step 5 included, and why an unpushed commit found here is finished
+   with a push rather than with one more review — the window closed with the
+   ticket run's own last step, not with this one. The one exception is the
+   **owed** commit above, which the ticket run kept inside the window on
+   purpose.
+6. **Record the ticket's verdict.** `dror-implement-ticket` ends on one word —
+   **owed**, **optional** or **no** — for whether another `dror-review` /
+   `dror-repair` round is wanted. Write the word and its grounds into the state
+   file with the round, and take it as given: it is that run's judgement of its
+   own diff, made while that diff was still reviewable.
 
-   **Read the grounds before spending on the word.** `dror-implement-ticket`
-   returns **owed** with its grounds, and one of them — *a criterion only the
-   user can settle* — is not something another round can move. Two more rounds of
-   review and repair over an unchanged diff will find what the last ones found
-   and hand back the same sentence, having spent a lens agent per lens and a
-   refuter per finding, twice, to do it. That ground goes straight to §3a. The
-   other grounds — the cap, a repair that touched production code — are exactly
-   what a further round is for.
+   **This step runs no round of its own.** On **optional** or **no** it cannot:
+   the ticket run pushed at its step 7, so `@{upstream}` is `HEAD` and
+   `dror-review`'s scope — the unpushed work — is empty; a round invoked here
+   would review nothing and report that as convergence. On **owed** the commit
+   is unpushed and the diff is there to read, and the drain declines by rule:
+   the ticket run has already spent its cap and step 5's two rounds on it, and a
+   ticket not converging after that gets the user, not a sixth round under the
+   drain's name. So the words mean:
 
-   - **owed, on grounds a round can move** — settle it now, still unpushed, and
-     settle it the same way
-     `dror-implement-ticket` does: **invoke `dror-review-repair`**, capped at
-     two rounds. Not an inline review-then-repair — that skill owns the round,
-     judges it, and brings four things an inline round has no way to reach: the
-     account of why the tree is dirty carried into every round, its run tag, the
-     check for another run editing this tree, and the rule that the full suite is
-     owed to the last code change.
-
-     **An owed-at-cap hand-back is a command, not a description.** Both that
-     skill and `dror-implement-ticket` end an owed-at-cap by returning the
-     command that would resume the loop. Where one comes back, run **that**
-     rather than composing a fresh invocation of your own: it carries the report
-     path, the tag and the round count this run reached, and a re-invented
-     prompt starts a loop that thinks it is on round one. Report it verbatim in
-     the summary too, since §3a hands it to the user. The prompt below is what to
-     send when no command came back — add §0a's sentence to the command either
-     way, because a command written by a run in this worktree still reaches a
-     fresh agent that starts outside it.
-
-     > `<§0a's sentence.>` Review and repair the unpushed work for ticket
-     > `<N>`. **Cap the loop at two rounds.** A `dror-prove` follows, so pass
-     > the ticket number down to every round's review and every round's repair,
-     > and report which boxes moved. The tree is **committed and unpushed**: it
-     > is this ticket's own work, already through two to three rounds of this
-     > same loop inside `dror-implement-ticket`, and this is the round it said
-     > was still owed —
-     > so the diff you take from `git merge-base @{upstream} HEAD` is exactly
-     > that ticket and nothing earlier.
-
-     Then `dror-prove` for any box its repairs unticked — that stays this
-     skill's own, because the loop deliberately ticks nothing — and then commit
-     again. Its prompt opens with §0a's sentence too: it is a step like any
-     other, but the agents it spawns beneath itself are not, and the sentence is
-     what reaches them. **One box on that list is not proved by a test**: the criterion
-     that *is* the project's verification gate is ticked on the full-suite run
-     that counted for this round, quoted to it, exactly as
-     `dror-implement-ticket`'s step 4 does — a repair unticks it like any other,
-     and re-proving it with a test is proving the wrong thing.
-
-     **And a prove that touched the tree owes the suite before the commit.**
-     The chain's rule is that a green full suite is owed to the last code
-     change, and the loop above honours it for its own rounds — but `dror-prove`
-     runs none, and it writes: a test for a box that had none, production code
-     for a criterion no repair took. So where it changed anything, run the
-     project's full suite, plus lint and the type-check, and name that run.
-     **And where the prove left the gate criterion unticked as waiting on a
-     later run, this run is that run**: green, it settles the gate — tick it,
-     since no step after this one will.
-     Otherwise this ticket's commit is pushed carrying code nothing has run,
-     the next ticket is written on top of it, and the first full suite to see it
-     is the one that fails under a later ticket's number.
-
-     The word it returns is the ticket's verdict, taken as given: **owed** at
-     its cap stops the drain (below), anything else settles the ticket. The next
-     ticket is written on top of this one's code, so leaving production code that
-     nothing has reviewed under the next ticket's diff is how a finding ends up
-     attributed to the wrong ticket — the thing the whole branch layout exists to
-     prevent.
    - **optional** or **no** — the ticket is settled. Optional is the user's
      call to make later, on the branch, which is what the branch outliving the
      run is for.
+   - **owed** — the ticket run reached its cap with a case for continuing still
+     live, and **the drain stops**: a ticket not converging after that many
+     rounds does not get another one built on top of it. Name the ticket, say
+     what its last round found, carry its hand-back command verbatim, and go to
+     §3a. The work is committed and, by the ticket run's own step 7,
+     **unpushed** — which is what keeps that command live: `dror-review` reads
+     the unpushed work, and a push would empty it. Step 5 above leaves it that
+     way, and §3a hands the user the command and the push together.
 
-   **Still owed at that cap, and the drain stops.** Two rounds is the loop's
-   own cap here and this skill does not raise it or run a second loop: a ticket
-   still owed after them is not converging, and continuing to the next ticket
-   would build on it while piling more work in front of the problem. Stop the
-   loop, name the ticket, say what the last round found, and go to §3a — after
-   the push below, because the work is real whatever the verdict.
+   **An owed whose ground is *a criterion only the user can settle* is the same
+   stop for a different reason** — no round can move it, and the answer is the
+   user's. It goes to §3a with that ground named, not with a command to run.
+7. **Read the ticket's state, and close it only where the ticket run could not.**
+   The close is `dror-implement-ticket`'s own step 8, made against three
+   conditions — every box ticked, the full-suite gate green over the tree as it
+   finally stands, and the push done. So `gh issue view <N> --json state` is this
+   step's first question, and a `CLOSED` answer ends it: record it with the round
+   and carry on.
 
-   **Then push**, once: after the verdict settles, after the cap is reached, or
-   after a stall. That is what leaves `dror-implement-ticket`'s own step 0 a
-   clean, pushed tree for the next ticket, and the next review a base at this
-   ticket's tip.
-7. Re-read the ticket's boxes. All ticked: say it can close, and **do not close
-   it** — closing stays the user's gesture, because every box on it was ticked by
-   this same chain. Some unticked: say which, leave the ticket open, and carry
-   on.
+   **`OPEN` is either a condition that did not hold, or a step that never ran.**
+   Ask which, since they are settled differently:
+
+   - The ticket run named the condition — a box still open, a red or missing
+     gate, a `criterion wrong` waiting on the user. **Leave it open**, say which,
+     and carry on. Nothing here overrules that judgement; it was made with the
+     tree in front of it.
+   - The ticket run never reached its step 8 — it stopped early, or step 5 above
+     finished a commit and a push on its behalf. Then this step makes the close,
+     on those same three conditions, read fresh: the `- [ ]` count in the body as
+     it stands now rather than what any run reported ticking, the gate run made
+     after the last code change and quoted, and the push confirmed at step 5. Any
+     of the three failing leaves the ticket open with a line saying which.
+
+   Closing at all is deliberate, and the objection it overrules is real: every box
+   on this ticket was ticked by this same chain, so the close inherits whatever
+   the proofs were worth. It is taken because reopening is one command and the
+   alternative is a queue of finished tickets nobody can tell from unfinished
+   ones. Where a criterion's evidence is thin the verdict itself says so —
+   `unproven` and `partial` do not tick, so they hold the ticket open on their
+   own, which is the check that matters rather than the gesture.
 
    **Rewrite this round's `outcome`** from `picked` to `finished`, `skipped` or
    `stopped`, in the same write as the counts below. This is the round's only
@@ -462,11 +455,14 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
    that reports on screen and never rewrites the word is a round the next session
    will correctly treat as interrupted.
 
-   Note the shape this leaves: a ticket whose boxes are all ticked and which the
-   user has not yet closed is `finished` here and **open** on the tracker. That
-   is the one case the resume section's tracker test would misread as
-   interrupted, so it is settled by the state file, which says `finished` — the
-   tracker wins only where the file has nothing to say.
+   Note the shape this leaves: a `finished` round leaves its ticket **closed**,
+   so the two records agree and the resume section's tracker test has nothing to
+   misread. The shape that does need the state file is the other one — a ticket
+   whose boxes are all ticked and which is still **open**, because its gate was
+   red or the round ended between the tick and the close. Left to the tracker
+   alone that reads as implemented-and-unclosed and goes to the front of the
+   list; a round entry reading `finished` is what says otherwise, and the tracker
+   wins only where the file has nothing to say.
 
    **Then read the clock again and close the round with step 1's counter, two
    lines:**
@@ -564,6 +560,13 @@ drop it from **attempted**, and pick it before anything else — unless the user
 answer was to leave that ticket alone, which is itself an answer and is recorded
 as one.
 
+**An owed stop is resumed only after the user has pushed.** Its answer is the
+hand-back command and then the push, and until both are made the ticket's commit
+sits unpushed in the worktree: a fresh run picks the ticket first, its step 0
+refuses the unpushed commit, step 5 holds it again, and step 6 stops on the same
+word. That is the stop holding, not the drain failing — say so in one line, and
+name the push as what clears it.
+
 Like every store in this chain it is disposable: unreadable is a miss, never an
 error, and the cost of losing it is re-attempting a stalled ticket once.
 
@@ -585,7 +588,9 @@ thing the stop is worth: an answer given now applies to a tree with one ticket o
 work in it, while the same answer given after four more tickets applies to a tree
 whose later work was written against the guess. So: finish the ticket's
 bookkeeping — commit **whatever this run wrote to the tree** and nothing else
-(the store stays out, as at step 5), push it, write the state file — then say in three lines what stopped, on which ticket, and what
+(the store stays out, as at step 5), push it — except a commit whose verdict is
+**owed**, which step 5 left unpushed so its hand-back command still has a diff to
+read, and which the user pushes after running it — write the state file, then say in three lines what stopped, on which ticket, and what
 the choice is. Then stop, and wait. Resuming is a fresh run of this skill; the
 state file makes it cheap.
 
@@ -654,8 +659,8 @@ it** — including what dies with the directory and what does not.
 The worktree path and the branch, then the work list as it was built and one line
 per ticket on it: its
 number, whether it finished, stalled or was **skipped** at step 2 and why, how many criteria are proven of how
-many, its round verdict — the word its settling loop returned, as that loop
-gave it, with the report tag where a step 6 loop ran — and **how long it took**,
+many, its round verdict — the word the ticket run returned, as it
+gave it, with the report tag where its step 5 ran a settling loop — and **how long it took**,
 which is the one column that says where the ADR's cost actually went. A drain is many tickets
 and the per-round lines belong to the ticket's own summary, so they stay there;
 what travels up is the word, and re-wording it is how a reader loses track of

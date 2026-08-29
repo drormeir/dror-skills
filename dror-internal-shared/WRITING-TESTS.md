@@ -38,6 +38,32 @@ point. Never write red or green for a run you did not make.
   the module equals it.
 - **Checks one behaviour**, so its failure names what broke.
 
+## A test that reads the tree scopes its own walk
+
+Some things are proved by reading the source rather than calling it — "this name
+appears in exactly three places", "nothing under this package imports Qt". The
+test walks the files itself, and that walk sits outside every guard the project
+has: `.gitignore`, pytest's `norecursedirs` and mypy's `exclude` keep the
+*tools* out of a directory, and not one of them reaches a test doing its own
+`rglob`. A second copy of the repository under the checkout — an ADR worktree at
+`.claude/adr-wip/<repo>-adr-<N>` is the ordinary one — is walked like any other
+directory, so a test asserting *three* call sites finds six: true about the files
+on disk, false about the program, and green everywhere the second copy is absent.
+
+So a test that walks:
+
+- **Roots the walk at the code it is asserting about**, derived from that
+  package's own `__file__` — never the current directory, and never a repository
+  root found by walking upward. The narrow root is most of the fix, and it is the
+  half that does not depend on remembering a list of names.
+- **Prunes dot-directories by name** wherever the root is still above one:
+  `.claude`, `.git`, `.venv`, `.tox`, the caches. Excluding `.venv` and `tests`
+  alone is not this rule — each of those names was excluded for a reason of its
+  own, and the copies are what this one is about.
+- **Names the paths it found in the failure message**, so the run that does fail
+  says *which* files it counted. A bare `assert len(hits) == 3` reports a number
+  and leaves the reader to guess whether the program changed or the walk did.
+
 ## Where a test goes
 
 Take the first route that fits:

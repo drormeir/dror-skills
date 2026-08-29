@@ -70,7 +70,11 @@ Split what is left:
 - **Structural** — "imports neither Qt nor numpy", "the name exists in exactly
   one place in the source", "nothing here raises, whatever it is handed". These
   are testable too: an import assertion, a `Grep` count asserted in a test, a
-  fuzz over hostile inputs. Prefer a real test over a note.
+  fuzz over hostile inputs. Prefer a real test over a note. A test that counts
+  what is in the source is reading the tree rather than calling it, so
+  `WRITING-TESTS.md`'s rule for a walk applies to it — an unpruned walk from the
+  repository root finds the ADR worktree's copy of every file it matches, and
+  says so only once the suite is run somewhere this run never runs it.
 - **Not testable here** — a criterion about another ticket's work, about a
   platform this machine is not, or about a process. Say which, and why, and
   write no test. Never fake one with a test that asserts nothing.

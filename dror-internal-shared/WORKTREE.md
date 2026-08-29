@@ -96,6 +96,14 @@ one sentence naming the line is what lets them make it.
 Repo-wide search is the one cost with no guard: `rg` and `git grep` honour
 `.gitignore` and are fine, `grep -r` is not.
 
+**A test that walks the tree itself has no guard either**, and it is the same
+cost wearing a green tick: the three above configure *tools*, and a test's own
+`rglob` is not one of them. It finds the worktree's copy of every file it
+matches, and it fails only when the suite is run from the user's checkout — which
+is not where a drain ever runs it. `WRITING-TESTS.md`'s rule for such a walk is
+what keeps that out, and it belongs to whoever writes the test, not to this
+checklist.
+
 ## Carrying the ignored things across
 
 A worktree contains tracked files only, and everything a run needs to verify with

@@ -1,6 +1,6 @@
 ---
 name: dror-implement-ticket
-description: Take one ticket from unwritten to closable - implement it, prove its criteria, loop review and repair until it converges, then prove whatever is still unticked. Use when the user names a ticket number and asks to implement it end to end.
+description: Take one ticket from unwritten to closed - implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. Use when the user names a ticket number and asks to implement it end to end.
 ---
 
 # dror-implement-ticket
@@ -61,7 +61,8 @@ first and the last are not — with no ticket there is no contract, and with a
 half-written implementation there is nothing for the chain to judge.
 
 Past that point the remaining steps run without stopping between them: prove, the
-review-repair loop, prove again. A step that finds nothing to do says so and the
+review-repair loop, prove again, settle whatever round is still owed, commit,
+push, close. A step that finds nothing to do says so and the
 run continues; nothing here waits on an answer, because the question every step
 would ask — "is this ticket's work done?" — is what the next step exists to
 answer with evidence.
@@ -102,9 +103,10 @@ before step 1**, naming what it found. The two commands say "nothing"
 differently — an empty output and the string `0` — so read each one's answer,
 not the presence of output.
 
-Committing and pushing is the user's call and this skill does neither; a run that
+This skill commits its own ticket at step 6 and pushes it at step 7, and neither
+of those makes the work already sitting here this run's to carry: a run that
 started dirty and said nothing would hand back a review of somebody else's work
-with this ticket's number on it.
+with this ticket's number on it, and then commit it under that number too.
 
 The user may say to proceed anyway. Then continue, and carry one sentence naming
 the pre-existing work into **step 3's prompt**, which is where the loop is
@@ -321,38 +323,159 @@ rule: `dror-prove` does not run one, so a test file or a line of production code
 added here has been seen by targeted runs alone. Run it before the summary and
 name it as the run that counted. And where the prove left the gate criterion
 unticked as waiting on a later run, this run is that run: green, it settles the
-gate — tick it, as the closing rule below settles one — since no step follows
-this one.
+gate — tick it, as step 6's rule settles one — since step 5's prove ticks it
+the same way and no step after that does.
 
 **A box this step leaves unticked is where the run ends, and no round follows
 it.** The loop is behind us: a criterion that failed here for the same reason it
 failed in step 2 is the ticket's problem, not a review's, and another pass over
-the code will not tick it. Say which box, why, and leave it — the next section is
-about what that costs at closing time.
+the code will not tick it. Say which box, why, and leave it — step 8 is where
+that costs the ticket its close.
 
-## Commit nothing
+## 5. Settle a round still owed
 
-This run ends with the working tree changed and uncommitted. What to commit, and
-where, is the user's call and the one thing these steps cannot judge — in
-particular whether a criterion still unticked after step 4 leaves this ticket
-closable at all.
+Step 3's loop ends on one word — **owed**, **optional** or **no**. This step acts
+on it, because the two steps after it are the commit and the push, and both are
+irreversible in a way a round is not: work pushed unreviewed is work the next
+ticket is written on top of.
 
-**And when the user does ask for the commit, the boxes go first.** A ticket is
-closed only with every criterion ticked; an unticked box at the moment of
-closing is either work that is not done or a verdict nobody recorded, and
-closing over it destroys the distinction. So before committing: read the body,
-and if any `- [ ]` is left, either settle it (step 4's route — a `gate` the
-verification run already answered is settled by ticking it) or say plainly which
-box is open and let the user decide, rather than closing and tidying afterwards.
+**Read the grounds before spending on the word.** An **owed** whose ground is *a
+criterion only the user can settle* is not something another round can move: two
+more rounds over an unchanged diff find what the last ones found and hand back
+the same sentence, having spent a lens agent per lens and a refuter per finding
+to do it. Say so and go straight to step 6. The other grounds — the cap, a repair
+that touched production code — are exactly what a further round is for.
 
-And where the tracker reads commit messages, a **closing keyword closes the
-ticket** — `Closes #N`, `Fixes #N`, `Resolves #N` on the default branch — at
-push time, silently, whatever the boxes say. It is not a note about what the
-commit relates to; it is the close itself, performed by the push, and it
-happens before anyone reads the reply that would have said a box was open.
-Write one only when the ticket is genuinely ready to close and the user asked
-for that; otherwise name the ticket without the keyword (`#N`, `for #N`) and
-close it as its own step, after the boxes are settled.
+**owed, on grounds a round can move** — settle it now, before the commit, by
+invoking `dror-review-repair` **capped at two rounds**. Not an inline
+review-then-repair: that skill owns the round, judges it, and carries the account
+of why the tree is dirty into every round, its run tag, and the rule that the
+full suite is owed to the last code change.
+
+**An owed-at-cap hand-back is a command, not a description.** Where step 3's loop
+came back with the command that would resume it, run **that** rather than
+composing a fresh invocation: it carries the report path, the tag and the round
+count already reached, and a re-invented prompt starts a loop that thinks it is
+on round one.
+
+Then `dror-prove` for any box those repairs unticked — the loop deliberately
+ticks nothing — and **one box on that list is not proved by a test**: the
+criterion that *is* the project's verification gate is ticked on the full-suite
+run that counted for this round, quoted to it, exactly as step 4 does. A prove
+that touched the tree owes the suite before the commit, by step 3's rule.
+
+**optional** or **no** — nothing to settle. Optional is the user's call to make
+later, on the branch.
+
+**Still owed after that cap, and the word travels up unchanged.** This step does
+not raise the cap or run a third loop: a ticket still owed after them is not
+converging, and hiding that behind another round buries it. Report the word, its
+grounds and the hand-back command the loop returned — a caller that stops on this
+hands that command to the user, and cannot compose it afterwards. Then commit
+below, and **do not push**: that command is `/dror-review` over the unpushed
+work, with no base of its own, so step 7's push is the one act that would spend
+it — `@{upstream}` would be `HEAD`, and the review it names would read an empty
+diff and call that convergence. The work is real whatever the verdict and the
+commit is what keeps it findable; the push is the user's, after the round the
+command runs, and step 8 leaves the ticket open on that condition.
+
+## 6. Commit the ticket
+
+One commit, this ticket's work. It is what gives every ticket a commit id of its
+own: a ticket whose work is still loose in the working tree is indistinguishable
+from the next ticket's, and the distinction cannot be recovered later by reading
+a diff.
+
+**The boxes go first.** Read the body as it stands now — step 5 may have moved
+one since step 4 did — and count the
+`- [ ]` lines. Every box ticked, and the message says the ticket is done. Any box
+still open, and the work is committed all the same — it is real and losing it is
+worse — but the message says so in a line of its own (`partial: criterion <n>
+open`), and so does the report. An unticked box is either work not done or a
+verdict nobody recorded, and a commit that reads as finished over one destroys
+the distinction. Settling it first is better than annotating it, and step 4's
+route is how: a `gate` the verification run already answered is settled by
+ticking it, not by a caveat in a commit message.
+
+**Stage the ticket's files by path, never `git add -A`.** Where this runs inside
+an ADR worktree, `<worktree>/.claude/dror-skills/` holds the drain's state file
+and this chain's review reports, and nothing gitignores it for you — an `-A`
+lands that bookkeeping in the branch's history.
+
+**Name the ticket, never with a closing keyword.** `Closes #N`, `Fixes #N`,
+`Resolves #N` are not references — where the tracker reads commit messages they
+*are* the close, performed by the push, whatever the boxes say and long after
+anyone is reading the reply that would have said a box was open. Closing is step 8's act,
+made after the push and against three conditions it reads for itself; a keyword
+makes it instead at push time, with none of them checked. Write `#N` or
+`for #N`.
+
+A run that changed nothing in the tree commits nothing and says so. That is the
+ordinary end of a tests-only request, not a failure.
+
+## 7. Push the ticket's branch
+
+`git push` once, to the branch's own upstream. It is what makes the ticket's work
+visible to anyone who is not at this machine, and it is what leaves the next
+ticket's step 0 a clean, pushed tree rather than one that stops it.
+
+**It is also what closes the review window**, which is why nothing above may be
+left owing: `dror-review` takes its scope from `git merge-base @{upstream} HEAD`,
+so once this push lands, `@{upstream}` is `HEAD` and this ticket's diff is no
+longer reviewable as unpushed work by anything. Step 5 exists to be finished
+before this line, not after it.
+
+**And where step 5 ended still owed, do not push.** Whatever comes next — the
+hand-back command where the cap was reached, or the round the user runs after
+settling a criterion — reviews the unpushed work and nothing else, so the push is
+the one act that would make it useless. The commit stands and the push waits: say
+the branch is unpushed and why, and that the review comes before the push.
+
+**Never onto the remote's default branch.** Where `HEAD` is `main`, `master` or
+whatever `origin/HEAD` names, this run commits and stops: say the commit is
+unpushed and why, and leave the push to the user. The chain's own habitat is a
+ticket branch — `adr-<N>` under a drain — and a run started on the default branch
+by hand is the case this rule is for.
+
+**Where the branch has no upstream**, set one to the remote of the same name
+(`git push -u origin <branch>`) — a branch that tracks nothing makes every later
+`dror-review` fall back to the remote's default branch and take the whole
+accumulated diff as one ticket's. Where there is no usable remote at all, say so
+and stop at the commit.
+
+## 8. Close the ticket
+
+Three conditions, all three, and the ticket is closed with the command the
+**issue convention** fact names — on a GitHub repo,
+`gh issue close <N> --comment "<one line: the branch, and the sha that did it>"`:
+
+1. **Every box ticked.** Count the `- [ ]` lines in the body as it stands now,
+   fetched again rather than remembered — steps 4 and 5 may both have moved
+   boxes, and the count that decides a close is the one on the tracker, not the
+   one in this run's notes.
+2. **The full-suite gate green over the tree as it finally stands.** Named, with
+   its summary line, and made *after* the last code change — step 3's rule says
+   which run that is. A ticket closed on a green from before the final repair is
+   closed on a tree nobody has.
+3. **Step 7 pushed.** A closed ticket whose only copy of the work is a commit on
+   one machine reads as done to everyone who cannot see that machine. So the
+   default-branch case, the no-remote case and the still-owed case above close
+   nothing: they commit, say why they did not push, and leave the ticket open.
+
+Any condition failing leaves the ticket **open**, with one line saying which —
+and that is not a failure of the run, it is the run reporting what it found.
+
+**Nothing here reopens, rewords or unticks.** A `criterion wrong` waiting on
+the user's call holds the ticket open by condition 1 and is meant to; the answer
+is theirs, and this step's only move is to leave it alone and say so.
+
+This close is deliberate, and the objection it overrules is real: every box on
+this ticket was ticked by this same chain, so the close inherits whatever the
+proofs were worth. It is taken because reopening is one command, and the
+alternative is a queue of finished tickets nobody can tell from unfinished ones.
+Where a criterion's evidence is thin, the verdict itself says so — `unproven` and
+`partial` do not tick, so they hold the ticket open on their own, which is the
+check that matters rather than the gesture.
 
 ## Present
 
@@ -367,12 +490,15 @@ Then one line for what the run wrote **outside the tree**: the boxes
 `dror-prove` ticked and the loop's repairs unticked. Those are the only marks
 this chain leaves on the ticket — `dror-review` writes its per-criterion verdicts
 into its own report and posts nothing. The three logs under
-`~/.claude/dror-skills/` carry a line per round for a later retrospective. The
-tree is left uncommitted and the ticket's boxes are not — say so rather than
-leave it to be discovered.
+`~/.claude/dror-skills/` carry a line per round for a later retrospective. Then
+the commit: its short sha, its subject, and the branch it was pushed to — or, on
+the default branch, a repo with no remote, or a round still owed, that it is
+unpushed and why. Then
+whether the ticket was **closed**, and where it was not, which of step 8's three
+conditions did not hold. Say it rather than leave it to be discovered.
 
 Then the one sentence that matters — which criteria are green and which are not,
-counted from the ticket's boxes as they stand now, **after step 4**. Then **why
+counted from the ticket's boxes as they stand now, **after steps 4 and 5**. Then **why
 the loop ended**: the word it returned — **owed**, **optional** or **no** — its
 grounds in one sentence, and where that word came from — a review with no
 survivors, a repair that touched no production code, the three-round cap, or a
@@ -383,5 +509,7 @@ Done when the implementation is written, the loop has returned with its word and
 its per-round lines, the full suite has run over the tree as it finally stands —
 after step 4, where that step changed it — every criterion has a proven state,
 every box a repair unticked has been proved again or explicitly left red, the
-loop's end is accounted for in one word with its grounds, and that summary is on
-screen with nothing committed.
+loop's end is accounted for in one word with its grounds, a round still owed has
+been run or explained, this ticket's work is in one commit named by its sha and
+pushed to its branch or held unpushed with the reason named, the ticket is closed
+or the condition that held it open is named, and that summary is on screen.

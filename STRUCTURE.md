@@ -93,7 +93,7 @@ flowchart TD
 
     RR --> RV
     RP --> PV2["dror-prove<br/>whatever is still unticked"]
-    PV2 --> CLOSE["ticket closable"]
+    PV2 --> CM["commit, push,<br/>close the ticket"]
 
     RV -.->|one line per finding| LOG[("refutations.tsv")]
     LOG -.-> RETRO[dror-review-retrospective]
@@ -119,8 +119,8 @@ rather than where control goes.
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
 | `dror-show-tickets` | You are deciding what to do next, or want to know whether an ADR is finished. Read it before and after the rest. | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
-| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree at `.claude/adr-wip/<repo>-adr-<N>`, a branch `adr-<N>`, one commit per ticket, a drain state file |
-| `dror-implement-ticket` | One ticket, start to closable, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closable — implement it, prove its criteria, loop review and repair until it converges, then prove whatever is still unticked. | code, then whatever the three below write |
+| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree at `.claude/adr-wip/<repo>-adr-<N>`, a branch `adr-<N>`, a push and a close per ticket, a drain state file |
+| `dror-implement-ticket` | One ticket, start to closed, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closed — implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
 | `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. | a review report; a per-criterion comment |
 | `dror-repair` | Findings already exist — from a review, from this conversation, from a colleague — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |

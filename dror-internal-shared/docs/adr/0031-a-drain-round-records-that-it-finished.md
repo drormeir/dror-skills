@@ -30,6 +30,17 @@ evidence that outlive any session: the round's own `outcome`; the tracker, where
 ticket open with every box ticked is implemented and unclosed; and the tree, for
 whose work is sitting in it.
 
+> **Superseded in part.** The paragraph below was written when the drain never
+> closed a ticket. `dror-implement-ticket` now commits, pushes and closes its own
+> ticket at its steps 6–8, and the drain closes one only where that run could
+> not. So "open with every box ticked" is no longer what a completed round
+> ordinarily leaves behind — a `finished` round leaves its ticket closed, and the
+> two records agree. The qualification still holds for the round that ticked
+> everything and did not close: a red gate, a push it could not make, or a
+> session that ended between the tick and the close. The test is unchanged: a
+> round entry reading `finished` settles it, `picked` means interrupted, and no
+> entry at all means the boxes are the only evidence.
+
 The tracker test needs one qualification, because this drain never closes a
 ticket — closing is the user's gesture. "Open with every box ticked" is therefore
 *also* what a completed round leaves behind. A round entry reading `finished`
