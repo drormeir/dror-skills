@@ -21,10 +21,6 @@ Rules — each exists because its violation already produced a defect here:
 - A shared rule lives once, on the shelf (`dror-internal-shared/`), under a
   header saying what the file owns and what it deliberately does not; a calling
   skill points and never restates.
-- A commit that changes a chain skill's behaviour owes two checks before it
-  lands: grep the map files for the old behaviour's wording, and run
-  `/dror-adr-review` over this repo's own ADRs — the map layer drifts exactly
-  the way that skill's `echoes` lens catches in other repos.
 
 There is no build here; grep is the test suite. After renaming anything, grep
 the repo for the old name.

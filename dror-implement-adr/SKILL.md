@@ -179,6 +179,13 @@ are the whole list by construction. Leave it out of the sort, and report it at
 the end: **can close** where the drain closed every child, and otherwise which
 children it is still waiting on.
 
+**A spec row reading `No tickets yet` ends the run here**, before any worktree
+work. It says the decision was published and nothing was ever cut from it, so
+the node set is empty for want of tickets rather than for want of work — and a
+drain that reported "nothing left" would be saying the ADR is finished. Say that
+the ADR has no tickets, that writing them is the next step and whose call that
+is, and stop.
+
 **Set-aside nodes leave first, with everything downstream of them.** A node
 waiting on a ticket that is not workable here — outside the ADR, or `Needs your
 call` — can never be taken, and neither can anything waiting on *it*. Remove that

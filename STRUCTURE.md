@@ -17,8 +17,10 @@ them.
 decision: what was decided, and what it was chosen *over*. The alternative
 matters as much as the choice — six months later, the question is never "what did
 we do", it is "why didn't we do the obvious thing", and an ADR that skipped the
-alternative cannot answer. They live as numbered files, `docs/adr/0007-*.md`, and
-they are prose — read start to finish, and still true after the work ships.
+alternative cannot answer. They live as numbered files, `0007-*.md`, in a
+decision directory — `docs/adr/` in this repo, wherever its own tool put them in
+yours. They are prose: read start to finish, and still true after the work
+ships.
 
 **A spec issue turns one ADR into work.** It is the parent issue that says "this
 decision is now being built". What it carries is the link back to the ADR and the

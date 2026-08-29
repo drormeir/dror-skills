@@ -22,24 +22,36 @@ by a failed search.
 
 ## A directory the project declares comes next
 
-A project whose ADR tool was pointed somewhere unusual says so in its own rule
-file — `CLAUDE.md` or `AGENTS.md`, already in context wherever these skills run.
-A directory named there is **added to the front of the search below**, before
-the defaults, and the run says which directory it used.
+A project whose ADR tool was pointed somewhere unusual says so in one of two
+places, and both are read:
+
+- **Its own rule file** — `CLAUDE.md` or `AGENTS.md`, already in context
+  wherever these skills run.
+- **`.adr-dir` at the repository root**, whose entire content is one line
+  holding the path. `adr-tools` writes it on `adr init <dir>`, and several
+  reimplementations write it always, so it is the declaration most repos have
+  without having written one by hand.
+
+A directory named in either is **added to the front of the search below**,
+before the defaults, and the run says which directory it used and where the
+declaration came from. Where both exist and disagree, the rule file wins: a
+human wrote it more recently than the tool wrote its scaffolding.
 
 This is the durable form of a standing instruction: the search is what actually
 runs, so a declared directory is honoured on a long run exactly as on a short
-one. What it is not is a config format — nothing here reads an ADR tool's own
-settings file, in its own schema, on the chance one exists.
+one. What it is still not is a config format — `.adr-dir` is one line holding
+one path, and reading it commits to no schema. Nothing here parses an ADR tool's
+own settings file, in that tool's own schema, on the chance one exists.
 
 ## Then one search over the conventional homes
 
 Write the number **bare**, with its leading zeros stripped — `7`, never `0007` —
-and search the declared directory, if there is one, ahead of the three where the
-tools that write ADRs put them:
+and search the declared directory, if there is one, ahead of the defaults where
+the tools that write ADRs put them:
 
 ```
-find <declared> docs/adr adr ai-docs/decisions -maxdepth 1 -type f -name '*.md' \
+find <declared> docs/adr doc/adr adr docs/decisions ai-docs/decisions \
+  src/*/docs/adr -maxdepth 1 -type f -name '*.md' \
   2>/dev/null | grep -Ei '/(adr[-_])?0*7-'
 ```
 
@@ -57,9 +69,12 @@ also return. The project said where its decisions live, and a leftover under
 
 Among hits of equal standing: **one is the answer, zero or more than one is a
 sentence and a stop, not a guess.** A repo picks one tool to author its
-decisions, so more than one hit is rare — but it is what a half-finished migration looks like, and
+decisions, so more than one hit is uncommon — but it is what a half-finished migration looks like, and
 `docs/adr/0007-x.md` beside `adr/ADR-007-y.md` is two decisions under one
-number. Picking either would run a whole loop against a document nobody named,
+number. A multi-context repo is the case where it is *ordinary* rather than a
+mistake: each context numbers from one, so `src/billing/docs/adr/0007-*.md` and
+`src/catalog/docs/adr/0007-*.md` are both real, and neither is the one meant.
+Picking either would run a whole loop against a document nobody named,
 so name every hit and say that a path settles it.
 
 ## What this deliberately does not resolve
@@ -70,12 +85,18 @@ decisions by date is served by the path escape hatch above, and gets one
 sentence saying the number could not be resolved — never a scan of every file's
 contents hunting for a title that looks right.
 
-**A decision directory that is neither declared nor one of the three.** The
-default list is the convention (ADR 0011) and it is short on purpose: each entry
-is a directory some published ADR tool actually writes to, and a longer list
-would be guessing at repos nobody has seen. A repo that keeps decisions
+**A decision directory that is neither declared nor on the list.** The default
+list is the convention (ADR 0011) and it is closed on purpose: each entry is a
+directory some published ADR tool actually writes to by default, and a longer
+list would be guessing at repos nobody has seen. A repo that keeps decisions
 elsewhere declares it, or uses the path escape hatch, and until it does either
 one it gets the same sentence — the guessing does not move here.
+
+**Anything deeper than the list reaches.** `-maxdepth 1` is per entry, and the
+one nested layout on the list is spelled out as `src/*/docs/adr` because a
+published tool documents it. A recursive search from the root was rejected: it
+walks `node_modules`, vendored checkouts and test fixtures, and it turns a
+missing declaration into hits from directories nobody offered as an ADR home.
 
 **A separator that is not a hyphen.** `0007_use_postgresql.md` does not resolve.
 No tool surveyed writes it, and loosening the separator would let a bare number

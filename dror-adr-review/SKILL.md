@@ -72,7 +72,8 @@ costs less than each agent reading it for itself. Then find, in this order:
 - **What the code has done since.** `git log --oneline <commit>..HEAD` over the
   paths the ADR names. This is the review's best lead: the drift is where the
   code moved after the decision was written down.
-- **Its neighbours.** The other files in `docs/adr/`, by title alone — the
+- **Its neighbours.** The other files in the directory the ADR resolved in — not
+  a fixed path, and not the whole repo — by title alone; the
   `neighbours` lens reads the ones that touch the same subject, and nothing else
   needs them.
 - **Its tickets.** The spec issue naming this ADR and its children, bodies and

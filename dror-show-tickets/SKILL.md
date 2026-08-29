@@ -53,6 +53,14 @@ Per issue, from `gh issue view <n> --json body,state,labels`:
     `dror-prove` found a criterion that is precise, testable and cannot be met
     as written, and only the user can reword it. It outranks every other open
     answer because no amount of work moves the ticket while it stands.
+  - `No tickets yet` for a spec issue that is OPEN and has **no children at
+    all** — the decision was published as work, and nothing has been cut from it
+    yet. It is checked here, above `Can close`, because "every child is CLOSED"
+    is vacuously true of a spec with no children, and an ADR nobody has started
+    would otherwise be reported as ready to close. It outranks the blocker
+    question for the same reason the row below does: no ticket blocks a set that
+    does not exist. The actionable answer is to write the tickets, and the
+    closing sentence says so.
   - `Can close` where the issue is OPEN, it defines at least one criterion, and
     every one of them is ticked. The work is done and only the user's close is
     missing, so this outranks the blocker question too: a ticket whose criteria
@@ -126,10 +134,12 @@ Columns, in order:
 | # | Title | Status | Module built | Commit | Tests | How to see it | Criteria done |
 
 `Status` carries the whole scheduling answer: `Closed`, `Needs your call`,
-`Can close`, `Awaiting #NN`, `Ready`, `Blocked by #NN` or `—`, and never two of
-them at once.
+`No tickets yet`, `Can close`, `Awaiting #NN`, `Ready`, `Blocked by #NN` or `—`,
+and never two of them at once.
 
-Rows in issue-number order, spec first. `—` for a cell that does not apply. One
+Rows in issue-number order, spec first. **A spec issue with no children is still
+one row**, not an empty table: the row is the answer, and a run that printed
+nothing would read as a missing spec. `—` for a cell that does not apply. One
 fact per cell — a cell holding three facts is three columns.
 
 ## After the table
