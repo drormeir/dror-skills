@@ -16,8 +16,10 @@ Every finding carries:
 - the **sentence** it is about, quoted, with its line number in the ADR;
 - the **kind** — `text` (the document is wrong, or is acted on wrongly), `hole`
   (the document is missing something it must carry), `breach` (the code breaks a
-  rule the document states), `conflict` (two decisions disagree), `revisit`
-  (nothing is wrong and the decision has been overtaken by what it predicted);
+  rule the document states), `conflict` (two decisions disagree), `echo` (a copy
+  of the rule elsewhere has drifted — only the `echoes` lens mints this one),
+  `revisit` (nothing is wrong and the decision has been overtaken by what it
+  predicted);
 - **what would make it true**: the corrected fact and the evidence for it. Not
   the replacement prose — writing that is the repair's job.
 
@@ -157,7 +159,7 @@ developer documents the ADR names, and any sibling ADR restating it in passing.
 
 **Name every copy, with its `file:line`.** A finding that names one of four is
 worse than useless — repairing that one leaves three disagreeing copies and no
-record that they exist. The kind is `text`, and the repair edits every copy the
+record that they exist. The kind is `echo`, and the repair edits every copy the
 finding names.
 
 Do not raise a copy that is *coarser* than the ADR and still true. A conventions

@@ -1,7 +1,11 @@
 # Structure
 
 Sixteen skills over one way of working. Every description below is the skill's
-own `description:` line, verbatim.
+own `description:` line, verbatim, minus its "Use when" trigger clause. This
+file owns the "Reach for it when" voice — the human's index — and nothing else:
+descriptions belong to each skill's frontmatter, and where this file and
+[`DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md) state the same rule,
+DROR-SKILLS.md owns it and this file mirrors.
 
 ## Four words, before anything else
 
@@ -119,12 +123,12 @@ rather than where control goes.
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
 | `dror-show-tickets` | You are deciding what to do next, or want to know whether an ADR is finished. Read it before and after the rest. | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
-| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one commit per ticket, `dror-implement-ticket` for each. | a worktree at `.claude/adr-wip/<repo>-adr-<N>`, a branch `adr-<N>`, a push and a close per ticket, a drain state file |
+| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one ticket at a time through `dror-implement-ticket`, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. | a worktree at `.claude/adr-wip/adr-<N>` (removed on a clean finish), a branch `adr-<N>`, a push and a close per ticket, a drain state file |
 | `dror-implement-ticket` | One ticket, start to closed, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closed — implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
-| `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. | a review report; a per-criterion comment |
+| `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. Reports the survivors and changes no behaviour. | a review report, its per-criterion verdicts inside |
 | `dror-repair` | Findings already exist — from a review, from this conversation, from a colleague — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
-| `dror-review-repair` | Same as `dror-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — round after round while a round is still owed, at least two and up to seven. | whatever its two steps write |
+| `dror-review-repair` | Same as `dror-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — `dror-review`, then `dror-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
 ## Above the chain
 
@@ -136,12 +140,11 @@ finding refuted before it reaches you — and a loop over the two, as below.
 |---|---|---|---|
 | `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against the code it decides about — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
 | `dror-adr-repair` | An ADR review returned `text` or `hole` findings and you want the document corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | the ADR's prose, and nothing else |
-| `dror-adr-review-repair` | Same as `dror-adr-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop ADR review and repair over one decision document until it converges — round after round while a round is still owed, up to three. | whatever its two steps write |
+| `dror-adr-review-repair` | Same as `dror-adr-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop ADR review and repair over one decision document until it converges — `dror-adr-review`, then `dror-adr-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
-Findings divide by **kind**, because two different hands fix them: a `text` or
-`hole` is the document's fault and goes to `dror-adr-repair`; a `breach` is the
-code's and goes to `dror-repair`; a `conflict` between two decisions is nobody's
-until the user says which wins.
+Findings divide by **kind**, because two different hands fix them; the routing
+lives in [`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md),
+the definitions in the glossary.
 
 ## Beside the chain
 
@@ -149,7 +152,7 @@ until the user says which wins.
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review log across runs and say what the lenses are getting wrong — which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, the map and the decision record. Not a procedure; nothing runs it on its own. |
+| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, the map and the decision record. A shelf, read by the skills that run. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` is the first step of every skill in the chain; `shared` is a
@@ -172,18 +175,20 @@ One writer per direction, because a tick is a claim about evidence:
 
 - **`dror-prove` ticks**, and only what it saw go green.
 - **`dror-repair` unticks**, and only a box whose test it just saw go red.
-- **`dror-review` touches no box.** It posts its per-criterion verdicts as a
-  comment instead.
+- **`dror-review` touches no box.** Its per-criterion verdicts go into its own
+  report; nothing is posted to the tracker.
 
 ## Which of them know your repo's conventions
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
-  `dror-prove`, `dror-repair`, `dror-review`, `dror-adr-repair`, `dror-guide`.
+  `dror-prove`, `dror-repair`, `dror-review`, `dror-review-repair`,
+  `dror-adr-repair`, `dror-guide`.
   They name no path and no tracker; whatever a repo declares reaches them
   through the facts.
 - **Convention-bound** — `dror-show-tickets` and `dror-implement-adr` assume
-  GitHub issues reachable by `gh`; `dror-show-tickets`, `dror-implement-adr` and
-  `dror-adr-review` assume ADRs at `docs/adr/<NNNN>-*.md`. In a repo that does
+  GitHub issues reachable by `gh`; `dror-show-tickets`, `dror-implement-adr`,
+  `dror-adr-review` and `dror-adr-review-repair` assume ADRs at
+  `docs/adr/<NNNN>-*.md`. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 The reasons behind all of it are one file per decision in

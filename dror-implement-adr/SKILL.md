@@ -45,13 +45,27 @@ naming, placement, guards, environment and re-entry rules for an ADR worktree, i
 one copy. Read it whole before creating or adopting anything, and take this run's
 path and branch from it. It is not restated here.
 
-What this skill owes it is the number: the worktree is `<repo>-adr-<N>` on branch
+What this skill owes it is the number: the worktree is `adr-<N>` on branch
 `adr-<N>`, both from the ADR this run was given.
 
 **Its preflight is a step of this one, not a hand-off.** Run it before the first
 ticket and report its four lines; a failure stops the run here, which is the
 whole point of asking at a moment when there is nothing to blame the answer on.
 Everything past §0a assumes an environment that was proved rather than built.
+
+**Then the baseline: the project's full suite, once, in the worktree, before the
+first ticket.** The tree is the remote head and nothing of this run's is in it,
+so a red here is pre-existing by construction, and it is the cheapest moment
+there will ever be to say so: every ticket's step 0 would find the same red,
+every round would be spent around it, and every ticket would end open on its
+gate. A red baseline is a §3a stop before any ticket is picked — the failing
+tests by subject, their assertions, and no fix — unless the project declares
+the failure out of scope, in which case it is named and carried into every
+ticket's prompt. Green, record the command, its summary line and the sha, and
+hand them to the first ticket's prompt as its baseline; each later ticket's
+baseline is the previous ticket's counted full-suite run over the tip it
+starts from, handed the same way, so no ticket pays for a suite the chain has
+already seen.
 
 ## 0a. Carry the path into every delegated prompt
 
@@ -192,64 +206,21 @@ moment the list is built rather than at the end.
 
 ### What an earlier session left, if anything
 
-**A virgin ADR pays nothing for this section.** No state file, no branch ahead of
-its remote, no open ticket with every box ticked — the three questions below all
-answer "nothing", in one `gh` call the scan already made and one `git` call, and
-the list §3 built stands as it is. Run them anyway: their cost is a sentence, and
-what they prevent is a resumed drain working *around* a finished ticket for the
-rest of the ADR.
+**A virgin ADR pays one line for this section.** Three questions, from the calls
+already made — is there a state file, is the branch ahead of its remote, does
+§2's table show an open ticket with every criterion ticked? All three answering
+"nothing" is the ordinary case: say so in one line — a drain that prints no such
+line is indistinguishable from one that never looked — and the list §3 built
+stands as it is.
 
-The `attempted` set is written **before** a ticket's work starts (step 3 below),
-which is what makes it survive a session that dies — and is also what makes a
-ticket that was interrupted look exactly like one that completed. A session
-killed mid-round cannot record that it was killed. So a resumed run does not
-trust `attempted`; it reconstructs, from three pieces of evidence that outlive
-any session (ADR 0031):
+**Any other answer means an earlier session left work behind: read
+[`RESUME.md`](RESUME.md), beside this file, whole, before picking a ticket.** It
+holds the read-side of resumption (ADR 0031) — which round entries to trust and
+which tickets go to the front, when the tracker outranks the state file, whose
+work a dirty tree is, the right-place check, and how a stopped or owed ticket
+re-enters. Its outcome is an amended list and one line saying what it found.
 
-1. **The round's own outcome.** Each round entry carries an `outcome` — see the
-   state file below — set to `picked` when the ticket is taken and rewritten to
-   `finished`, `skipped` or `stopped` when the round ends. **A round still
-   reading `picked` is an interrupted round**, whatever `attempted` says. Take
-   its ticket out of `attempted` and put it at the **front** of the list, for the
-   same reason §3a's stopped ticket goes first: the session ended in the middle
-   of it, and everything after it in the list was planned on the assumption it
-   was done.
-
-2. **The tracker, which is the authority when the file is not there.** The state
-   file is disposable and may be absent, stale, or from a drain that never wrote
-   outcomes. §2's table has the fact that does not depend on it: **a ticket that
-   is open with every acceptance criterion ticked is implemented and unclosed**.
-   That ticket goes to the front of the list on the strength of the boxes alone,
-   with no state file needed.
-
-   **Except where a round entry says `finished`.** Step 7 closes a ticket it
-   finished, so "open with every box ticked" is ordinarily a round that did not
-   reach its close — but not always: a round whose gate came back red ticks
-   nothing further, leaves the ticket open and still ends. So the test is: a round entry reading
-   `finished` settles it and the ticket stays done; a round entry reading
-   `picked` means interrupted; and **no entry at all** — no file, or a file from
-   a drain that wrote no outcomes — means the boxes are the only evidence there
-   is, and a ticket in that state goes to the front. Re-attempting a finished
-   ticket costs one round and changes nothing; walking past an unfinished one
-   costs the rest of the ADR. Name which of the three cases each ticket fell into.
-
-3. **The tree, for whose work is sitting in it.** A dirty worktree at the start
-   of a resumed run belongs to the ticket whose round reads `picked`. Name that
-   ticket before anything is committed — the rule at §3's end says what happens
-   next, and it turns on whether that ticket's boxes are ticked.
-
-**Then check you are in the right place.** The state file records the `worktree`
-and the `branch` it was written under. The shelf's re-entry rules adopted a
-directory and a
-branch of its own accord; where either disagrees with the file, stop and say both
-— a drain resumed onto the wrong branch commits this ADR's work somewhere nobody
-will look for it, and the file is the only thing that can catch it.
-
-Say in one line what this section found, including when it found nothing: a
-resumed drain that prints no such line is indistinguishable from one that never
-looked.
-
-### The clock
+### The clock and the ETA
 
 You have no clock of your own, so the drain reads one: `date +%s`, epoch
 seconds, arithmetic without a date library. Three moments and no others —
@@ -271,6 +242,29 @@ between sessions is however long the user took to answer, so elapsed is always
 of how long a ticket takes here, so the ETA's mean reads the earlier rounds out
 of the state file along with this run's. Say `elapsed 20m this run` where the
 file shows earlier ones, or the number reads as the whole ADR's cost.
+
+**The ETA is a mean of the worked rounds, times what is left**, and the two
+words in that sentence are what keeps it honest:
+
+- **Worked.** A skipped round takes seconds and is not a sample of anything;
+  averaging it in halves the estimate and the drain then runs twice as long as
+  it promised. Skips are excluded from the mean, and so are stalls — a ticket
+  that stopped early spent less than one that finished. Where a round was
+  skipped or stalled, that line's ETA carries `(from <k> worked)` so the
+  reader can see how thin the mean is.
+- **Mean, not a trend.** Tickets differ by more than any curve fitted to three
+  of them can predict, so take the plain mean and do not weight the recent
+  ones. The `~` is doing real work in that line.
+
+**One worked round is not an estimate.** Print `ETA — one sample` rather than
+a number, and start estimating at the second. And where every round so far was
+skipped or stalled, there is no mean at all: print `ETA — none yet`, never a
+number derived from the elapsed time divided by rounds, which is the same
+mistake with the arithmetic hidden.
+
+The estimate assumes every remaining ticket is worked. Some will be skipped,
+so the ETA is an upper bound rather than a guess — worth saying once, in the
+summary, not on every line.
 
 ### Then, each round
 
@@ -318,6 +312,11 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
    §0a's sentence. "In the worktree" is not a place this skill can put it — that
    run's own step 0 asks `git status` and `git merge-base` in whatever directory
    its agent starts in, and the answer decides what the whole chain reviews.
+   Then the baseline, in one line: the green full-suite run over this tip — §0's
+   for the first ticket, the previous ticket's counted run for every later one —
+   as command, summary line and sha, so that run's step 0 takes it instead of
+   paying for the suite again. Where §0 carried an out-of-scope failure, its
+   name goes on the same line.
 
    That run ends on a summary of its own. **It is one ticket's summary, not the
    drain's**: read it, record it, and continue at step 5 in the same turn.
@@ -473,8 +472,12 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
    ```
 
    `<done>` counts the rounds that finished — worked or skipped — `<left>` is
-   what remains on the list, and `<stalled>` counts the tickets that ended
-   unfinished so far, which is the number that says whether the drain is going
+   what remains on the list, and `<stalled>` counts the rounds whose `outcome`
+   reads `stopped`. A stop ends a session, so a count above one is only ever
+   read out of the state file a resumed run inherited; a `finished` round whose
+   ticket stayed open still counts as done — the round did its work, and the
+   open ticket is the tracker's story, told in the summary. `<stalled>` is the
+   number that says whether the drain is going
    well or merely going. `<verdict>` is the word step 6 recorded, as that loop
    gave it, or `skipped — <why>`; §Present's rule against re-wording it holds
    here for the same reason.
@@ -486,36 +489,16 @@ file shows earlier ones, or the number reads as the whole ADR's cost.
    reads at a glance — `12m`, `1h 40m` — since a drain measured to the second
    claims a precision it does not have.
 
-   **The ETA is a mean of the worked rounds, times what is left**, and the two
-   words in that sentence are what keeps it honest:
-
-   - **Worked.** A skipped round takes seconds and is not a sample of anything;
-     averaging it in halves the estimate and the drain then runs twice as long as
-     it promised. Skips are excluded from the mean, and so are stalls — a ticket
-     that stopped early spent less than one that finished. Where a round was
-     skipped or stalled, that line's ETA carries `(from <k> worked)` so the
-     reader can see how thin the mean is.
-   - **Mean, not a trend.** Tickets differ by more than any curve fitted to three
-     of them can predict, so take the plain mean and do not weight the recent
-     ones. The `~` is doing real work in that line.
-
-   **One worked round is not an estimate.** Print `ETA — one sample` rather than
-   a number, and start estimating at the second. And where every round so far was
-   skipped or stalled, there is no mean at all: print `ETA — none yet`, never a
-   number derived from the elapsed time divided by rounds, which is the same
-   mistake with the arithmetic hidden.
-
-   The estimate assumes every remaining ticket is worked. Some will be skipped,
-   so the ETA is an upper bound rather than a guess — worth saying once, in the
-   summary, not on every line.
+   The ETA obeys §The clock and the ETA: a plain mean of **worked** rounds
+   only, `(from <k> worked)` where any round was skipped or stalled, and
+   `ETA — one sample` / `ETA — none yet` where there is no mean to take.
 
    A stop at §3a prints this line too, before §3a's three lines: the last thing
    on screen should say how much of the ADR the stop leaves untouched.
 
 Termination: every round takes one ticket off the list and none puts one back,
 and the extra review rounds inside a ticket are capped at two. The list is built
-once and only shrinks, which is a stronger guarantee than the rescanning loop
-had — there, termination rested on **attempted** growing.
+once and only shrinks.
 
 **The state file.** A compaction mid-drain would lose the loop's state — the
 list, what is left of it, and which numbers were attempted — and "tried and
@@ -535,8 +518,8 @@ rewritten in place to `finished`, `skipped` or `stopped` when the round ends.
 Both writes matter and neither is the other's substitute: the first is what makes
 a dead session's ticket recoverable, and the second is the only thing that
 distinguishes a ticket this drain completed from one it was interrupted in the
-middle of. A round entry left at `picked` **is** that signal, and the resume
-section above is what reads it.
+middle of. A round entry left at `picked` **is** that signal, and `RESUME.md`
+is what reads it.
 
 **Rewriting a round entry is allowed here and nowhere else.** These are the logs'
 opposite: `refutations.tsv` and its neighbours are append-only histories, and
@@ -544,28 +527,10 @@ this file is a *current position* that is rewritten every round by design. It
 holds no history worth protecting — losing it costs one re-attempted ticket, as
 below.
 
-**A resumed run still runs §2's scan, and builds its list fresh.** Sessions are
-separated by however long the user took to answer, and the tracker moved in
-between — tickets closed by hand, criteria ticked, a new ticket filed against
-this ADR. The one-scan rule holds *within* a run, where the loop is the only
-thing changing the tree; it says nothing about a run that starts over. What the
-file carries across is what the tracker cannot say: which numbers this drain
-already tried, and which question it stopped on.
-
-**With the stopped ticket taken back out of that set.** It is the one number a
-resumed run must pick *first*, not skip: the run before it stopped precisely so
-the user could answer, and a resume that inherits it as "attempted" walks past
-the answer it was waiting for and works the rest of the ADR around the hole. So
-drop it from **attempted**, and pick it before anything else — unless the user's
-answer was to leave that ticket alone, which is itself an answer and is recorded
-as one.
-
-**An owed stop is resumed only after the user has pushed.** Its answer is the
-hand-back command and then the push, and until both are made the ticket's commit
-sits unpushed in the worktree: a fresh run picks the ticket first, its step 0
-refuses the unpushed commit, step 5 holds it again, and step 6 stops on the same
-word. That is the stop holding, not the drain failing — say so in one line, and
-name the push as what clears it.
+**What a resumed run does with this file** — the fresh scan, the stopped ticket
+picked first, an owed stop waiting on the push — **is `RESUME.md`'s to say.**
+What the file carries across is what the tracker cannot say: which numbers this
+drain already tried, and which question it stopped on.
 
 Like every store in this chain it is disposable: unreadable is a miss, never an
 error, and the cost of losing it is re-attempting a stalled ticket once.
@@ -573,8 +538,9 @@ error, and the cost of losing it is re-attempting a stalled ticket once.
 ## 3a. Stop for the user's judgement
 
 A round that **stopped** rather than finished ends the drain, and the user is
-asked. `dror-implement-ticket` refusing on an open blocker, refusing on a tree it
-found dirty, ending on a criterion it could not honestly implement, a ticket
+asked — and so does a red baseline at §0, before any round exists.
+`dror-implement-ticket` refusing on an open blocker, refusing on a tree it
+found dirty or red, ending on a criterion it could not honestly implement, a ticket
 still **owed** at its cap or owed on a criterion only the user can settle, a
 `Needs your call` row that is all the ADR has left,
 a `dror-show-tickets` row whose status this skill cannot read at all — each of
@@ -613,50 +579,61 @@ uncommitted jams the very next ticket. Commit it under the ticket's number,
 marked as the partial work it is, push it with the rest, and skip step 6: there
 is no verdict on a ticket that was never implemented.
 
-**A resumed run's dirty tree is not automatically partial, and this is where the
-distinction is made.** A tree that is dirty when the loop starts is the previous
-session's interrupted ticket — the state file says whose, which is the one thing
-separating it from the pre-existing dirt above, and the reason that file is
-written before the work starts rather than after. What it is *worth*, though,
-depends on the ticket, and there are two cases that must not be run together:
+**A resumed run's dirty tree is neither of the cases above.** It is the previous
+session's interrupted ticket, not this run's stall and not pre-existing dirt —
+and whether it commits as partial or resumes one step from done is `RESUME.md`'s
+distinction, made there at the start of the run, not here.
 
-- **Boxes still unticked** — the session died mid-implementation. This is the
-  partial work the paragraph above describes: commit it under the number, marked
-  partial, and it is skipped like any stall.
-- **Every box ticked, ticket still open** — the session died *after* the work and
-  the proof and *before* the review-repair loop and the close. Nothing here is
-  partial. Committing it as partial and moving on abandons a finished ticket one
-  step from done, and leaves the rest of the ADR built on top of a ticket the
-  drain believes it never did. **Resume that ticket instead**: it goes to the
-  front of the list, and its round runs from where it was cut off.
+## 4. Merge nothing; remove the worktree only from a clean finish
 
-`dror-implement-ticket` is a whole run and will re-tread what it must; the boxes
-it already proved are ticked and its step 4 reads them off the ticket rather than
-off memory, so a resumed ticket costs the review-repair loop and not the
-implementation. Say which of the two cases fired, and on which number.
-
-## 4. Merge nothing, remove nothing
-
-The run ends with the branch pushed and the worktree in place. Merging into the
-default branch is the user's call, and so is when — several rounds of review and repair
-on the branch are the ordinary case, and each ticket's commits are what makes
-that possible.
-
+The run ends with the branch pushed. Merging into the default branch is the
+user's call, and so is when — several rounds of review and repair on the branch
+are the ordinary case, and each ticket's commits are what makes that possible.
 Say what the merge would be, and do not run it:
 
 ```
 git -C <the user's checkout> merge --ff-only adr-<N>
-git -C <the user's checkout> worktree remove --force .claude/adr-wip/<repo>-adr-<N>
 ```
 
 `--ff-only` rather than a plain merge, so a checkout that has moved on refuses
-instead of quietly making a merge commit. The removal is `git worktree remove`
-and never `rm -rf`, and what `--force` is for, is on the shelf under **Leaving
-it** — including what dies with the directory and what does not.
+instead of quietly making a merge commit.
+
+**The worktree is removed when nothing about the run needs it any more**, and
+only then. Every condition below must hold, read from the tree and the state
+file rather than from memory of the run; any one failing leaves the worktree
+standing, with a line naming which:
+
+- The work list is empty and the run did not stop at §3a.
+- Every round in the state file reads `finished`, and every ticket it names is
+  `CLOSED` on the tracker — no round `stopped` or `skipped`, no
+  verdict of **owed**. An **optional** verdict does not hold it: that call is
+  made on the branch, which survives the directory, from a fresh worktree or
+  from the checkout after the merge.
+- From inside the worktree, `git status --porcelain` is empty and
+  `git rev-list --count @{upstream}..HEAD` is `0`.
+- The worktree is at the shelf's path, `.claude/adr-wip/adr-<N>`. One
+  adopted from anywhere else was made by the user and is theirs to remove.
+- Nothing shared points into it. Where the project is a Python package,
+  `pip show <package>` in the user's checkout's venv must name the checkout and
+  not the worktree — an editable install made from the worktree into the shared
+  venv would leave the user's imports pointing at a deleted path.
+
+Then, from the user's checkout and never with `rm -rf`:
+
+```
+git -C <the user's checkout> worktree remove --force .claude/adr-wip/adr-<N>
+```
+
+Why `--force`, why never `rm -rf`, and what dies with the directory are the
+shelf's to say — WORKTREE.md's "Leaving it" holds them, in one
+copy. Confirm with `git worktree list`, which must no
+longer name the path, and say so. **The branch `adr-<N>` is never deleted**,
+local or remote: it is what the merge above reads from.
 
 ## Present
 
-The worktree path and the branch, then the work list as it was built and one line
+The worktree path and the branch, whether the worktree was removed or which of
+§4's conditions kept it, then the work list as it was built and one line
 per ticket on it: its
 number, whether it finished, stalled or was **skipped** at step 2 and why, how many criteria are proven of how
 many, its round verdict — the word the ticket run returned, as it
@@ -689,5 +666,6 @@ delegated prompt named the worktree as the directory its
 commands run in, every commit this skill pushed was made over a tree a full
 suite had seen — except a stall's partial commit, which §3a names as partial —
 every attempted ticket has a commit and a pushed state, the
-state file matches what happened, nothing is merged, and that summary is on
-screen.
+state file matches what happened, nothing is merged, the worktree is removed
+where every one of §4's conditions held and otherwise named as standing with
+the condition that kept it, and that summary is on screen.

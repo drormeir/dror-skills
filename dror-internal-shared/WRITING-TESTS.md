@@ -46,7 +46,7 @@ test walks the files itself, and that walk sits outside every guard the project
 has: `.gitignore`, pytest's `norecursedirs` and mypy's `exclude` keep the
 *tools* out of a directory, and not one of them reaches a test doing its own
 `rglob`. A second copy of the repository under the checkout — an ADR worktree at
-`.claude/adr-wip/<repo>-adr-<N>` is the ordinary one — is walked like any other
+`.claude/adr-wip/adr-<N>` is the ordinary one — is walked like any other
 directory, so a test asserting *three* call sites finds six: true about the files
 on disk, false about the program, and green everywhere the second copy is absent.
 

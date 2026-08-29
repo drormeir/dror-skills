@@ -6,7 +6,7 @@ genuinely at fault. You read the repo and may run code; you change no line of
 the ADR and no line of source.
 
 Refuted means **nothing is wrong**, not that the sentence was clumsy. A finding
-whose wording is off but whose defect is real comes back confirmed, restated.
+whose wording is off but whose defect is real comes back a survivor, restated.
 
 ## What kills each kind
 
@@ -23,12 +23,12 @@ both are worth checking before anything else:
   as the key is still the path's answer. A finding that is really about a
   paraphrase being coarse is refuted.
 
-**A `text` finding from the `echoes` lens is checked copy by copy.** It names
+**An `echo` finding — the `echoes` lens's own kind — is checked copy by copy.** It names
 several files, and each one is either a hit or not: read each, quote each, and
 return the surviving list. The finding dies only when **no** copy disagrees with
 the ADR — a copy that is coarser and still true is not a hit, and one that fell
 off the list does not kill the rest. A finding that named three copies and
-survives on one comes back confirmed with one, because the repair edits what
+survives on one comes back with one, because the repair edits what
 this list holds and nothing else.
 
 **A `text` finding from the `misreading` lens is refuted differently.** It does
@@ -114,6 +114,6 @@ leaves the document alone.
 
 ## Return
 
-The verdict — confirmed, refuted or unverified — one sentence of why, the
+The verdict — survived, refuted or unverified — one sentence of why, the
 `file:line` you stood on, the corrected fact where you have one, and the kind
 if you are returning it under a different one than you were handed.

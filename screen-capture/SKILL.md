@@ -46,5 +46,4 @@ Let Claude see the user's live desktop by capturing it to an image file and read
 
 - To capture a specific monitor, always pull its exact `WIDTHxHEIGHT+X+Y` from `xrandr` rather than guessing.
 - Write captures to `/tmp` (or another non-repo path) so screenshots never get committed.
-- Re-run the capture each time you need a fresh view; the file is a point-in-time snapshot.
 - If every grabber fails (locked-down Wayland, no DISPLAY, headless), fall back to asking the user to take the screenshot themselves and tell you the file path, then Read it.

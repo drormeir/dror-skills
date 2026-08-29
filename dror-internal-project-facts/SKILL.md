@@ -75,8 +75,11 @@ Read whatever the repo uses to state its own rules: `CLAUDE.md`, `AGENTS.md`,
 - **Declared scope** — the areas the project rules out: retired directories,
   vendored code, generated files. Findings there are noise.
 - **Issue convention** — how work is tracked here: the tracker and the command
-  that reads an issue, where a ticket's acceptance criteria live in its body, how
-  a child ticket names its parent, and the file that documents all this. A repo
+  that reads an issue — one that returns the title, the body and the open/closed
+  state, since the criteria live in the body and blocker checks read the state
+  (on a GitHub repo, `gh issue view <n> --json title,body,state`) — where a
+  ticket's acceptance criteria live in its body, how a child ticket names its
+  parent, and the file that documents all this. A repo
   that tracks nothing records this as unstated, and the skills that take a ticket
   number say so instead of guessing a tracker.
 

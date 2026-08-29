@@ -20,7 +20,7 @@ Why it sits inside the project, and what that costs, is ADR 0029.
 ## The names
 
 The branch is **`adr-<N>`** and the worktree is
-**`<repo>/.claude/adr-wip/<repo>-adr-<N>`**, with `<N>` the ADR's number written
+**`<repo>/.claude/adr-wip/adr-<N>`**, with `<N>` the ADR's number written
 the way it is spoken — `adr-14`, not `adr-0014` and not `adr14-wip`, even though
 the ADR's own file is `0014-*.md`. Local and remote carry the same name.
 
@@ -36,8 +36,8 @@ From the user's checkout:
 
 ```
 git fetch origin
-git worktree add .claude/adr-wip/<repo>-adr-<N> -b adr-<N> <the remote's default branch>
-git -C .claude/adr-wip/<repo>-adr-<N> push -u origin adr-<N>
+git worktree add .claude/adr-wip/adr-<N> -b adr-<N> <the remote's default branch>
+git -C .claude/adr-wip/adr-<N> push -u origin adr-<N>
 ```
 
 Three things in those three lines look optional and are not.
@@ -197,8 +197,11 @@ each reviewed against the wrong base.
 
 ## Leaving it
 
-The worktree stays. Nothing here removes one, and nothing merges the branch:
-both are gestures with consequences outside this work, and both are the user's.
+Nothing here merges the branch: that is a gesture with consequences outside
+this work, and it is the user's. The worktree is removed by exactly one caller,
+`dror-implement-adr`'s §4, and only from a clean finish — every ticket closed and
+pushed, the tree clean, nothing shared pointing into it. Any other end of a run
+leaves it standing, and so does any other skill.
 
 Where the user does remove one, `git worktree remove` is the command and `rm -rf`
 is not: a plain delete leaves the registration behind, and `git worktree list`

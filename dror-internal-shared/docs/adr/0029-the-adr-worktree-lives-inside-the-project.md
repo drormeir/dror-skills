@@ -1,5 +1,10 @@
 # The ADR worktree lives inside the project, behind three guards
 
+> **Amended 2026-08-29.** The worktree directory is now `adr-<N>`, matching the
+> branch: inside `.claude/adr-wip/` the repo prefix said nothing the path did
+> not already say — it was a leftover from the beside-the-repo placement this
+> ADR retired. The placement and the guards are unchanged.
+
 An ADR's work happens in a `git worktree` at
 `<repo>/.claude/adr-wip/<repo>-adr-<N>`, on a branch named `adr-<N>`, and the
 rules for both live in `WORKTREE.md` on the shelf rather than in

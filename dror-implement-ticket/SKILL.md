@@ -11,9 +11,8 @@ One ticket, one run: **implement**, then `dror-prove`, then `dror-review-repair`
 
 **The loop is delegated, and it is delegated whole.** This file does not spell
 out rounds, judge one, or count them: `dror-review-repair` owns that, and this
-skill gives it a ticket, a cap and the promise that a prove follows. What
-changed from the old chain is that the re-prove is no longer *inside* a round —
-it runs once, at the end, over every box that is still open.
+skill gives it a ticket, a cap and the promise that a prove follows. The
+re-prove runs once, at the end, over every box that is still open.
 
 The ticket number is this skill's one argument. Without it, ask for it — there is
 no default ticket and guessing one is worse than asking. Every step below is
@@ -39,9 +38,10 @@ tracks tickets. The later steps invoke it themselves and read the same cached
 facts.
 
 That skill is a **step of this one**, not a hand-off: the moment the facts are in
-hand, continue at **step 0** in the same turn. Step 0 needs no facts, so it may
-equally run before this section — what it may not do is be skipped, which is
-what naming step 1 here would invite.
+hand, continue at **step 0** in the same turn. Step 0's two git questions need
+no facts, but its third — the baseline suite — needs the verification command,
+so the facts come first. What step 0 may not do is be skipped, which is what
+naming step 1 here would invite.
 
 **A repo whose issue convention came back unstated stops here**, and says so.
 Every step below is handed a ticket number and three of them fetch the ticket
@@ -73,14 +73,18 @@ anything, which is the ordinary case — each spawning its own lens and refuter
 agents, so a ticket whose diff keeps moving costs several times what a clean one
 does.
 
-## 0. Start from a pushed tree
+## 0. Start from a pushed, green tree
 
 Step 3 reviews **everything unpushed**, not this ticket's diff, so work left in
 the tree before this run starts is reported and repaired under this ticket's
 name. Committing does not remove it — an unpushed commit is in scope exactly as
-a modified file is.
+a modified file is. And a test that is red before this run writes a line is the
+same work arriving through the suite instead of through `git status`: nothing
+in the chain may fix it — `dror-repair` names it `pre-existing failure` and
+leaves it, by rule — and the gate criterion can never tick over it, so every
+round is spent and the ticket ends open on a red that was known before step 1.
 
-Before anything is written, ask two questions and report both:
+Before anything is written, ask three questions and report all three:
 
 - `git status --porcelain` — is there uncommitted or untracked work?
 - `git rev-list --count <base>..HEAD` — is the branch ahead of what step 3 will
@@ -98,19 +102,35 @@ to count against, and there every commit is unpushed by definition: say that is
 the case rather than reporting a number. Name which of the three you used, since
 step 3 will name it again and the two must agree.
 
+- **The project's full suite**, in its quiet form, over the tree as found — the
+  **baseline**. A caller may hand this step a green run instead: the command,
+  its summary line and the sha it ran over. Take it only where `HEAD` is that
+  sha and the tree is clean; otherwise run the suite here. Name which.
+
 A non-empty status, or a count that is anything but `0`, and the run **stops
 before step 1**, naming what it found. The two commands say "nothing"
 differently — an empty output and the string `0` — so read each one's answer,
 not the presence of output.
+
+**A red baseline stops the run the same way.** Name each failing test by its
+subject, paste its assertion, and say it is **pre-existing** — red on a tree
+this run had not touched. Do not fix it and do not guess whose it is beyond what
+`git log -1 -- <its file>` says; the answer is the user's, since a fix here is
+code under this ticket's number that no finding and no criterion asked for. A
+failure the project itself declares out of scope is not a stop: name it and
+carry on, and carry the name down to step 3 so the loop reads it the same way.
 
 This skill commits its own ticket at step 6 and pushes it at step 7, and neither
 of those makes the work already sitting here this run's to carry: a run that
 started dirty and said nothing would hand back a review of somebody else's work
 with this ticket's number on it, and then commit it under that number too.
 
-The user may say to proceed anyway. Then continue, and carry one sentence naming
-the pre-existing work into **step 3's prompt**, which is where the loop is
-handed everything it knows. The review needs it so its findings can be read
+The user may say to proceed anyway — over the dirt, or over the red. Then
+continue, and carry one sentence naming the pre-existing work, or the
+pre-existing red tests by subject, into **step 3's prompt**, which is where the
+loop is handed everything it knows. Over a red, say now what it costs: the gate
+criterion ticks only on a green full suite, so unless the red is fixed outside
+this run before step 4, step 8 leaves the ticket open on it. The review needs it so its findings can be read
 against that work; the repair needs it more, because a repair told nothing will
 fix another ticket's code under this ticket's name and leave it in the tree —
 which is the outcome step 0 exists to prevent, still happening one step later.
@@ -119,9 +139,8 @@ and passing it at all is not optional.
 
 ## 1. Implement
 
-Read the ticket the way the **issue convention** fact says this repo tracks work
-— on a GitHub repo that is `gh issue view <n> --json title,body,state` — and
-number its acceptance criteria 1..N. That numbering is the chain's: `dror-prove`,
+Read the ticket the way the **issue convention** fact says this repo tracks work,
+and number its acceptance criteria 1..N. That numbering is the chain's: `dror-prove`,
 `dror-review` and `dror-repair` all count the boxes in the ticket's own order,
 and a run that renumbers them makes three later reports unreadable against the
 ticket.
@@ -139,7 +158,10 @@ the parent ADR is the fuller map, and worth a look when the answer is unclear.
 
 Write the implementation the ticket describes, and nothing the ticket does not.
 Typecheck and run the affected tests as you go, with this project's own
-verification commands; run the full suite once, at the end of this step.
+verification commands; run the full suite once, at the end of this step. Read
+its result against step 0's baseline: a test red there is not this step's and is
+named as such, not chased; a test red here and green there is this step's, and
+this step fixes it before it ends.
 
 **A step that cannot be finished ends the run here.** An ambiguous criterion, a
 criterion the code contradicts, a dependency discovered mid-way — say what
@@ -195,7 +217,10 @@ cap — none of which is this file's business any more:
 > ticket, and the tests a prove wrote for its criteria. That is the work you are
 > being asked to review, not work left behind by somebody else. `<Where step 0
 > found the tree dirty and the user said to proceed: and this work was also in
-> the tree before the run started — …>`
+> the tree before the run started — …>` `<Where step 0's baseline was red and
+> the user said to proceed, or a failure is declared out of scope: these tests
+> were red before the run started and are pre-existing failures, not this
+> ticket's — …>`
 
 **Tell the loop why the tree is dirty.** Its own step 0 asks `git status` and
 reports what it finds, which is right for a user invoking it directly and
@@ -216,13 +241,10 @@ ticketless, so that no box is left unticked with nobody to tick it back. Three
 rounds rather than the loop's own seven is this chain paying for the rounds twice
 over: it has an implementation and two proves around them.
 
-**Three rounds is measured, not guessed** — and it is a *cap*, over a floor of
-two that the loop enforces itself. The first measurement said round 2 found one
-gap and no bug and the curve was already flat; a wider reading of the refutation
-log says the opposite about round 2 in particular, which is why the floor exists
-(ADR 0023): one review pass does not cover a diff, so rounds 1 and 2 are one
-review split in two and round 3 is the first that is really a second look. Three
-is what that costs. The loop reports **owed** at its cap where a case for
+**Three rounds is measured, not guessed** — a *cap*, over a floor of
+two that the loop enforces itself (ADR 0023): rounds 1 and 2 are one
+review split in two, and round 3 is the first that is really a second look.
+The loop reports **owed** at its cap where a case for
 continuing is still live, and hands over the command; that answer travels into
 this run's summary unchanged.
 
@@ -231,29 +253,18 @@ the boxes its repairs unticked, and the verification runs those repairs made.
 Carry all of it into this run's summary as it was given — a chain that re-words a
 delegated result is a chain whose reader cannot tell which layer said what.
 
-**Where the tree started dirty** (step 0, proceeding on the user's say-so), the
-sentence naming that pre-existing work goes into this prompt: the loop passes it
-to every round's review and every round's repair, and a repair told nothing will
-fix another ticket's code under this ticket's name.
-
-**The chain's rule for the full suite: it is owed to the last code change.** A
-green full suite seen *after* the last edit any step made is the run, whoever ran
-it — a round's `dror-repair` gate, or step 1's when nothing has changed code
-since. So: the loop repaired and its last round ran a suite, that is the run; the
-loop repaired nothing and step 2 added no test either, step 1's suite still
-stands and nothing is re-run; anything else — no round ran a suite, or step 2's
-new tests have never been in one — **run the project's full suite here**, before
-step 4. A test file added in step 2 is a change like any other: it can break
-collection or share a fixture, and a targeted run cannot see that. Say which of
+**The chain's rule for the full suite: it is owed to the last code change**,
+whoever made it. So: the loop repaired and its last round ran a suite, that is
+the run; nothing has changed code since step 1's suite, that one still stands;
+anything else — no round ran a suite, or step 2's new tests have never been in
+one (a test file can break collection or share a fixture, which a targeted run
+cannot see) — **run the project's full suite here**, before step 4. Say which of
 the three happened, and name the run that counted.
 
-**The rule outlives this step.** It is owed to the last code change wherever that
-change is made, and step 4 is a step that can make one: `dror-prove` writes a
-test for a criterion that had none, and writes production code for a criterion no
-repair took — an `unmet criterion` finding is neither a bug nor a gap in cover,
-so a repair's list may never have carried it. So a step 4 that touched the tree
-owes the suite again, after it and before the summary. Never a chain that ends
-with code no full suite has seen.
+**The rule outlives this step.** Step 4 can change the tree too — `dror-prove`
+writes tests, and production code for an `unmet criterion` no repair carried —
+so a step 4 that touched the tree owes the suite again, after it and before the
+summary. Never a chain that ends with code no full suite has seen.
 
 ## 4. Prove what is still unticked
 
@@ -425,11 +436,9 @@ so once this push lands, `@{upstream}` is `HEAD` and this ticket's diff is no
 longer reviewable as unpushed work by anything. Step 5 exists to be finished
 before this line, not after it.
 
-**And where step 5 ended still owed, do not push.** Whatever comes next — the
-hand-back command where the cap was reached, or the round the user runs after
-settling a criterion — reviews the unpushed work and nothing else, so the push is
-the one act that would make it useless. The commit stands and the push waits: say
-the branch is unpushed and why, and that the review comes before the push.
+**And where step 5 ended still owed, do not push** — step 5's hold applies
+here, for the reason it gives. The commit stands and the push waits: say the
+branch is unpushed and why, and that the review comes before the push.
 
 **Never onto the remote's default branch.** Where `HEAD` is `main`, `master` or
 whatever `origin/HEAD` names, this run commits and stops: say the commit is

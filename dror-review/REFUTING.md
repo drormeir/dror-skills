@@ -6,7 +6,7 @@ you change no behaviour.
 
 Refuted means **the code is fine**, not that the sentence was clumsy. A finding
 whose scenario is misstated but whose code is genuinely broken comes back
-confirmed, with the scenario rewritten.
+a survivor, with the scenario rewritten.
 
 ## A missing-test finding is refuted differently
 
@@ -61,6 +61,6 @@ whole comment lines, leaving every line of code as it was.
 
 ## Return
 
-The verdict — confirmed, refuted or unverified — one sentence of why, the
+The verdict — survived, refuted or unverified — one sentence of why, the
 corrected scenario where you rewrote one, and the path and line of any claim
 comment you wrote.

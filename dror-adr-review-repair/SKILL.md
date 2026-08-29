@@ -1,6 +1,6 @@
 ---
 name: dror-adr-review-repair
-description: Loop ADR review and repair over one decision document until it converges - dror-adr-review, then dror-adr-repair on what survived, round after round while a round is still owed, up to three. Use when the user names an ADR and asks to check and fix it in one run, or to keep going until nothing is left.
+description: Loop ADR review and repair over one decision document until it converges - dror-adr-review, then dror-adr-repair on what survived, round after round while a round is still owed. Use when the user names an ADR and asks to check and fix it in one run, or to keep going until nothing is left.
 ---
 
 # dror-adr-review-repair
@@ -39,7 +39,7 @@ what to commit is the user's call.
 
 ## What this loop does not repair
 
-Three of the five kinds `dror-adr-review` reports are **not** this loop's work,
+Three of the six kinds `dror-adr-review` reports are **not** this loop's work,
 and each leaves it by a different door:
 
 - A **`breach`** says the code violates the ADR's rule and the document is fine.
@@ -122,8 +122,7 @@ and the word step 4 answered. That is the whole state of the loop.
 
 ### The run's own report name
 
-Before round 1, mint a **run tag** — four hex characters from
-`openssl rand -hex 2`, or the last four of `date +%s` where that is not there —
+Before round 1, mint a **run tag** by the store's recipe
 and use it for the whole run: the report is
 `<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>.md`, every round, `<n>`
 being the ADR's number. This is the caller naming the path, which

@@ -1,5 +1,9 @@
 # The dror skills — what each one is for
 
+The agent-facing map. It owns the tier lists, the checkbox rules and the
+finding-kind routing; the glossary owns the terms, and each skill's own file its
+procedure.
+
 Thirteen skills over one way of working: an **ADR** states a decision, a **spec
 issue** turns it into work, **child tickets** carry the pieces, and each ticket's
 **acceptance criteria** are checkboxes in its body. The criteria are the contract
@@ -14,7 +18,7 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | Skill | Question it answers | Writes |
 |---|---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? | nothing |
-| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | a worktree, a branch, each ticket's push, each ticket's close, `drain-<ADR>.json` |
+| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, `drain-<ADR>.json` |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
 | `dror-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
@@ -39,8 +43,9 @@ They divide the findings by **kind**, because two different hands fix them: a
 decisions is nobody's until the user says which wins. Neither skill writes code,
 and neither may rewrite what was decided — see ADR 0020.
 
-A typical ticket: implement → `dror-prove` → `dror-review` → `dror-repair` →
-close, which is exactly what `dror-implement-ticket <N>` runs in one go.
+A typical ticket: implement → `dror-prove` → the review-repair loop →
+`dror-prove` on whatever is still unticked → commit, push, close — which is what
+`dror-implement-ticket <N>` runs in one go.
 `dror-show-tickets` is the map you read before and after. Matt's `/implement`
 does the same shape with his own `/tdd` and `/code-review` in place of the two
 middle steps — one or the other, never both, or one ticket gets two test sets.
@@ -89,12 +94,13 @@ They answer different questions, and neither replaces the other.
 - **Matt's `/code-review`** reviews since a chosen point on two axes, Standards
   and Spec. **`dror-review`** reviews everything unpushed through lenses and
   refuters, and leaves a report file later runs read.
-- **Matt's `/implement`** is the same orchestration over his own steps: its nine
-  lines name `/tdd` and `/code-review` literally, so a plain run bypasses the
+- **Matt's `/implement`** is the same orchestration over his own steps: it names
+  `/tdd` and `/code-review` literally, so a plain run bypasses the
   dror chain entirely. **`dror-implement-ticket`** is the dror spelling of it —
-  one ticket number threaded through all four steps, no review before the
-  criteria are proven, a repair step to close what the review found, and no
-  commit. Chaining Matt's `/implement` *into* the dror chain is the one
+  one ticket number threaded through every step, no review before the
+  criteria are proven, a review-repair loop to close what reviews find, and its
+  own commit, push and close at the end. Chaining Matt's `/implement` *into* the
+  dror chain is the one
   combination to avoid: it reviews and commits before `dror-prove` has run.
 
 ## Who may move a checkbox

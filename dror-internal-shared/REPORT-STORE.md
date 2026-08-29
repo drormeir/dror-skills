@@ -94,6 +94,12 @@ tag, the report's own time from the front matter, and the finding's number in it
 report names no lens, and a `file:line` moves. Each part answers what none of the
 others can, and neither the tag nor the minute is optional (ADR 0025).
 
+**The tag is minted by this recipe and no other**: four hex characters from
+`openssl rand -hex 2`, or the last four of `date +%s` where that is not there —
+unless the caller handed a tag in, in which case that one is used unchanged. A
+skill that needs a tag says "mint a run tag by the store's recipe" and does not
+restate the commands.
+
 **Every finding carries one, survivors and kills alike.** A report written
 without ids cannot be joined to anything: its repair records nothing, and its log
 lines answer only the questions that need no id. If a finding is worth writing
@@ -117,7 +123,20 @@ about a project, and one repo's runs are too few to read anything into (ADR
 - `runs.tsv` — one line per review run.
 - `repairs.tsv` — one line per finding a repair handled.
 
-Which columns each carries belongs to the skill that writes it. What follows
+**`refutations.tsv` has two writers** — `dror-review` and `dror-adr-review` —
+so its columns live here, once, in this order:
+
+`date` (ISO, from `date -I`) · `repo` (the directory name) · `head` (short
+commit) · `lens` (the one that raised it; a merge's every-lens list joined by
+`+`) · `path` (repo-relative file, no line number — line numbers go stale and
+break grouping) · `kind` (the writing skill's closed kind vocabulary) ·
+`verdict` (survived / refuted / unverified) · `claim` (was a claim comment
+written: yes / no) · `summary` (under 80 characters, no tabs) · `id` (the
+report's finding id, copied whole) · `report` (the path this run's report was
+written to, as named on screen). **`id` and `report` are last, in that order.**
+Each writer says in its own file what its `kind`, `path` and `claim` values are.
+
+A single-writer file's columns belong to the skill that writes it. What follows
 holds for all three.
 
 **Create the directory and the file with its header row when they are not

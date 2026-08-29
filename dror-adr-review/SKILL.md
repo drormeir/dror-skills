@@ -197,8 +197,7 @@ recorded because either one moving is what makes a finding stale — a repair ru
 reads them to say so; the time and the tag are what the finding id below is built
 from.
 
-**Mint a run tag** — four hex characters from `openssl rand -hex 2`, or the last
-four of `date +%s` where that is not there — unless the caller gave one, in which
+**Mint a run tag** by the store's recipe — unless the caller gave one, in which
 case that is the tag. It does not change the report's name, which the reference
 derives from the ADR; it identifies the *run*, so two reviews of one ADR at one
 commit inside one minute cannot mint one id twice.
@@ -236,17 +235,13 @@ kill alike, is also appended as one line to `~/.claude/dror-skills/refutations.t
 — the same log `dror-review` writes, on the reference's terms for every log. The
 `lens` column keeps the two pools apart; nothing else has to.
 
-One tab-separated line per finding, the columns `dror-review` owns, in its
-order: `date` (from `date -I`) · `repo` (the directory name) · `head` (short
-commit) · `lens` · `path` — **the ADR's repo-relative path**, which is what this
-run reviewed, even for a `breach` whose evidence sits in code · `kind` (text /
-hole / breach / conflict / revisit / echo) · `verdict` (survived / refuted / unverified) ·
-`claim` (always `no`: this skill writes no claim comments, and the column stays
-so the two pools share one schema) · `summary` (under 80 characters, no tabs) ·
-`id` (the report's `<head>-<tag>-<hhmm>-<n>`, copied whole) · `report` (the path
-this run's report was written to, as you named it on screen — it is where the
-`## Refuted` grounds sit until the next run on this ADR overwrites them, and a
-summary under eighty characters has no room for those).
+One tab-separated line per finding — the columns and their order are the store
+reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
+values: `path` is **the ADR's repo-relative path**, which is what this run
+reviewed, even for a `breach` whose evidence sits in code; `kind` is `text /
+hole / breach / conflict / revisit / echo`; `claim` is always `no` — this skill
+writes no claim comments, and the column stays so the two pools share one
+schema.
 
 **The `id` column is what lets a `breach` be followed.** A breach goes to
 `dror-repair`, which writes a `repairs.tsv` row only for a finding that carried

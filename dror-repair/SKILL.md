@@ -60,9 +60,8 @@ Two words are this skill's own:
 ## The ticket, when there is one
 
 A ticket number may be passed to this run. If one is, read it the way the
-**issue convention** fact says this repo tracks work — on a GitHub repo that is
-`gh issue view <n> --json title,body,state` — and number its acceptance criteria
-1..N, the same numbering `dror-prove` and `dror-review` use. A repo whose
+**issue convention** fact says this repo tracks work, and number its acceptance
+criteria 1..N, the same numbering `dror-prove` and `dror-review` use. A repo whose
 convention came back unstated carries on without the ticket and says so; it is
 focus, not scope, so nothing on the list depends on it.
 
@@ -266,7 +265,8 @@ and a line keyed on a guess is worse than an absent one.
 Where the header does not name `files_edited` and `production`, they arrive on
 the header line, as any added column does.
 
-The run ends here, with the changes uncommitted. Committing is the user's.
+Nothing is committed — committing is the user's. Two things are still owed
+before the run ends: the report below, and the review-owed line after it.
 
 ## Report
 
@@ -367,4 +367,5 @@ caller that needed it and did not get it has to ask again for what this run
 already knew.
 
 Name the files plainly, since that is the part a caller cannot re-derive without
-a diff, and keep the whole thing to two lines.
+a diff, and keep the whole thing to two lines. The run ends here, with the
+changes uncommitted.

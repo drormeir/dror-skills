@@ -1,6 +1,6 @@
 ---
 name: dror-review-repair
-description: Loop review and repair over the unpushed work until it converges - dror-review, then dror-repair on what survived, round after round while a round is still owed, at least two and up to seven. Use when the user asks to review and fix in one run, or to keep reviewing until nothing is left.
+description: Loop review and repair over the unpushed work until it converges - dror-review, then dror-repair on what survived, round after round while a round is still owed. Use when the user asks to review and fix in one run, or to keep reviewing until nothing is left.
 ---
 
 # dror-review-repair
@@ -174,8 +174,7 @@ step 4 answered. That is the whole state of the loop.
 
 ### The run's own report name
 
-Before round 1, mint a **run tag** — four hex characters from
-`openssl rand -hex 2`, or the last four of `date +%s` where that is not there —
+Before round 1, mint a **run tag** by the store's recipe
 and use it for the whole run: the report is
 `<repo>/.claude/dror-skills/review-report-<tag>.md`, every round. This is the
 caller naming the path, which `../dror-internal-shared/REPORT-STORE.md` makes the

@@ -71,9 +71,9 @@ clean every time. Say which, rather than reading a silence.
 
 `~/.claude/dror-skills/repairs.tsv` — one line per finding a repair handled, keyed by
 the report's id, carrying that run's outcome word. **Join on the whole string and
-never on its parts**: the id has three shapes by age — `<head>-<n>`,
-`<head>-<hhmm>-<n>` and `<head>-<tag>-<hhmm>-<n>` (ADR 0025) — and splitting on
-`-` reads one shape's tag as another's minute. A **survivor** whose outcome is
+never on its parts** — the store reference's rule
+(`../dror-internal-shared/REPORT-STORE.md`, "The finding id"), stated there once
+with the shapes that make splitting wrong. A **survivor** whose outcome is
 `Couldn't reproduce` or `Ruled out`
 is a finding that passed a lens and a refuter and was still wrong: it is a false
 positive the review scored as a success, and it belongs in question 1's numbers

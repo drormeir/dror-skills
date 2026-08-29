@@ -1,6 +1,6 @@
 ---
 name: dror-internal-shared
-description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the glossary, the map and the decision record. A shelf, read by the skills that run.
+description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the ADR worktree's rules, the glossary, the map and the decision record. A shelf, read by the skills that run.
 disable-model-invocation: true
 ---
 

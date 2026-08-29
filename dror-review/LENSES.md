@@ -34,22 +34,11 @@ already", "both producers freeze it", "this raises nothing", "nothing calls it"
 — each of those is an answer you can reach yourself by reading the immediate
 callers, which the paragraph above already sends you to.
 
-**Where this gate came from, and what is unproven about it.** Across nineteen
-days of refutation logs, hazards were refuted at 79% against 40% for bugs and
-21% for missing cover, and the share held in every lens that raises them: 90% in
-`logic`, 88% in `state`, 16 of 16 in `clone`. Set hazards aside and no lens is
-imprecise — they land within one band. So the kill is the kind, and that part is
-measured.
-
-**That a high rate is a *fault* is not measured, and may be false** (ADR 0030). A hazard is
-defined one paragraph up as correct today but fragile — a claim about a future
-that a refuter, judging the present, will often and rightly kill. Kills are what
-propose-then-refute is *for* (ADR 0003), no one has ever fixed the right rate,
-and nothing in any log records a bug that no lens raised. So this gate spends
-recall to buy precision, against 36 surviving hazards whose worth is not in the
-numbers either. It is a **standing trial, not a settled rule**: the next
-retrospective should ask whether hazard survivors fell with the kills, and say
-so plainly if they did.
+**Where this gate came from**: measurement — hazards are refuted at several
+times the rate of bugs or missing cover, in every lens that raises them, so the
+kill is the kind (ADR 0030). Whether that rate is a *fault* is not measured and
+may be false — the gate spends recall to buy precision, and it is a standing
+trial, not a settled rule.
 
 The cost is real and it is yours to weigh in the moment: this loses the hazard
 in a seam written for a caller that lands next week, which is exactly the case

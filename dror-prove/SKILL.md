@@ -36,8 +36,7 @@ in hand, continue at **Step 1** in the same turn.
 
 ## Step 1 — read the ticket
 
-Read it the way the **issue convention** fact says this repo tracks work — on a
-GitHub repo that is `gh issue view <n> --json title,body,state`. A repo whose
+Read it the way the **issue convention** fact says this repo tracks work. A repo whose
 convention came back unstated stops here: say so and ask, rather than guess a
 tracker. Take the `- [ ]` / `- [x]` lines under *Acceptance criteria*, in order,
 and number them 1..N — that number is how every

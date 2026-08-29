@@ -1,6 +1,6 @@
 ---
 name: dror-review
-description: Correctness review of the unpushed work - commits not yet on the remote plus the working tree - every finding refuted before it reaches you. Reports the survivors and changes no behaviour.
+description: Correctness review of the unpushed work - commits not yet on the remote plus the working tree - every finding refuted before it reaches you. Reports the survivors and changes no behaviour. Use when the user asks what is wrong with the work before pushing it, or wants findings without the fixing.
 ---
 
 # dror-review
@@ -26,9 +26,8 @@ in hand, continue at **Review** below in the same turn.
 ## The ticket, when there is one
 
 A ticket number may be passed to this run. If one is, read it the way the
-**issue convention** fact says this repo tracks work — on a GitHub repo that is
-`gh issue view <n> --json title,body,state` — and number its acceptance criteria
-1..N, the same numbering `dror-prove` and `dror-repair` use. A repo whose
+**issue convention** fact says this repo tracks work, and number its acceptance
+criteria 1..N, the same numbering `dror-prove` and `dror-repair` use. A repo whose
 convention came back unstated reviews without the ticket and says so. Carry that list into
 every lens prompt beside the project facts: it is what the diff was written to
 satisfy, and a lens that knows it stops reporting a deliberate choice as a
@@ -102,8 +101,7 @@ because it guessed at a neighbour would leave changed files unlooked-at with
 nobody told. What this section buys is that the user, reading a finding against a
 file they did not touch this session, can tell the two readings apart.
 
-**Mint a run tag** — four hex characters from `openssl rand -hex 2`, or the last
-four of `date +%s` where that is not there — unless the caller gave one, in which
+**Mint a run tag** by the store's recipe — unless the caller gave one, in which
 case that is the tag. It does **not** change the report's name, which ADR 0021
 derives from the ticket; it identifies the *run* in the front matter and in the
 run log below, so a later reading can tell which rows came from runs that
@@ -275,20 +273,10 @@ Survivors go in as well as kills, because a lens's kill count says nothing on
 its own: what matters is the *share* of its findings that died, and that needs
 the denominator.
 
-One tab-separated line per finding, these columns in this order:
-
-`date` (ISO, from `date -I`) · `repo` (the directory name) · `head` (short
-commit) · `lens` (the one that raised it; the merge's every-lens list joined by
-`+`) · `path` (repo-relative file, no line number — line numbers go stale and
-break grouping) · `kind` (bug / hazard / cover) · `verdict` (survived /
-refuted / unverified) · `claim` (was a claim comment written: yes / no) ·
-`summary` (under 80 characters, no tabs) · `id` (the report's
-`<head>-<tag>-<hhmm>-<n>`) · `report` (the path this run's report was written
-to, as you named it on screen).
-
-**`id` and `report` are last, in that order**, and where the header does not
-name one, add it to the header line only — the reference's rule for a column
-added since a file was written.
+One tab-separated line per finding — the columns and their order are the store
+reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
+values: `kind` is `bug / hazard / cover`, `path` is the finding's repo-relative
+file, and `claim` records whether a claim comment was written, `yes` / `no`.
 
 **Why the path is worth a column.** The log's `summary` holds what a finding
 *claimed*; the `## Refuted` section above holds **why it died**, which is the one

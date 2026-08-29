@@ -2,7 +2,9 @@
 
 The words the `dror-*` skills use, one entry per term. Two neighbours carry the
 rest: why a skill behaves as it does is in [`docs/adr/`](docs/adr/), and what
-each skill is for is in [`DROR-SKILLS.md`](DROR-SKILLS.md).
+each skill is for is in [`DROR-SKILLS.md`](DROR-SKILLS.md). This file owns only
+the terms no rule file carries; an entry whose rules live in a shelf file is a
+condensed pointer, and that file owns the term.
 
 ## The work being described
 
@@ -108,7 +110,7 @@ holds the rules that go with them.
 
 `dror-internal-shared/WORKTREE.md` holds the rules that go with these.
 
-- **ADR worktree** — `<repo>/.claude/adr-wip/<repo>-adr-<N>`, a `git worktree`
+- **ADR worktree** — `<repo>/.claude/adr-wip/adr-<N>`, a `git worktree`
   holding one ADR's work so it is never another run's review scope. Beside the
   repo, `../<repo>-adr-<N>`, in trees made before the placement changed
   (ADR 0029).
