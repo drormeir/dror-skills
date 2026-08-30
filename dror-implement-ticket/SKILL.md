@@ -244,7 +244,7 @@ cap — none of which is this file's business any more:
 > round's repair: a criterion the diff claims and misses is an `unmet criterion`
 > finding, and a box whose test a repair sees go red is unticked by it. **Cap the
 > loop at three rounds.** Report which boxes moved, so the prove that follows
-> knows its list.
+> knows its list. **This is a chain run: notify nothing.**
 >
 > The tree is dirty **because this run wrote it** — the implementation for this
 > ticket, and the tests a prove wrote for its criteria. That is the work you are

@@ -128,6 +128,10 @@ holds the rules that go with them.
 - **Drain state file** — `drain-<ADR>.json` in that worktree's store: the drain's
   current position, not a history. The work list, what remains, which numbers
   were attempted, and one entry per round.
+- **Drain progress log** — `drain-<ADR>.log` beside the state file: the drain's
+  per-round lines in the order they happened, appended and never rewritten. A
+  forked run's text returns only at the end (ADR 0042), so this is the only way
+  to watch a drain while it works — `tail -f` it.
 - **Round outcome** — `picked` when a ticket is taken, rewritten to `finished`,
   `skipped` or `stopped` when its round ends. An entry left at `picked` is an
   interrupted round, and it is the only thing that distinguishes one from a
@@ -159,10 +163,13 @@ These words are the same in every `dror-*` run.
 - **Refutation log** — `~/.claude/dror-skills/refutations.tsv`, outside any repo: one
   line per merged finding, appended by every review and never rewritten. Its
   `summary` is what a finding *claimed*; why it died is in the report the
-  `report` column points at, for as long as that report is the current one.
+  `report` column points at, for as long as that report is the current one. Its
+  `round` says which round of a caller's loop raised the finding, which is what
+  makes a loop's rounds separable at all (ADR 0041).
 - **Run log** — `~/.claude/dror-skills/runs.tsv`: one line per review, naming the
   lenses run and the lenses dropped. The denominator the refutation log cannot
-  hold, since a lens that finds nothing writes no finding.
+  hold, since a lens that finds nothing writes no finding. It also carries the
+  run's `elapsed_s`, the only record of what a review costs in wall-clock.
 - **Repair log** — `~/.claude/dror-skills/repairs.tsv`: one line per finding a repair
   handled, appended by `dror-repair` and by `dror-adr-repair`, keyed by the
   report's finding id, carrying that run's outcome and the
@@ -177,5 +184,8 @@ These words are the same in every `dror-*` run.
   logs — `<head>-<hhmm>-<n>` and `<head>-<n>` — so an id is matched **whole** and
   never split into parts (ADR 0025).
 - **Run tag** — four hex characters minted per review run. Names the *run* in a
-  report's front matter and in `runs.tsv`; it is not the report's file name,
-  which ADR 0021 derives from the ticket.
+  report's front matter and in `runs.tsv`. It is not the report's file name,
+  which ADR 0021 derives from the ticket — except where a caller names the path
+  instead, as `dror-review-repair` does with `review-report-<tag>-r<n>.md` and
+  `dror-adr-review-repair` with `adr-review-report-<n>-<tag>-r<k>.md`, one
+  file per round (ADR 0041).

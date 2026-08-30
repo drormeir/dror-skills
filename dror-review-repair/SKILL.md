@@ -136,8 +136,8 @@ Say so and stop.
 ## Rounds
 
 Each round is **review, then repair, then judge**. Announce the round before its
-review — `round 2 of at most 7` — so a reader watching a long run can tell a
-second pass from a stuck one.
+review — `round 2 of at most 7` — for the transcript and the summary; a watcher
+sees nothing of it (ADR 0042), which is what the notification below is for.
 
 ### Each step runs in its own context
 
@@ -184,13 +184,45 @@ now.
 Keep in **this** context only the per-round lines, the report paths, and the word
 step 4 answered. That is the whole state of the loop.
 
+### Say where the loop is, unless a caller says not to
+
+**A forked run delivers only its final message** (ADR 0042), so the round
+announcements below reach nobody: they are printed into this run's own context,
+and a user watching a manual invocation sees nothing between the command and the
+summary. A round is a lens fan-out and a refuter under each finding, so that
+silence is minutes at a time with no way to tell progress from a hang.
+
+So fire one `notify-send` as each round begins, best-effort:
+
+```
+notify-send "review-repair <tag> · round <n> of at most <cap>" "<the scope, in a few words>"
+```
+
+Ignore its exit status and never let it gate a round — it is absent on a
+headless box and on macOS, and a cosmetic channel must not stop a loop.
+
+**A caller may declare a chain run, and then this is off entirely.** Say nothing,
+notify nothing: the caller is a skill and not a person, it has its own reporting
+at its own granularity, and a notification per round of every ticket in a drain
+is how a user learns to dismiss them unread. It is **the caller's word that is
+trusted**, the same way it is trusted about a prove following — this skill cannot
+see who invoked it. No declaration means a person typed the command, which is
+the case worth reporting to.
+
 ### The run's own report name
 
 Before round 1, mint a **run tag** by the store's recipe
-and use it for the whole run: the report is
-`<repo>/.claude/dror-skills/review-report-<tag>.md`, every round. This is the
+and use it for the whole run: round `<n>`'s report is
+`<repo>/.claude/dror-skills/review-report-<tag>-r<n>.md`. This is the
 caller naming the path, which `../dror-internal-shared/REPORT-STORE.md` makes the
 answer over any name the review would derive.
+
+**The tag is the run's and the suffix is the round's**, so a loop leaves one
+file per round rather than one file. What that costs is a few kilobytes in a
+disposable store; what it buys is ADR 0041's subject — the trail a later round
+leaves is the only evidence of whether that round read code an earlier one
+never opened, and a single overwritten path destroys it at the moment it is
+made.
 
 **It is what makes two copies of this loop safe in one checkout.** A ticketless
 review takes the plain `review-report.md`, and the reference tells reports apart
@@ -208,7 +240,10 @@ apart and nothing else.
 So **look for the other run and say what you find**, before round 1 and once
 only: list `<repo>/.claude/dror-skills/` and read the front matter of every
 `review-report*.md` that is not this run's, exactly as `dror-review`'s own
-concurrency check does. A recently-written report under another tag is another
+concurrency check does. **Not this run's** now means every file carrying this
+run's tag, whatever its round suffix — before round 1 there are none of them,
+and the check runs once, so this costs the check nothing; what it prevents is a
+later reader of this passage taking one tag for one file. A recently-written report under another tag is another
 run in this tree. Name it on screen, carry that line into the summary, and
 **pass it into every round's repair** — a repair meeting a failing test it did not
 cause needs to know somebody else is editing, and that is the one place the
@@ -227,10 +262,23 @@ Invoke the `dror-review` skill, with the focus paragraph where this run has one
 and no ticket number:
 
 > Review the unpushed work. Report the survivors and change no behaviour. Write
-> your report to `<repo>/.claude/dror-skills/review-report-<tag>.md` — that name
-> is this run's and overrides the name you would derive. Scope: `<the scope, or
+> your report to `<repo>/.claude/dror-skills/review-report-<tag>-r<n>.md` — that
+> name is this run's and overrides the name you would derive. Use `<tag>` as
+> your run tag, so every round's rows carry it. This is **round
+> `<n>`** of this loop; log it as that round. Scope: `<the scope, or
 > "every unpushed file">`. For context, what this work was meant to do: `<the
 > focus paragraph>` — focus, not scope. No ticket is passed to this run.
+
+**The round number is passed because the review cannot know it.** Its own file
+says so and writes `-` where nobody names one, so a loop that omits it logs
+three rounds indistinguishable from three separate one-round runs — which is
+the whole of what `refutations.tsv`'s `round` column exists to prevent.
+
+**The tag is passed for the same reason, and it is what joins the rounds.**
+`dror-review-retrospective` groups a run's logged rows — finding rows and run
+rows both — by `run_tag` and orders them by `round`; a review left to mint its own tag files each round
+under a tag of its own, and rounds minted apart never group. The path alone
+does not carry it — a name is matched whole and never split into parts.
 
 It finds and stops, which is what keeps the repair a separate step: the report is
 written before anything is changed. **That stop is the review's, not this run's**
@@ -279,11 +327,13 @@ Invoke the `dror-repair` skill:
 > editing this same working tree — …, last seen at … — so a file changing under
 > you, or a test failing in code you did not touch, may be theirs.>`
 
-**Name the tagged file, never the store's default.** The default
-`review-report.md` may be another run's entirely, and passing it sends this
-repair at somebody else's findings. Pass the path step 1 confirmed it wrote — it
-should be the tagged one, and a review that reports any other name is a
-disagreement to say out loud rather than work around.
+**Name this round's tagged file, never the store's default and never an earlier
+round's.** The default `review-report.md` may be another run's entirely, and
+passing it sends this repair at somebody else's findings; an earlier round's
+file sends it at findings this loop has already repaired. Pass the path step 1
+confirmed it wrote — it should be this round's `-r<n>` file, and a review that
+reports any other name is a disagreement to say out loud rather than work
+around.
 
 **A fix that lands outside a narrowed scope is reported, not hidden.** The
 repair's list comes from the report, so it normally stays inside — but a fix
@@ -382,8 +432,12 @@ at round 7 names the files nothing has reviewed and hands the user the command a
 it would be typed:
 
 > `/dror-review`, writing its report to
-> `<repo>/.claude/dror-skills/review-report-<tag>.md`, then `/dror-repair` on
-> what it finds in that file.
+> `<repo>/.claude/dror-skills/review-report-<tag>-r<n+1>.md`, then `/dror-repair`
+> on what it finds in that file.
+
+`<n+1>` and not the cap's own round: the user is being handed the round this
+loop did not take, and pointing them at the last round's file would have them
+repair findings this run already repaired.
 
 **Carry the tag into that command.** Typed without it, the review takes the
 default `review-report.md` — which may be another run's, and is not the file this
@@ -392,14 +446,20 @@ run's reader is watching.
 Never write **owed** at the cap and stop silently; a reader would take the stop
 for convergence.
 
-**Each round overwrites the last round's report**, because this run hands every
-round the one tagged path. That is deliberate, not a limitation of the naming: a
-per-round file would keep the trail, and the trail is not read — step 4 weighs
-what the repair agent **returned**, and `~/.claude/dror-skills/repairs.tsv` keeps
-each finding's outcome keyed by its id for a later retrospective. What the file
-holds is therefore always the open list, which is what the next repair needs. A
-round's findings a reader will want later belong in this run's summary, not in a
-file the next round replaces.
+**Each round keeps its own report**, at the `-r<n>` path above, and no round
+overwrites another. This reverses what this file used to say, and the reason it
+used to give was sound at the time: the trail was not read, since step 4 weighs
+what the repair agent **returned** and `~/.claude/dror-skills/repairs.tsv` keeps
+each finding's outcome keyed by its id. What changed is that a question now
+needs it — whether a later round's findings land in files an earlier round never
+opened, which decides whether the round-1 floor is convergence or coverage, and
+which no returned summary and no id-keyed outcome can answer. ADR 0041 holds
+that argument.
+
+**The repair still reads one file: this round's.** Step 2 passes the path step 1
+confirmed it wrote, which is always the current round's, so what the repair works
+from is the open list exactly as before. The earlier rounds' files are for a
+reader, and nothing in this loop reads them back.
 
 The user may stop the loop at any point, and a run told to stop reports what it
 has rather than finishing the round.
@@ -422,8 +482,8 @@ caller's prove takes as its list, and this run is the only one that watched them
 move.
 
 Then say the tree is left uncommitted, and name what was written outside it: this
-run's report file, and the three logs under `~/.claude/dror-skills/` that every
-round appends to — `refutations.tsv` and `runs.tsv` from each review,
+run's report files, one per round, and the three logs under
+`~/.claude/dror-skills/` that every round appends to — `refutations.tsv` and `runs.tsv` from each review,
 `repairs.tsv` from each repair. **They are the point of running the rounds at
 all** as far as a later `dror-review-retrospective` is concerned: one `runs.tsv` line
 per round is what lets it see whether the findings thinned out, and a run that

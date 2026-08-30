@@ -101,7 +101,10 @@ hypothetical — ADR 0025 records the run where it happened.
 `<repo>/.claude/dror-skills/` for `review-report*.md`, and for each one that is
 not the name this run will take, read its front matter — the ticket, the base,
 the `HEAD` and the time. A report there written **recently** under another name
-is another run in this tree.
+is another run in this tree — unless its front matter carries **the tag this
+run's caller gave**, in which case it is an earlier round of the caller's own
+loop (its reports are one per round, `-r<n>`): this run's own history, not a
+neighbour, and it goes unreported and out of `concurrent`.
 
 It is a **heuristic and it is reported, never enforced.** A run between its start
 and its first report write is invisible to this check, and a finished run's
@@ -315,7 +318,16 @@ the denominator.
 One tab-separated line per finding — the columns and their order are the store
 reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
 values: `kind` is `bug / hazard / cover`, `path` is the finding's repo-relative
-file, and `claim` records whether a claim comment was written, `yes` / `no`.
+file, `claim` records whether a claim comment was written, `yes` / `no`,
+`subject` is the ticket number this run was given, or `-` where it was given
+none, and `run_tag` is this run's tag — the caller's where one was given, the
+minted one otherwise.
+
+**`round` is the caller's to say and never this run's to guess.** A loop that
+runs this skill several times over one diff names the round in its prompt, and
+that number goes in the column unchanged; a run nobody numbered writes `-`.
+Counting rounds from what is already in the log would be the guess — two loops
+sharing a checkout interleave their rows, and the count would be of neither.
 
 **Why the path is worth a column.** The log's `summary` holds what a finding
 *claimed*; the `## Refuted` section above holds **why it died**, which is the one
@@ -351,9 +363,19 @@ run-level row inside it would be counted as a finding by everything that reads
 it.
 
 This run's own values: `lenses_run` and `lenses_dropped` carry the closed names
-from [`LENSES.md`](LENSES.md), and `concurrent` carries the tags or names the
+from [`LENSES.md`](LENSES.md), `concurrent` carries the tags or names the
 check above saw, joined by `+`, or **`-` for none seen** — never `unchecked`,
-which is what a review that runs no check of its own writes there.
+which is what a review that runs no check of its own writes there — and `round`
+and `subject` are the same values the finding log's section above gives them.
+
+**`elapsed_s` needs two readings, and the first one is easy to miss.** Run
+`date +%s` immediately before launching the lenses and again as this line is
+written, and put the difference in the column. Take the first reading at the
+lenses rather than at the top of the run: everything before them is reading the
+prompt, and what this column is for is the cost of the fan-out and the refuters
+under it. A run that reached this point without the first reading writes `-`
+and does not reconstruct one — a duration invented from a report's timestamp
+would be a different quantity wearing this column's name.
 
 **`run_tag` and `concurrent` are what make every rate in this file readable
 later.**

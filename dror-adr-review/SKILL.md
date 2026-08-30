@@ -290,7 +290,16 @@ values: `path` is **the ADR's repo-relative path**, which is what this run
 reviewed, even for a `breach` whose evidence sits in code; `kind` is `text /
 hole / breach / conflict / revisit / echo`; `claim` is always `no` — this skill
 writes no claim comments, and the column stays so the two pools share one
-schema.
+schema; `subject` is **the ADR's number**, the same one the identity line
+carries; `round` is the round a looping caller named, or `-`; and `run_tag` is
+this run's tag — the caller's where one was given, the minted one otherwise.
+
+**`subject` holds an ADR number here and a ticket number in `dror-review`'s
+rows**, which is safe only because the two pools are never read against each
+other — the rule for keeping them apart is
+`dror-review-retrospective`'s, and it turns on the disjoint lens names rather
+than on this column. A reader that groups by `subject` alone across both pools
+is comparing an ADR with a ticket that happens to share its number.
 
 **The `id` column is what lets a `breach` be followed.** A breach goes to
 `dror-repair`, which writes a `repairs.tsv` row only for a finding that carried
@@ -320,7 +329,11 @@ names keep readable apart. The columns and their order are the store reference's
 
 This run's own values: `lenses_run` and `lenses_dropped` carry the closed names
 from this skill's [`LENSES.md`](LENSES.md); `concurrent` is **`unchecked`**, or
-the tags a caller told this run it saw, joined by `+`.
+the tags a caller told this run it saw, joined by `+`; `round` and `subject` are
+the same values the finding log's section above gives them; and `elapsed_s` is
+the difference between a `date +%s` read immediately before the lenses are
+launched and one read as this line is written, or `-` where the first reading
+was not taken.
 
 **Never `-` here.** In `dror-review`'s rows that value means *a check ran and saw
 nobody*; this skill runs no check of its own, and writing `-` would put "looked

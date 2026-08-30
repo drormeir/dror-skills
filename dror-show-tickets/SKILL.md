@@ -30,10 +30,16 @@ untracked file still counts; note that in the closing sentence.
 Where the repo documents its issue conventions — `docs/agents/issue-tracker.md`
 is one common home — read that if the commands below do not fit.
 
-1. **The spec issue.** `gh issue list --state all --limit 200 --json number,title,state,body`
+1. **The spec issue.** `gh issue list --state all --limit 200 --json number,title,state,body,labels`
    and keep the issue whose body or title names the ADR — its slug, its title, or
    the string `ADR <NNNN>` / `ADR 0<NN>`. It is the parent and usually carries no
    checkboxes.
+
+   **This one call is the whole read**, and `labels` is in it for that reason:
+   with `body`, `state` and `labels` in hand for every issue in the tracker,
+   step 3 has everything it needs and fetches nothing. Dropping the field would
+   cost one `gh` round trip per ticket — a per-ADR price on the one thing here
+   that scales with the ticket count.
 2. **The children.** An issue whose body opens with a `## Parent` section naming
    the spec's `#number`. Where GitHub sub-issues are enabled, the sub-issues
    endpoint answers the same question — prefer whichever the repo actually uses.
@@ -43,7 +49,12 @@ is one common home — read that if the commands below do not fit.
 
 ## Step 3 — read each ticket
 
-Per issue, from `gh issue view <n> --json body,state,labels`:
+Per issue, from the `body`, `state` and `labels` **step 1 already fetched**. Do
+not re-fetch: `gh issue view <n>` here asks the tracker a question it has just
+answered, once per ticket, and returns the same three fields. Read one only
+where step 1's list could not reach the issue at all — a number outside its
+limit, or a fallback that named an issue the list did not return — and say so
+in the closing sentence.
 
 - **Status** — one cell answering "can this be worked on now", read in this
   order, first answer wins:

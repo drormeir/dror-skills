@@ -34,7 +34,8 @@ that touched production code — are exactly what a further round is for.
 ## owed, on grounds a round can move
 
 Settle it now, before the commit, by invoking `dror-review-repair` **capped at
-two rounds**. Not an inline review-then-repair: that skill owns the round, judges
+two rounds**, telling it **this is a chain run, so it notifies nothing**. Not an
+inline review-then-repair: that skill owns the round, judges
 it, and carries the account of why the tree is dirty into every round, its run
 tag, and the rule that the full suite is owed to the last code change.
 

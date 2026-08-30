@@ -137,19 +137,46 @@ break grouping) · `kind` (the writing skill's closed kind vocabulary) ·
 `verdict` (survived / refuted / unverified) · `claim` (was a claim comment
 written: yes / no) · `summary` (under 80 characters, no tabs) · `id` (the
 report's finding id, copied whole) · `report` (the path this run's report was
-written to, as named on screen). **`id` and `report` are last, in that order.**
-Each writer says in its own file what its `kind`, `path` and `claim` values are.
+written to, as named on screen) · `round` (which round of a caller's loop this
+run was, `1` upward, or `-` where the caller ran no loop) · `subject` (the
+number this run was given, or `-`) · `run_tag` (this run's tag, the same value
+its `runs.tsv` row carries). **`id` and `report` keep their positions in
+that order, and every column added later follows them**, so a row written
+before the addition stays readable as the shorter row it is. Each writer says
+in its own file what its `kind`, `path`, `claim` and `subject` values are.
+
+**`round` is what makes a loop's rounds separable at all.** Without it a
+three-round loop appends its findings as one undifferentiated block, and the
+question a retrospective most wants to ask — did a later round find defects in
+files an earlier round never opened, or in the code its repair had just
+written — cannot be asked of the log at any price. It is written by the run,
+from the number its caller handed in, and never inferred from a finding id's
+minute field, which the id rule above forbids splitting. `round` separates a
+loop's rounds; **`run_tag` is what joins them into one run** — ids may not be
+split and report names are matched whole, so without this column no reader can
+tell which round-1 rows belong with which round-2 rows once two loops share a
+repo.
 
 **`runs.tsv`** — written by `dror-review` and `dror-adr-review`:
 
 `date` · `repo` · `head` · `lenses_run` (the writer's own closed lens names,
 joined by `+`) · `lenses_dropped` (the same, or `-`) · `findings` (how many
 merged findings this run produced, kills included) · `run_tag` (this run's tag) ·
-`concurrent` (what the run knows about who else was in the tree). Each writer
-says in its own file what it may write in `concurrent` — the two differ, and the
-difference is the point: a review that runs a neighbour check of its own can
-write `-` for *looked and saw nobody*, and one that runs none writes `unchecked`,
-which is not the same fact.
+`concurrent` (what the run knows about who else was in the tree) · `round` (as
+in `refutations.tsv` above) · `subject` (the same) · `elapsed_s` (whole seconds
+this run took, from its own two clock readings, or `-` where it took none).
+Each writer says in its own file what it may write in `concurrent` — the two
+differ, and the difference is the point: a review that runs a neighbour check of
+its own can write `-` for *looked and saw nobody*, and one that runs none writes
+`unchecked`, which is not the same fact.
+
+**`elapsed_s` is a measurement, not bookkeeping.** A review run is a lens
+fan-out and a refuter under each finding, and how much of a chain's wall-clock
+that costs has never been recorded anywhere — so every judgement about whether
+the loop is worth its rounds has been made from the round *count*, which the
+one drain that measured both showed does not predict duration. Two `date +%s`
+readings per run answer it directly. A run that did not read the clock writes
+`-` and is excluded from any mean, exactly as an unworked round is.
 
 **`repairs.tsv`** — written by `dror-repair` and `dror-adr-repair`:
 

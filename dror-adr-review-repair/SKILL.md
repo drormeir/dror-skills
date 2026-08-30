@@ -94,8 +94,21 @@ cover.
 ## Rounds
 
 Each round is **review, then repair, then judge**. Announce the round before its
-review — `round 2 of at most 3` — so a reader watching can tell a second pass
-from a stuck one.
+review — `round 2 of at most 3` — for the transcript and the summary; a forked
+run's text reaches nobody until it returns (ADR 0042), which is what the
+notification below is for.
+
+**Fire one `notify-send` as each round begins, best-effort:**
+
+```
+notify-send "adr-review-repair <n> · round <k> of at most <cap>" "<the focus, in a few words>"
+```
+
+Ignore its exit status and never let it gate a round — it is absent on a
+headless box and on macOS, and a cosmetic channel must not stop a loop. This
+run is what the user typed — nothing invokes this loop from a chain — so there
+is no caller's silence to honour, and the notification is the one thing a
+watcher gets between the command and the summary.
 
 ### Each step runs in its own context
 
@@ -130,17 +143,23 @@ exists to review the sentences the last repair wrote, and a lens told that a
 sentence has already been fixed is being asked to trust the very thing it is
 there to check.
 
-Keep in **this** context only the per-round lines, the report path, the breaches
+Keep in **this** context only the per-round lines, the report paths, the breaches
 and the word step 4 answered. That is the whole state of the loop.
 
 ### The run's own report name
 
 Before round 1, mint a **run tag** by the store's recipe
-and use it for the whole run: the report is
-`<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>.md`, every round, `<n>`
+and use it for the whole run: round `<k>`'s report is
+`<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>-r<k>.md`, `<n>`
 being the ADR's number. This is the caller naming the path, which
 `../dror-internal-shared/REPORT-STORE.md` makes the answer over any name the
 review would derive.
+
+**The tag is the run's and the suffix is the round's**, so the loop leaves one
+file per round rather than one file — the same arrangement as
+`dror-review-repair`'s, and ADR 0041's decision ("each round keeps its report")
+is why: an earlier round's grounds are the only evidence of what that round had
+in front of it, and a single overwritten path destroys them as they are made.
 
 **It is what makes two copies of this loop safe in one checkout.** Two runs over
 one ADR both reach for `adr-review-report-<n>.md`, and the second overwrites the
@@ -155,7 +174,9 @@ the same prose at the same time, and a document is one file with no seam to
 divide: the second writer edits text the first has already moved. So **look for
 the other run and say what you find**, before round 1 and once only: list
 `<repo>/.claude/dror-skills/` and read the front matter of every
-`adr-review-report*.md` that is not this run's. A recently-written report under
+`adr-review-report*.md` that is not this run's. **Not this run's** means every
+file carrying this run's tag, whatever its round suffix — before round 1 there
+are none of them, so this costs the check nothing. A recently-written report under
 another tag naming **this** ADR is another run on this document — name it on
 screen, carry it into the summary, and pass it into every round's repair.
 
@@ -169,9 +190,10 @@ one:
 
 > Review ADR `<n>`, at `<the path step 0 resolved>`. Report the survivors and
 > edit no text. Write your report to
-> `<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>.md` — that name is this
-> run's and overrides the name you would derive. Use `<tag>` as your run tag, so
-> every round's finding ids carry it. `<Where the concurrency check saw a
+> `<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>-r<k>.md` — that name is
+> this run's and overrides the name you would derive. Use `<tag>` as your run tag,
+> so every round's finding ids carry it. This is **round `<k>`** of this loop; log
+> it as that round. `<Where the concurrency check saw a
 > neighbour: another run is on this ADR — …, last seen at … — write its tag in
 > your run row's `concurrent` column.>` For context, why this document is being
 > checked now: `<the focus paragraph>` — focus, not scope; read the document
@@ -226,11 +248,13 @@ Invoke the `dror-adr-repair` skill:
 > is editing this same document — …, last seen at … — so a sentence changing
 > under you may be theirs.>`
 
-**Name the tagged file, never the store's default.** The default
-`adr-review-report-<n>.md` may be another run's entirely, and passing it sends
-this repair at somebody else's findings. Pass the path step 1 confirmed it wrote,
-and a review that reports any other name is a disagreement to say out loud rather
-than work around.
+**Name this round's tagged file, never the store's default and never an earlier
+round's.** The default `adr-review-report-<n>.md` may be another run's entirely,
+and passing it sends this repair at somebody else's findings; an earlier round's
+file sends it at findings this loop has already repaired. Pass the path step 1
+confirmed it wrote — it should be this round's `-r<k>` file, and a review that
+reports any other name is a disagreement to say out loud rather than work
+around.
 
 `dror-adr-repair` has no suite to stand on: its evidence is that every sentence
 it wrote was **grounded** in the tree, and its step 3 reads the document whole
@@ -293,8 +317,12 @@ names the documents nothing has reviewed and hands the user the command as it
 would be typed:
 
 > `/dror-adr-review` on ADR `<n>`, writing its report to
-> `<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>.md`, then
+> `<repo>/.claude/dror-skills/adr-review-report-<n>-<tag>-r<k+1>.md`, then
 > `/dror-adr-repair` on what it finds in that file.
+
+`<k+1>` and not the cap's own round: the user is being handed the round this
+loop did not take, and pointing them at the last round's file would have them
+repair findings this run already repaired.
 
 Never write **owed** at the cap and stop silently; a reader would take the stop
 for convergence.
@@ -331,7 +359,7 @@ repairs and the part a reader will otherwise lose:
 
 Then say the document is left uncommitted, name every file this run edited — the
 ADR, and any copy an `echo` reached — and name what was written outside it: this
-run's report file, and the logs under `~/.claude/dror-skills/` that every round
+run's report files, one per round, and the logs under `~/.claude/dror-skills/` that every round
 appends to — `refutations.tsv` and `runs.tsv` from each review, `repairs.tsv`
 from each repair.
 Say if one could not be written. Then stop.

@@ -409,11 +409,15 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    already in hand, and already written to the state file at step 3.
 
    This line is not decoration and it is not optional. A round is one
-   `dror-implement-ticket` run, which is minutes of a chain of sub-skills each
-   reporting on itself, and §Present's table does not arrive until the whole ADR
-   is done — so a user watching a drain has, without this line, no way to tell a
-   run on its second ticket from one on its last. **Emit it as your own text, not
-   inside a tool call**, or it is written where only you can read it.
+   `dror-implement-ticket` run — hours, not minutes — and §Present's table does
+   not arrive until the whole ADR is done, so without this line a user watching
+   a drain cannot tell a run on its second ticket from one on its last.
+
+   **Fire the notification, append it to the progress log, and print it too** —
+   in that order, and all three. This run is forked (ADR 0036), so its text
+   returns only at the end: the notification is what reaches a user who is not
+   watching anything, the log is what a `tail -f` shows, and the print is for
+   whoever reads the transcript afterwards. The two sections below hold both.
 2. **Skip it where the ticket itself says to.** The list is a plan made once and
    the tree has moved under it: a ticket already closed by hand mid-run, or one
    whose blocker ended up stalled, is skipped with a line saying which. This is
@@ -604,7 +608,7 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    wins only where the file has nothing to say.
 
    **Then read the clock again and close the round with step 1's counter, two
-   lines:**
+   lines — notified, appended to the progress log and printed, as at step 1:**
 
    ```
    [ADR <N>] <done>/<total> done · <left> left · <stalled> stalled · #<ticket> <verdict>
@@ -639,6 +643,66 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
 Termination: every round takes one ticket off the list and none puts one back,
 and the extra review rounds inside a ticket are capped at two. The list is built
 once and only shrinks.
+
+**The notification.** The one channel a forked run has to a user who is not
+reading a file. `notify-send` is fired once as a ticket is picked, once as its
+round closes, and once where §3a stops the run:
+
+```
+notify-send "ADR <N> · ticket <i>/<total>" "#<ticket> starting"
+notify-send "ADR <N> · <done>/<total> done" "#<ticket> <verdict> · <left> left · ETA ~<estimate>"
+notify-send -u critical "ADR <N> stopped — needs you" "#<ticket>: <the question, in one line>"
+```
+
+Fire the last one **before** §3a's own lines, so the desktop says a drain is
+waiting at the moment it starts waiting rather than after the summary is
+composed.
+
+`<estimate>` obeys §The clock and the ETA, exactly as the printed line does —
+the same mean, and the same `one sample` / `none yet` words where there is no
+mean to take. Never a number invented for the notification.
+
+**Why this and not the printed line.** A forked skill delivers only its final
+message (ADR 0042), so every progress line this run prints is written where
+only this context can read it — the user watching a drain sees nothing between
+the invocation and the summary, whatever the file says about emitting text. A
+`notify-send` is a tool call, and its *effect* lands on the desktop rather than
+in the transcript, which is why the fork does not swallow it.
+
+**Best-effort, never a gate.** `notify-send` is absent on a headless box and
+on macOS, and a run that treated its failure as an error would stop a drain over
+a cosmetic channel. Ignore the exit status, never make a round depend on it, and
+say nothing about it on screen — the progress log below is the record, and this
+is only the tap on the shoulder.
+
+**Three, and not one per step.** A notification per sub-skill would be a
+notification every few minutes for hours, which is how a user learns to dismiss
+them without reading. The ticket boundary is the granularity the user asked for,
+and the stop is the only one that must interrupt — hence `-u critical` on that
+one alone.
+
+**The progress log.** `<worktree>/.claude/dror-skills/drain-<ADR>.log`, plain
+text, one line appended as each is composed: step 1's starting line and step 7's
+two closing lines, verbatim, plus the work list once when §3 builds it and
+§3a's three lines where a stop ends the run. Nothing else — it is a progress
+log and not a second report.
+
+**It exists because this run has no other channel to the user.** A forked skill
+returns its closing summary and nothing before it (ADR 0042), so a drain that
+runs for hours shows nothing at all until it is finished, and a user cannot tell
+it from a hung one. The filesystem is what is visible while a fork is working,
+and the state file is JSON written for a resumed run to parse rather than for a
+person to watch. This is the same lines in the order they happened, so
+`tail -f` answers "where is it now".
+
+**Append, never rewrite** — the opposite of the state file below, and for the
+opposite reason: what a watcher wants is the sequence. It is written under the
+store, so step 5's rule keeps it out of the commit like everything else there,
+and it is disposable in the same way — a line that could not be written is
+never a reason to stop a round.
+
+Name its path in §Present, since that is the first moment this run can tell
+anyone anything.
 
 **The state file.** A compaction mid-drain would lose the loop's state — the
 list, what is left of it, and which numbers were attempted — and "tried and
@@ -697,6 +761,13 @@ the question and this is where it is put. Say what the ticket found, say that
 proceeding over it is available, and stop. An override given here costs a fresh
 run of that ticket rather than a continuation of the stopped one, which is what
 §3's fork section says the arrangement costs and the one place it is paid.
+
+**Fire the critical notification first**, by §The notification's third line,
+before the bookkeeping below and before the three lines are composed. A drain
+stops because it needs an answer, and the minutes spent committing and writing
+the state file are minutes the user could already have been reading the
+question. This is the one notification that is allowed to interrupt, and the
+only moment in a drain where the difference is worth anything.
 
 **Do not carry on to the next `Ready` ticket.** Continuing costs the user the one
 thing the stop is worth: an answer given now applies to a tree with one ticket of
@@ -785,7 +856,8 @@ local or remote: it is what the merge above reads from.
 
 ## Present
 
-The worktree path and the branch, whether the worktree was removed or which of
+The worktree path and the branch, **the progress log's path**, whether the
+worktree was removed or which of
 §4's conditions kept it, then the work list as it was built and one line
 per ticket on it: its
 number, whether it finished, stalled or was **skipped** at step 2 and why, how many criteria are proven of how

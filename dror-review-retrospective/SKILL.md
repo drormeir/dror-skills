@@ -1,6 +1,6 @@
 ---
 name: dror-review-retrospective
-description: Read the review log across runs and say what the lenses are getting wrong - which one produces false positives, which recurring assumption causes them, and what wording to change. Reports and stops.
+description: Read the review logs across runs and say what the lenses are getting wrong and what the rounds are worth - which lens produces false positives, which recurring assumption causes them, what a later round caught that an earlier one had in front of it, and what a round costs. Reports and stops.
 disable-model-invocation: true
 ---
 
@@ -25,9 +25,16 @@ every `dror-review` and every `dror-adr-review` run and never rewritten.
 Tab-separated; the columns are whatever its own header row names — the shelf's
 `REPORT-STORE.md` owns the schema and this skill assumes none of it, so the log
 stays self-describing if the schema grows. The columns
-read here are `date`, `repo`, `lens`, `path`, `verdict`, `claim` and `summary`;
-a header missing one of those makes the questions that need it unanswerable,
-which is said rather than guessed around.
+read here are `date`, `repo`, `lens`, `path`, `verdict`, `claim`, `summary`,
+`round`, `subject` and `run_tag`; a header missing one of those makes the
+questions that need it unanswerable, which is said rather than guessed around.
+
+**`round`, `subject` and `run_tag` arrived late and most rows predate them**
+(ADR 0041).
+A row without them is not a round-1 row and not a ticketless run — it is a row
+written before anyone recorded which round it came from. The two questions below
+that need `round` are answered over the rows that carry it, with the count of
+rows they had to leave out stated beside the answer.
 
 **`summary` is what a finding claimed, never why it died.** Under eighty
 characters there is no room for the refuter's ground, so the question below
@@ -41,7 +48,9 @@ holds the path the run wrote its report to, and its `## Refuted` section gives a
 paragraph per kill — the id joins them. Reports are **overwritten by the next
 run of the same ticket or ADR**, so this reaches the current report for each and
 nothing older: it is a pointer, never a history, and most rows will point at a
-file that has moved on. Read the ones that answer, count them, and say how many
+file that has moved on. A loop's rounds are the exception since ADR 0041 — each
+keeps its own `-r<n>` file, so a run's rounds resolve together or not at all,
+and a whole run's grounds are readable where any of it is. Read the ones that answer, count them, and say how many
 of the refuted findings you could reach that way against how many there are. A
 path that no longer resolves is a miss and never an error, and a row with no
 `report` column at all predates it.
@@ -81,7 +90,9 @@ the lenses **dropped**. It is what supplies the denominator the log cannot: a
 lens that ran and found nothing writes no finding, so without this file a lens
 selected twice and a lens selected thirty times are indistinguishable, and a
 lens with no rows at all could equally be one nobody chose or one that came back
-clean every time. Say which, rather than reading a silence.
+clean every time. Say which, rather than reading a silence. It also carries
+`round` and `elapsed_s`, which is where the cost question below reads what a
+review run is worth in wall-clock.
 
 `~/.claude/dror-skills/repairs.tsv` — one line per finding a repair handled, keyed by
 the report's id, carrying that run's outcome word. **Join on the whole string and
@@ -110,7 +121,7 @@ Read the whole file. It is one line per finding and stays small for years.
 
 ## What to look for
 
-Six questions, in this order. Each is answered from the log, with the counts
+Seven questions, in this order. Each is answered from the log, with the counts
 that support it.
 
 **Which lens is imprecise.** Refuted over total, per lens. A lens is not
@@ -180,23 +191,56 @@ folding it in.
 
 **What a round found that the round before it had in scope.** The one question
 about **recall** these files can carry, and the reason `repairs.tsv` records
-`files_edited`. Order a head's rounds by the id's tag and minute — same tag,
-ascending minute — and for each round after the first, count the findings whose
-`path` the *previous* round's repair never edited. Those are findings the
-previous round's review had in front of it and did not return.
+`files_edited`. Group a run's rows by `run_tag` and order them by `round`; for
+each round after the first, sort its findings into three by `path`:
 
-Report it as a share per round index, never as a rate against anything else, and
-say the count it rests on. It is **one-directional**: it counts misses that a
-later round happened to catch, and can never see a miss nobody caught, so a low
-number is not evidence of good recall. It is also unavailable before
-`files_edited` existed and unreadable across rounds whose ids carry no tag — a
-"round" assembled out of two concurrent runs is not a sequence, and ADR 0024's
-`concurrent` column is what says which runs those were. Where either is missing,
-say the question cannot be answered for those rows rather than approximating the
-repair's reach from the previous round's findings, which overstates it.
-**`unchecked` in that column is missing, not empty** — it is the word a review
-that runs no neighbour check of its own writes (ADR 0027), and reading it as
-"nobody else was here" is the confound the column exists to prevent.
+**Bucket one** — a file the previous round's review already named. The round is
+returning to known ground. **Bucket two** — a file the previous round's *repair*
+edited, from that round's `files_edited`. This is new code, written after the
+previous review looked, and finding a defect there is the round doing exactly
+what another round is for. **Bucket three** — neither. The previous round's
+review had that file in its diff, never named it, and no repair touched it. That
+is a miss the earlier round could have caught.
+
+Report the three as counts per round index, never as a rate against anything
+else, and say what they rest on.
+
+**This is the question that decides what the round-1 floor is.**
+`dror-review-repair` takes round 2 unconditionally where round 1 repaired
+anything, and its grounds are two runs whose round-2 findings landed in files
+round 1 never opened — bucket three. If bucket three dominates across many
+tickets, the floor is compensating for a review that does not cover its diff,
+and the answer is in `dror-review`'s lens fan-out — each lens given the whole
+diff, none accountable for any particular file, and a cap (that file's, under
+"Run the lenses") keeping a wider diff from adding any. If bucket two dominates,
+the floor is convergence exactly as it says, and narrowing anything would spend
+real recall. ADR 0041 exists because neither could be told from the other, so say
+which the counts support and how thin the evidence is — the two runs the floor
+cites are two.
+
+It is **one-directional**: it counts misses that a later round happened to
+catch, and can never see a miss nobody caught, so a small bucket three is not
+evidence of good recall. It needs `round` and `run_tag` on both rounds' rows and
+`files_edited` on the repair's, and it is unreadable where two concurrent runs
+were pooled into one apparent sequence — ADR 0024's `concurrent` column is what
+says which runs those were, and **`unchecked` there is missing, not empty**, the
+word a review that runs no neighbour check of its own writes (ADR 0027). Where
+any of those is absent, say the question cannot be answered for those rows
+rather than approximating the repair's reach from the previous round's findings,
+which overstates it and would fold bucket three into bucket two — the one
+confusion this question exists to prevent.
+
+**What a round costs.** From `runs.tsv`'s `elapsed_s`, the mean seconds a review
+run takes, split by round index and by how many lenses it ran. This is the other
+half of every argument about whether a loop's later rounds are worth taking:
+until this column existed the only thing on record was the round *count*, and
+the one drain that measured both showed the count does not predict duration.
+
+Report it beside the buckets above and never instead of them. A round that is
+cheap and finds bucket-three defects is a round to keep whatever it costs; an
+expensive round that finds only bucket one is the case for a lower cap. Rows
+with `-` took no reading and are excluded from the mean rather than counted as
+zero, and the count excluded is stated.
 
 **Where the code keeps needing claims.** Group the `claim = yes` lines by
 `path`. A file that repeatedly makes reviewers reach the wrong conclusion is a
@@ -215,7 +259,7 @@ because a lens edited on it gets narrower for no reason.
 ## Propose, do not edit
 
 For each finding above, name the concrete change and quote the current wording.
-Three things can be the target, and the question decides which:
+Four things can be the target, and the question decides which:
 
 - A lens raising false positives is a section of that lens's own `LENSES.md` —
   name the sentence or bullet. **Which file that is follows from the lens's
@@ -229,6 +273,15 @@ Three things can be the target, and the question decides which:
 - A file that keeps needing claims is neither: the change belongs in **that
   project's code**, as a comment, and no skill edit will help. This one is a
   code-pool answer only; an ADR review writes no claim comments.
+- **The round questions target neither a lens nor a refuter.** A bucket-three
+  answer is about how `dror-review` distributes its diff across lenses — its
+  "Run the lenses" section and the cap that keeps a wider diff from adding any —
+  and a bucket-two-plus-cost answer is about `dror-review-repair`'s round-1 floor
+  and its cap. Name the file and quote the sentence as for any other target. This
+  is the one proposal here that changes how much gets reviewed rather than how a
+  finding is worded, so it is also the one where **the recall sentence below is
+  not a formality**: a cap lowered on cost alone spends exactly the recall the
+  bucket counts were measuring.
 
 **Name these by their path relative to this skill's own directory** —
 `../dror-review/LENSES.md` — and open them there to quote from. An absolute

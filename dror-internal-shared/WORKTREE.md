@@ -209,7 +209,10 @@ goes on advertising a path that is not there — which is exactly what the re-en
 check above reads. `--force` is ordinarily needed, because the ignored `.venv`
 symlink and `.claude/` count as untracked to that command.
 
-**What dies with the directory is the store beside it** — the drain's state file,
-`facts.md`, the reports. All of it is re-derivable, and the drain's own state
-file says what re-deriving costs. What does *not* die is any committed and pushed
+**What dies with the directory is the store beside it** — the drain's state file
+and its progress log, `facts.md`, the reports. All of it is re-derivable, and
+the drain's own state file says what re-deriving costs. The progress log is the
+one thing there a *reader* may still want: it is only removed on a clean finish,
+where the summary has just said everything the log would have, so nothing is
+lost that was not also printed. What does *not* die is any committed and pushed
 work, which is on the branch.
