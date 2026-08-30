@@ -1,6 +1,9 @@
 ---
 name: dror-adr-repair
 description: Repair an ADR's text from findings already made - every corrected sentence grounded in the code it describes, and no decision rewritten. Use when asked to fix an ADR review's findings, or to bring a named decision document back in line with the tree.
+context: fork
+background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-adr-repair
@@ -70,19 +73,31 @@ Its `## Refuted` section is **not** the list. Those findings were raised and the
 disproved, and repairing one is editing a true sentence to satisfy a mistake.
 The user has to name it explicitly before it counts.
 
-## Learn the project first
+**This run has a context of its own.** The frontmatter forks it (ADR 0036):
+what reaches it is this file, the facts the line below injects, and the
+arguments it was invoked with — never the conversation that invoked it.
+Everything the run needs from that conversation arrives as an argument or not
+at all; a question only the user can answer is returned as the result, and the
+caller puts it; and what goes back to the caller is the closing summary.
 
-Invoke the `dror-internal-project-facts` skill. The **domain vocabulary** is the one that
+## The project facts
+
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
+
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). The **domain vocabulary** is the one that
 matters most here — a repaired sentence is written in the project's own words,
-and a repair that introduces a synonym for a term the glossary already fixes has
-made the document worse while making it true. The declared scope matters too: a
-sentence describing a retired directory is repaired to say it is retired, not
-updated to track it.
-
-That skill is a **step of this one**, not a hand-off —
-`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
-that means; read it whole before invoking. The moment the facts are
-in hand, **spawn step 1's grounding agents, one per item, in the same turn** —
+and a repair that introduces a synonym for a term the glossary already fixes
+has made the document worse while making it true. The declared scope matters
+too: a sentence describing a retired directory is repaired to say it is
+retired, not updated to track it. A block that begins `MISS:` means
+the store could not answer: invoke the `dror-internal-project-facts` skill — it
+gathers in a subagent, rewrites the store and returns the five facts — and hold
+what it returns as the facts from then on. That skill is a **step of this
+one**, not a hand-off; `../dror-internal-shared/DELEGATION.md` owns what that
+means, at authoring time. Either way, the moment the facts are in hand,
+**spawn step 1's grounding agents, one per item, in the same turn** —
 step 1 is read-only and runs fanned out, so the first call after the facts is
 the fan-out itself.
 
@@ -127,7 +142,8 @@ as a question for the user.
 
 This step is read-only, so it parallelizes cleanly: spawn one subagent per item,
 all at once. Each is told: the finding with its quoted sentence and kind, the
-project facts, the ADR's path, and that it **writes nothing** — not the ADR, not
+path of the store's `facts.md`, the ADR's path — paths, never their contents
+(ADR 0038) — and that it **writes nothing** — not the ADR, not
 source, not a scratch note in the tree. It returns the corrected fact with its
 evidence, or `ungrounded` with what could not be settled, or `not reproduced`
 with the passage of code that agrees with the document.

@@ -26,6 +26,11 @@ Rules — each exists because its violation already produced a defect here:
 - A shared rule lives once, on the shelf (`dror-internal-shared/`), under a
   header saying what the file owns and what it deliberately does not; a calling
   skill points and never restates.
+- A skill the user runs to work the chain carries `context: fork` and
+  `background: false`, opens with the facts injection line, and takes
+  everything it needs as arguments — nothing from the conversation reaches it
+  (ADR 0036, ADR 0037). An agent it spawns is given paths, never pasted text
+  (ADR 0038).
 
 There is no build here; grep is the test suite. After renaming anything, grep
 the repo for the old name.

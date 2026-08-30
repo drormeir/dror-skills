@@ -1,18 +1,38 @@
 ---
 name: dror-repair
-description: Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. Use when asked to fix review findings, bugs this conversation named, or missing tests it named.
+description: Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. Use when asked to fix the findings in a review report, or in a findings file the user names.
+context: fork
+background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-repair
 
-Fix every bug this conversation has already named, and pin each one with a test.
-Runs start to finish without stopping.
+Fix every bug already named, and pin each one with a test. Runs start to finish
+without stopping.
 
 **Every bug found is on the list.** The default is the whole report, or
-everything the conversation named. The user subtracts from it — "skip 4",
+everything the findings file names. The user subtracts from it — "skip 4",
 "leave the latent hazards" — and may add a bug of their own; naming a few is not
 a way of choosing only those. Work that list and only that list; discovering
 further bugs is someone else's run.
+
+## The list arrives as the argument
+
+**This run has a context of its own.** The frontmatter forks it (ADR 0036):
+what reaches it is this file, the facts the line below injects, and the
+arguments it was invoked with — never the conversation that invoked it.
+Everything the run needs from that conversation arrives as an argument or not
+at all; a question only the user can answer is returned as the result, and the
+caller puts it; and what goes back to the caller is the closing summary.
+
+So the argument is one of three things: the path of a review report in the
+store; the path of a **findings file** — one entry per finding, each with a
+`file:line` and a failure scenario, written by whoever named the bugs before
+invoking this skill, in whatever words they used; or nothing, in which case the
+store's own rules name the report. Subtractions and additions — "skip 4", one
+more bug of the caller's own — travel in the same argument, after the path. A
+bug named in a conversation and never written down does not reach this run.
 
 **A gap in cover is on that list too**, and it is the one item that is not a
 bug: the code is sound and nothing is fixed, so what it needs is the test alone.
@@ -76,17 +96,22 @@ criterion is caught while it is being written rather than at review.
 with `dror-prove`, which holds the criterion-to-test mapping. Say which boxes
 moved.
 
-## Learn the project first
+## The project facts
 
-Invoke the `dror-internal-project-facts` skill. The verification commands, the test layout
-and the declared scope are the ones that matter here: write the new tests the way this project
-writes tests, and verify with the commands it actually uses.
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
 
-That skill is a **step of this one**, not a hand-off —
-`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
-that means; read it whole before invoking. The moment the facts are
-in hand, **open the list's first item at its `file:line`, in the same turn** —
-the report's first finding, or the conversation's — which is step 1's first look
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). The verification commands, the test layout and
+the declared scope are the ones that matter here: write the new tests the way
+this project writes tests, and verify with the commands it actually uses. A block that begins `MISS:` means
+the store could not answer: invoke the `dror-internal-project-facts` skill — it
+gathers in a subagent, rewrites the store and returns the five facts — and hold
+what it returns as the facts from then on. That skill is a **step of this
+one**, not a hand-off; `../dror-internal-shared/DELEGATION.md` owns what that
+means, at authoring time. Either way, the moment the facts are in hand,
+ **open the list's first item at its `file:line`, in the same turn** —
+the report's first finding, or the findings file's — which is step 1's first look
 at whether a test can catch it, and what grouping the list for step 1's fan-out
 needs from every item.
 
@@ -131,9 +156,11 @@ rather than by item is what keeps two agents from writing the same file at once,
 which no lock and no retry recovers from.
 
 Each agent is told: the finding with its `file:line` and failure scenario, the
-project facts already in hand (test layout, the command that runs one test), the
-file it owns, and `dror-internal-shared/WRITING-TESTS.md` verbatim. It **writes tests
-only**. A subagent
+path of the store's `facts.md` (its test layout, its command that runs one
+test), the file it owns, and the path of `dror-internal-shared/WRITING-TESTS.md`
+to read whole — paths, never contents, since text written into a prompt is paid
+for once per agent and then held here for the rest of the run (ADR 0038). It
+**writes tests only**. A subagent
 that edits production code has performed step 2 unobserved, out of order and
 without the call-site check, so the fix step below would be repairing a tree it
 no longer recognises; a cover item's mutation is made in that agent's **own**

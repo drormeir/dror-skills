@@ -1,6 +1,9 @@
 ---
 name: dror-adr-review
 description: Review one ADR document against itself, its tickets and the code it governs - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names an ADR and asks whether it is still true, still coherent, or still obeyed - most often as a preliminary pass, sharpening the decision before its tickets are implemented.
+context: fork
+background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-adr-review
@@ -46,17 +49,29 @@ that rule for every skill taking an ADR by number.
 
 Everything else about the project arrives through the facts below.
 
-## Learn the project first
+**This run has a context of its own.** The frontmatter forks it (ADR 0036):
+what reaches it is this file, the facts the line below injects, and the
+arguments it was invoked with — never the conversation that invoked it.
+Everything the run needs from that conversation arrives as an argument or not
+at all; a question only the user can answer is returned as the result, and the
+caller puts it; and what goes back to the caller is the closing summary.
 
-Invoke the `dror-internal-project-facts` skill and carry what it returns into every agent
-prompt: the domain vocabulary is what the `neighbours` lens reads drift
+## The project facts
+
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
+
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). Every agent below is given the store's path
+to them: the domain vocabulary is what the `neighbours` lens reads drift
 against, and the declared scope marks which findings are noise — an ADR
-describing a retired directory is describing something nobody will fix.
-
-That skill is a **step of this one**, not a hand-off —
-`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
-that means; read it whole before invoking. The moment the facts are
-in hand, **resolve the ADR number to its file, in the same turn**, by the next
+describing a retired directory is describing something nobody will fix. A block that begins `MISS:` means
+the store could not answer: invoke the `dror-internal-project-facts` skill — it
+gathers in a subagent, rewrites the store and returns the five facts — and hold
+what it returns as the facts from then on. That skill is a **step of this
+one**, not a hand-off; `../dror-internal-shared/DELEGATION.md` owns what that
+means, at authoring time. Either way, the moment the facts are in hand,
+**resolve the ADR number to its file, in the same turn**, by the next
 section's rule.
 
 ## Read the ADR
@@ -64,9 +79,12 @@ section's rule.
 Resolve the number given, or open the path given, by `ADR-FILE.md`'s rule. No
 match ends the run: say so and stop, and do not guess which decision was meant.
 
-**Read it whole, here, before anything is spawned.** It is one document of a few
-hundred lines, every lens needs all of it, and reading it once in this context
-costs less than each agent reading it for itself. Then find, in this order:
+**Read it whole, here, before anything is spawned.** Choosing the lenses is
+this skill's job and it cannot be done unread. Every agent needs all of it too,
+and each reads it for itself from the path it is given: text this run writes
+into a prompt is output tokens, paid once per agent and then held in this
+context for the whole run, while a path costs one read in an agent that is gone
+when it returns (ADR 0038). Then find, in this order:
 
 - **Its date and its commit.** `git log -1 --format='%h %ad' -- <path>` — when
   the document last moved. A claim in an ADR nobody has touched in a year is not
@@ -81,8 +99,9 @@ costs less than each agent reading it for itself. Then find, in this order:
   needs them.
 - **Its tickets.** The spec issue naming this ADR and its children, bodies and
   all, found the way `dror-show-tickets` step 2 finds them. One `gh` call here,
-  once, and the bodies are handed to the `tickets` lens — a lens that shelled out
-  for them itself would pay for the same listing again. A repo with no reachable
+  once, its output redirected into a scratch file whose path the `tickets` lens
+  is given — a lens that shelled out for them itself would pay for the same
+  listing again, and bodies written into its prompt would be paid for here. A repo with no reachable
   tracker, or an ADR with no ticket set, drops the lens and says so in the
   report; an **inferred** set is passed with that word attached, so the lens
   weighs it accordingly.
@@ -95,8 +114,10 @@ six findings that all say the same thing.
 
 [`LENSES.md`](LENSES.md) is a **pool**, not a running order. Choose the ones
 this ADR raises and run each as one agent, all launched in parallel, each given
-the ADR's path and its full text, the project facts, the paths the ADR names,
-and `LENSES.md`'s preamble plus its own lens section, verbatim.
+the ADR's path, the path of the store's `facts.md`, the paths the ADR names,
+and the path of `LENSES.md` with the name of its lens — it reads that file
+itself, and is told that the preamble and the section headed with its name bind
+it while the other sections are other agents'. Paths, never contents.
 
 Choosing is this skill's job, not the user's. Skip a lens whose concerns the
 document never raises — an ADR that states no rule anything could break needs no
@@ -150,8 +171,8 @@ looked.
 
 Hand each merged finding to one independent agent, all launched in parallel —
 one refuter per finding, however many survived the merge, with **no cap**. Each
-is given: its finding; the project facts; the ADR's full text; and
-[`REFUTING.md`](REFUTING.md) verbatim.
+is given: its finding; the path of the store's `facts.md`; the ADR's path; and
+the path of [`REFUTING.md`](REFUTING.md), to read whole. Paths, never contents.
 
 Every suspect is checked. Cutting the list here would put unchecked suspicions
 in the report, and a reader cannot tell an unchecked finding from a confirmed

@@ -1,6 +1,9 @@
 ---
 name: dror-implement-ticket
 description: Take one ticket from unwritten to closed - implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. Use when the user names a ticket number and asks to implement it end to end.
+context: fork
+background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-implement-ticket
@@ -14,10 +17,18 @@ out rounds, judge one, or count them: `dror-review-repair` owns that, and this
 skill gives it a ticket, a cap and the promise that a prove follows. The
 re-prove runs once, at the end, over every box that is still open.
 
-The ticket number is this skill's one argument. Without it, ask for it — there is
-no default ticket and guessing one is worse than asking. Every step below is
-handed that same number, so the runs judge one contract and not several readings
-of it.
+The ticket number is this skill's one argument. Without it, say so and stop —
+there is no default ticket and guessing one is worse than stopping. Every step
+below is handed that same number, so the runs judge one contract and not several
+readings of it.
+
+**This run has a context of its own.** The frontmatter forks it (ADR 0036):
+what reaches it is this file, the facts the line below injects, and the
+arguments it was invoked with — never the conversation that invoked it. An
+override the user has given arrives as an argument or not at all; a question
+only the user can answer is returned as the result, and the caller puts it;
+and what goes back to the caller is the closing summary. Every skill this one
+invokes is forked the same way, so their working context never lands here.
 
 Steps 0 and 1 and the summary are this skill's own work. The rest are the dror
 chain, each
@@ -29,22 +40,30 @@ and no runner of its own, and takes all three from the facts. It does assume
 working tree — so a repo under another VCS is out, and that is the one
 assumption to state rather than discover.
 
-## Learn the project first
+## The project facts
 
-Invoke the `dror-internal-project-facts` skill. Its test layout, verification commands and
-issue convention are what step 1 needs: build the way this project builds, verify
-with the command it actually uses, and read the ticket the way this project
-tracks tickets. The later steps invoke it themselves and read the same cached
-facts.
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
 
-That skill is a **step of this one**, not a hand-off, and so is every other skill
-this file invokes: `../dror-internal-shared/DELEGATION.md` — the shelf beside this
-skill — owns what a sub-skill's closing contract means to a caller and why every
-delegating step below ends on a named next action. Read it whole before that
-first invocation. Here the action is: the moment the facts are in hand, **run step 0's `git status`
-in the same turn**. Step 0's two git questions need no facts, but its third — the
-baseline suite — needs the verification command, so the facts come first. What step 0 may not do is be skipped, which is what
-naming step 1 here would invite.
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). Its test layout, verification commands and
+issue convention are what step 1 needs: build the way this project builds,
+verify with the command it actually uses, and read the ticket the way this
+project tracks tickets. A block that begins `MISS:` means the store could not
+answer: invoke the `dror-internal-project-facts` skill — it gathers in a
+subagent, rewrites the store and returns the five facts — and hold what it
+returns as the facts from then on. The later steps run the same script at their
+own top and read the same store.
+
+That skill is a **step of this one**, not a hand-off, and so is every other
+skill this file invokes: `../dror-internal-shared/DELEGATION.md` — the shelf
+beside this skill — owns what a sub-skill's closing contract means to a caller
+and why every delegating step below ends on a named next action, at authoring
+time. Here the action is: the moment the facts are in hand, **run step 0's
+`git status` in the same turn**. Step 0's two git questions need no facts, but
+its third — the baseline suite — needs the verification command, so the facts
+come first. What step 0 may not do is be skipped, which is what naming step 1
+here would invite.
 
 **A repo whose issue convention came back unstated stops here**, and says so.
 Every step below is handed a ticket number and three of them fetch the ticket
@@ -59,7 +78,9 @@ Four things stop this skill, all of them at or before step 1 and so all of them
 *before* the chain runs: a repo that tracks no tickets, an unpushed tree, a
 blocker still open, and an
 implementation that could not honestly be finished. Each says what it found
-rather than reporting around it. The middle two are the user's to override; the
+rather than reporting around it. The middle two are the user's to override —
+the run cannot ask, so it returns the question as its result, and the override,
+when given, arrives as an argument on the next invocation; the
 first and the last are not — with no ticket there is no contract, and with a
 half-written implementation there is nothing for the chain to judge.
 
@@ -366,68 +387,28 @@ that costs the ticket its close.
 **deliverable's shape** (DELEGATION.md) as step 2's, and the run's last
 finished-looking artifact before the commit. So this step's named next action:
 **immediately after the prove returns, and in the same turn, run the full suite
-where this step touched the tree; then, where step 3's word was owed on grounds
-a round can move, invoke `dror-review-repair` as step 5 says, and otherwise
-fetch the ticket body for step 6's count.** One of those is this step's last
-move, and a turn that relays the prove's summary and makes none has stopped
-inside a step.
+where this step touched the tree; then, where step 3's word was **owed**, read
+[`SETTLING.md`](SETTLING.md), and otherwise fetch the ticket body for step 6's
+count.** One of those is this step's last move, and a turn that relays the
+prove's summary and makes none has stopped inside a step. Branch on the bare
+word here: whether those grounds are ones a round can move is the first question
+that file asks, and asking it twice is how the two answers come apart.
 
 ## 5. Settle a round still owed
 
-Step 3's loop ends on one word — **owed**, **optional** or **no**. This step acts
-on it, because the two steps after it are the commit and the push, and both are
-irreversible in a way a round is not: work pushed unreviewed is work the next
-ticket is written on top of.
+**optional** or **no** — nothing to settle, and this step is one line. The loop
+judged its own last round and stopped on the merits; optional is the user's call
+to make later, on the branch. Go to step 6.
 
-**Read the grounds before spending on the word.** An **owed** whose ground is *a
-criterion only the user can settle* is not something another round can move: two
-more rounds over an unchanged diff find what the last ones found and hand back
-the same sentence, having spent a lens agent per lens and a refuter per finding
-to do it. Say so and go straight to step 6. The other grounds — the cap, a repair
-that touched production code — are exactly what a further round is for.
+**owed** — [`SETTLING.md`](SETTLING.md), beside this file, owns what happens
+between that word and the commit: whether a further loop runs and what it is
+capped at, what the prove after it must tick, and what the commit and the push
+may do while the word still stands. Read it whole before acting on the word, and
+do not act on it from memory of this section — the cap and the push-hold live
+there, in one copy.
 
-**owed, on grounds a round can move** — settle it now, before the commit, by
-invoking `dror-review-repair` **capped at two rounds**. Not an inline
-review-then-repair: that skill owns the round, judges it, and carries the account
-of why the tree is dirty into every round, its run tag, and the rule that the
-full suite is owed to the last code change.
-
-**An owed-at-cap hand-back is a command, not a description.** Where step 3's loop
-came back with the command that would resume it, run **that** rather than
-composing a fresh invocation: it carries the report path, the tag and the round
-count already reached, and a re-invented prompt starts a loop that thinks it is
-on round one.
-
-Then `dror-prove` for any box those repairs unticked — the loop deliberately
-ticks nothing — and **one box on that list is not proved by a test**: the
-criterion that *is* the project's verification gate is ticked on the full-suite
-run that counted for this round, quoted to it, exactly as step 4 does. A prove
-that touched the tree owes the suite before the commit, by step 3's rule.
-
-Both of those are steps of this run, and each ends on a shape DELEGATION.md
-names — the loop on **a hand-back command** where it is still owed, the prove on
-**a deliverable's shape**. So each has its named next action: **immediately
-after the loop returns, and in the same turn, invoke `dror-prove` for the boxes
-it unticked, or where it unticked none, fetch the ticket body for step 6's
-count; immediately after that prove returns, run the full suite where it touched
-the tree, then fetch the ticket body for step 6's count.** The still-owed case
-below changes what the commit says and whether the push runs, not whether the
-commit is made.
-
-**optional** or **no** — nothing to settle. Optional is the user's call to make
-later, on the branch.
-
-**Still owed after that cap, and the word travels up unchanged.** This step does
-not raise the cap or run a third loop: a ticket still owed after them is not
-converging, and hiding that behind another round buries it. Report the word, its
-grounds and the hand-back command the loop returned — a caller that stops on this
-hands that command to the user, and cannot compose it afterwards. Then commit
-below, and **do not push**: that command is `/dror-review` over the unpushed
-work, with no base of its own, so step 7's push is the one act that would spend
-it — `@{upstream}` would be `HEAD`, and the review it names would read an empty
-diff and call that convergence. The work is real whatever the verdict and the
-commit is what keeps it findable; the push is the user's, after the round the
-command runs, and step 8 leaves the ticket open on that condition.
+It is a separate file because most tickets never reach it, and a ticket run is
+spawned once per ticket by `dror-implement-adr`.
 
 ## 6. Commit the ticket
 

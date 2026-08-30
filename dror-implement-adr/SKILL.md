@@ -2,6 +2,8 @@
 name: dror-implement-adr
 description: Work one ADR's ticket list to exhaustion on a branch of its own - a side worktree off the remote head, one ticket at a time through dror-implement-ticket, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. Use when the user names an ADR number and asks to implement it, drain it, or work its remaining tickets.
 disable-model-invocation: true
+context: fork
+background: false
 ---
 
 # dror-implement-adr
@@ -16,17 +18,29 @@ It owns no implementation. It is `dror-show-tickets` for the map and
 bookkeeping between them — the same relationship `dror-implement-ticket` has to
 `dror-prove` / `dror-review` / `dror-repair`.
 
-The ADR number is this skill's one argument. Without it, ask for it.
+The ADR number is this skill's one argument. Without it, say so and stop.
 
 **Every delegated skill is a step of this one, not a hand-off.**
 `../dror-internal-shared/DELEGATION.md` — the shelf beside this skill — owns what
 a sub-skill's closing contract means to a caller and why every step below ends on
-a named next action. Read it whole before the first invocation. A drain that ends
-on a sub-skill's closing sentence has worked no ticket at all.
+a named next action, at authoring time. A drain that ends on a sub-skill's
+closing sentence has worked no ticket at all.
 
-No tension with §0a: a skill of this chain is a step, while the lens and refuter
-agents `dror-review` spawns beneath itself are real spawns that start where the
-session started. Both are true, at different depths.
+**This run has a context of its own.** The frontmatter forks it (ADR 0036), so
+what reaches it is this file and its argument — the ADR number — never the
+conversation that invoked it, and a question that is the user's (§3a) goes back
+as this run's result for the caller to put.
+
+**A step and a spawn are not alternatives**, which is what §0a's warning and the
+paragraph above are each half of. `dror-show-tickets` at §2 is a step run in this
+context; the ticket run at §3 step 4 is a step run in an agent of its own; the
+lens and refuter agents `dror-review` spawns far beneath both are neither this
+skill's steps nor its business. What makes something a step is that this run is
+not finished when it returns — DELEGATION.md says so for both ways of invoking,
+and names the spawned one as the case where the sub-skill's closing sentences
+come back *inside a result* that the next turn can still mistake for its own.
+What makes something a spawn is where its commands run, which is §0a's subject
+and the reason that section is written as hard as it is.
 
 **One ticket at a time, never two.** Each is written on top of the last one's
 commit, and §0's layout exists so that one ticket's diff is one ticket's review.
@@ -35,6 +49,22 @@ commit, and §0's layout exists so that one ticket's diff is one ticket's review
 against one repository. Each session therefore gets a checkout of its own, so
 one run's tree is never another run's review scope, and the user's own checkout
 stays free for the work they are doing by hand.
+
+**A long ADR is drained across sessions, and that is free.** §3's fork keeps
+each ticket's working context out of this one, so a drain lives far longer than
+it used to — but not without bound: the work list, the round lines and §2's
+table stay here for the whole run. Stopping after a few rounds and re-invoking
+this skill costs nothing that matters. §Present prints, the state file carries
+the attempted set and the durations the ETA is built from, and `RESUME.md`
+rebuilds the list against a tracker that has meanwhile moved — which a fresh run
+does better than a long one, since the tracker really has moved.
+
+**The moment is the user's, and this skill does not pick it.** It cannot read how
+much context it has left, so a rule telling it to stop when the window is tight
+would be a judgement made exactly as judgement is going — the shape
+DELEGATION.md already rejects. Nothing here stops on a count of rounds either;
+what is written down is only that stopping is cheap, so that a user watching a
+long drain knows they may.
 
 ## 0. Prepare the branch and the worktree
 
@@ -76,7 +106,8 @@ prompt's commands run in, named in its first sentence:
 > read and write files under that path only.
 
 **This is the whole isolation, and prose is the only thing holding it.** A
-changed working directory is **not inherited by a spawned agent**: it starts in
+changed working directory is **not inherited by a spawned agent**, and a skill
+forked by its frontmatter is a spawned agent in exactly this sense: it starts in
 the session's primary working directory — the user's checkout — whatever `cd`
 ran here. `dror-review` spawns a lens agent per lens and a refuter under each,
 so a step merely *expected* to be in the worktree runs its `git status` and
@@ -96,18 +127,30 @@ the commands this skill runs itself, never the ones inside a subagent, and a run
 that leans on it instead of on the prompt has guarded the one place that was
 never at risk.
 
+**So the agent is made to answer the question the backstop cannot ask.** §3 step
+4 runs a whole ticket inside a spawned agent, which is exactly the blind spot the
+paragraph above names, and the whole of that ticket's work is on the far side of
+it. The prompt therefore requires `git rev-parse --show-toplevel` as the **first
+line of what that agent returns**, and this skill reads that line before it reads
+anything else. It is not proof — an agent that ran the check in the right place
+and its work in the wrong one would still pass — but it converts a silent default
+into a claim on the record, made by the only party that could see, and a wrong
+answer is caught at the first ticket rather than at the merge.
+
 ## 1. The project facts warm themselves
 
 **Do not invoke `dror-internal-project-facts` on its own.**
-`dror-implement-ticket` invokes it as its own first step, every ticket, and
-every ticket after the first reads the cached `facts.md` — so a separate call
-here buys nothing the first ticket does not buy anyway. (`dror-show-tickets`
-does not use it: it is convention-bound and names its own commands.)
+`dror-implement-ticket`'s file opens with the store's stamp script (ADR 0037),
+every ticket, and invokes the gather only on a miss — so a separate call here
+buys nothing the first ticket does not buy anyway. (`dror-show-tickets` does not
+use it: it is convention-bound and names its own commands.)
 
-What matters is not *that* it runs but **where**: the cache lives in the store of
-whatever checkout the gather ran in, so a gather in the user's tree leaves the
-worktree paying for its own every round. §0a's sentence on every delegated
-prompt is what puts it in the right place.
+Where it runs is fixed rather than chosen: the script runs in the session
+shell's working directory — the user's checkout, since nothing in this skill
+`cd`s — so the store it reads is that checkout's, and a miss gathers into it.
+The worktree is cut from the same rule files, so the facts are the same; what
+could differ is a rule file this ADR's own branch changes, and that is what a
+gather after the merge is for.
 
 ## 2. Map the ADR
 
@@ -277,6 +320,70 @@ The estimate assumes every remaining ticket is worked. Some will be skipped,
 so the ETA is an upper bound rather than a guess — worth saying once, in the
 summary, not on every line.
 
+### The ticket runs in its own context
+
+Step 4 invokes `dror-implement-ticket` once per ticket, and that skill's own
+frontmatter forks it (ADR 0036): the run happens in an agent of its own and
+only its closing summary lands here. Nothing in this file spawns it — the
+arrangement ADR 0035 chose is now the sub-skill's to provide, and what this
+step writes is the invocation's argument. Steps 5, 6 and 7
+stay here, in this context, because they are git and tracker questions this skill
+asks for itself and the answers are what §Present is built from.
+
+**Why.** A ticket run is the whole chain — an implementation, two proves, a
+review-repair loop of up to three rounds and sometimes a settling loop after it —
+and every source file it reads, every suite it runs and every instruction file it
+loads would otherwise land here and stay, ticket after ticket, until a drain of
+any length runs out of window in the middle of the list it exists to work. The
+drain does not need any of that. It needs a handful of facts per ticket, all of
+which fit in a returned summary. `dror-review-repair` makes the same arrangement
+for its own two steps and gives the same reason; this is that reason one layer up,
+where the multiplier is the ticket count. What it costs, and the three cheaper
+things that were tried against it first, are ADR 0035.
+
+**What the agent returns**, and nothing else — this is what steps 5 to 7 read and
+what §Present relays:
+
+- **The toplevel it ran in**, from `git rev-parse --show-toplevel`, as the first
+  line. §0a says why it is first.
+- **The commit** — short sha and subject — and whether it was pushed, or the
+  reason it was held.
+- **The criteria**: how many are proven of how many, and the number of every box
+  still open with the verdict that left it open.
+- **The loop's word** — **owed**, **optional** or **no** — with its grounds in a
+  sentence, and where it ends **owed at the cap**, the hand-back command
+  verbatim. Step 6 acts on this word and cannot re-derive it.
+- **The report tag**, where its step 5 ran a settling loop.
+- **Whether the ticket was closed**, and where it was not, which of that skill's
+  three conditions did not hold.
+- **Where it stopped early**: which of the four stops below, what it wrote to the
+  tree before stopping, and the question it would have asked.
+
+A summary that comes back as narrative instead of those facts has to be asked
+again, which is the one way this arrangement costs more than it saves. A ticket
+run that ends on a bare "done" leaves this skill nothing to carry into §Present,
+and DELEGATION.md names that a defect in the sub-skill — true, and no help
+mid-drain, which is why the prompt lists the facts rather than trusting them.
+
+**What the agent is given** is small on purpose: §0a's sentence, the ticket
+number, and the baseline. Not the work list, not the ADR's table, not the
+summaries of the tickets already worked. A ticket run judges one ticket's
+contract, and knowing what the drain did before it changes nothing it is allowed
+to do — while a tree written against another ticket's account of itself is the
+thing §0's layout exists to prevent.
+
+**The two overridable stops become this skill's to put.** A spawned agent cannot
+ask the user anything, so where `dror-implement-ticket` would have stopped on a
+dirty tree or an open blocker and offered the override itself, it returns the
+question instead and the drain takes it to §3a. What that costs is real and small:
+an override answered at §3a resumes through a fresh run of the ticket rather than
+continuing where that run stood. Inside a drain it is nearly free, because those
+two stops are the two a drain does not produce — the tree is clean by
+construction after each round's commit and push, and §3's topological sort works
+every blocker before anything that waits on it. A direct
+`dror-implement-ticket` run is untouched and still asks for itself, which is
+what that skill's own file says and what DELEGATION.md forbids editing it for.
+
 ### Then, each round
 
 1. Take the next ticket off the list. Empty: the loop is done — go to §4.
@@ -319,33 +426,40 @@ summary, not on every line.
    entry's `outcome` set to `picked`**, before the work starts, not after. Step 7
    rewrites that one word when the round ends; until it does, the entry says a
    ticket was taken and never finished, which is exactly what it means.
-4. Invoke `dror-implement-ticket` with that number, its prompt opening with
-   §0a's sentence. "In the worktree" is not a place this skill can put it — that
-   run's own step 0 asks `git status` and `git merge-base` in whatever directory
-   its agent starts in, and the answer decides what the whole chain reviews.
-   Then the baseline, in one line: the green full-suite run over this tip — §0's
-   for the first ticket, the previous ticket's counted run for every later one —
-   as command, summary line and sha, so that run's step 0 takes it instead of
+4. **Invoke the ticket**, by the section above: `dror-implement-ticket` with
+   that number, its argument opening with §0a's sentence and asking for the
+   facts that section lists; the fork is the skill's own.
+   "In the worktree" is not a place this skill can put it, and for a forked
+   agent that sentence is the only thing that puts it there at all: the agent
+   starts in the session's primary working directory whatever this skill did,
+   and that run's own step 0 then asks `git status` and `git merge-base`
+   wherever it is standing, which decides what the whole chain reviews. Then the
+   baseline, in one line: the green full-suite run over this tip — §0's for the
+   first ticket, the previous ticket's counted run for every later one — as
+   command, summary line and sha, so that run's step 0 takes it instead of
    paying for the suite again. Where §0 carried an out-of-scope failure, its
    name goes on the same line.
 
-   That run ends on a summary of its own. **It is one ticket's summary, not the
-   drain's** — a deliverable's shape (DELEGATION.md), and one ticket of many. So
-   this step's named next action: record the summary, then **immediately, in the
+   **Read the returned toplevel first, before the rest of the summary.** Anything
+   but the worktree and this round is over: nothing here is committed, closed or
+   counted — the work is wherever that agent left it and this skill did not watch
+   it land — and the drain goes to §3a naming the path that came back. A summary
+   that arrives without that line is the same stop; asking again is cheaper than
+   any of the seven facts below being about the wrong tree.
+
+   What comes back is a summary. **It is one ticket's summary, not the drain's**
+   — a deliverable's shape (DELEGATION.md), arriving as an agent's *result*,
+   which is the shape that reads most like a finished turn. So this step's named
+   next action: record the summary against the round, then **immediately, in the
    same turn, run step 5's `git log --oneline <the previous tip>..HEAD`.**
 
    Four things stop that run — a repo tracking no tickets, a dirty or unpushed
-   tree, an open blocker, an implementation it could not honestly finish — and
-   two of them, the tree and the blocker, are the **user's to override**. It is a
-   step of this run, so it puts those to the user itself, and that is the right
-   place for them: an override answered there continues that ticket where it
-   stood, while the same answer given to the drain would have thrown the ticket's
-   half-done work away. **So let it ask, and answer nothing on the user's
-   behalf** — the loop wanting the drain to keep moving is precisely the interest
-   that must not decide an override.
-
-   Where it ends stopped — the user declined the override, or it was one of the
-   two nobody can override — the drain stops with it: see §3a.
+   tree, an open blocker, an implementation it could not honestly finish. The
+   agent puts none of them to the user, because it cannot; it returns the
+   question and the drain stops on it at §3a, which is where the user is. **Answer
+   none of them on the ticket's behalf** — the loop wanting the drain to keep
+   moving is precisely the interest that must not decide an override — and carry
+   the question up in the words it came back in.
 5. **Check the ticket's commit and its push.** Both are
    `dror-implement-ticket`'s own steps 6 and 7 — one commit naming the ticket,
    staged by path, its message answering to the boxes as they stood, pushed to
@@ -413,9 +527,9 @@ summary, not on every line.
    `dror-review`'s scope — the unpushed work — is empty; a round invoked here
    would review nothing and report that as convergence. On **owed** the commit
    is unpushed and the diff is there to read, and the drain declines by rule:
-   the ticket run has already spent its cap and step 5's two rounds on it, and a
-   ticket not converging after that gets the user, not a sixth round under the
-   drain's name. So the words mean:
+   the ticket run has already spent its loop's cap and its settling cap on top of
+   it, and a ticket not converging after all of those gets the user, not one more
+   round under the drain's name. So the words mean:
 
    - **optional** or **no** — the ticket is settled. Optional is the user's
      call to make later, on the branch, which is what the branch outliving the
@@ -553,7 +667,8 @@ error, and the cost of losing it is re-attempting a stalled ticket once.
 A round that **stopped** rather than finished ends the drain, and the user is
 asked — and so does a red baseline at §0, before any round exists.
 `dror-implement-ticket` refusing on an open blocker, refusing on a tree it
-found dirty or red, ending on a criterion it could not honestly implement, a ticket
+found dirty or red, ending on a criterion it could not honestly implement, a
+returned toplevel that is not the worktree, a ticket
 still **owed** at its cap or owed on a criterion only the user can settle, a
 `Needs your call` row that is all the ADR has left,
 a `dror-show-tickets` row whose status this skill cannot read at all — each of
@@ -561,6 +676,14 @@ those is a call about *what should be built*, and this loop's judgement is only
 about *what to build next*. **Unreadable is the test in that last one**, not
 unpickable: a status the table minted and this skill simply does not act on is
 step 2's business and never a stop.
+
+**Two of them are the user's to override, and offering the override is this
+skill's** — the dirty tree and the open blocker. `dror-implement-ticket` offers
+them itself when a user runs it directly; step 4's agent cannot, so it returns
+the question and this is where it is put. Say what the ticket found, say that
+proceeding over it is available, and stop. An override given here costs a fresh
+run of that ticket rather than a continuation of the stopped one, which is what
+§3's fork section says the arrangement costs and the one place it is paid.
 
 **Do not carry on to the next `Ready` ticket.** Continuing costs the user the one
 thing the stop is worth: an answer given now applies to a tree with one ticket of
@@ -573,12 +696,16 @@ read, and which the user pushes after running it — write the state file, then 
 the choice is. Then stop, and wait. Resuming is a fresh run of this skill; the
 state file makes it cheap.
 
-"Whatever this run wrote" is the whole of it, and on one of the stop causes that
-is **nothing**: a ticket refused because the tree was already dirty wrote no
+"Whatever this run wrote" is the whole of it, and on two of the stop causes that
+is **nothing**. A ticket refused because the tree was already dirty wrote no
 line, and committing what it found would put another ticket's work under this
 one's number — which is the refusal happening anyway, one step later and under a
 commit message that lies about it. Report the dirt, name it as pre-existing, and
-commit none of it.
+commit none of it. A **toplevel that came back wrong** is the same answer for a
+harder reason: this skill does not know what that agent wrote or where, so there
+is nothing here it can honestly commit and no tree it can honestly claim to have
+read. Name the path that came back, name the worktree it should have been, say
+the ticket's work is wherever that agent left it, and commit nothing.
 
 The one thing that is **not** a stop is a ticket the graph itself excludes: a
 ticket awaiting a stalled one is skipped at step 2 with a line saying so, which

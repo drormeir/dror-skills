@@ -96,7 +96,7 @@ flowchart TD
 
     subgraph build ["STAGE 2 · build it — one ticket at a time"]
         ST[dror-show-tickets] --> IA[dror-implement-adr]
-        IA -->|one ticket at a time| IT[dror-implement-ticket]
+        IA -->|"one ticket at a time,<br/>each in an agent of its own"| IT[dror-implement-ticket]
         ST -->|one ticket by hand| IT
 
         IT --> IMPL["implement<br/>the ticket's code"]
@@ -121,7 +121,7 @@ flowchart TD
     RETRO -.->|proposes wording changes| RV
 
     PF[dror-internal-project-facts]
-    PF -.->|first step of every one| IT
+    PF -.->|stamp script at the top of every one| IT
     PF -.-> PV
     PF -.-> RV
     PF -.-> RP
@@ -154,7 +154,7 @@ and by then the tickets are wrong too.
 | `dror-implement-ticket` | One ticket, start to closed, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closed — implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
 | `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. Reports the survivors and changes no behaviour. | a review report, its per-criterion verdicts inside |
-| `dror-repair` | Findings already exist — from a review, from this conversation, from a colleague — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
+| `dror-repair` | Findings already exist — in a review report, or in a findings file you wrote from what a colleague or a conversation named — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
 | `dror-review-repair` | Same as `dror-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — `dror-review`, then `dror-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
 ## Above the chain
@@ -183,8 +183,22 @@ the definitions in the glossary.
 | `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
-`project-facts` is the first step of every skill in the chain; `shared` is a
-shelf of documents those skills read as they work.
+`project-facts` opens every skill in the chain — its stamp script runs before
+the skill's text is read and injects the cached facts, and the skill itself runs
+only on a miss; `shared` is a shelf of documents those skills read as they work.
+
+## What a run costs, and how to keep it down
+
+Every skill in the chain runs in a context of its own: its frontmatter forks it,
+so the conversation you invoke it from never reaches it and its working context
+never reaches you — only its closing summary does. Two habits keep the bill
+lower still. Invoke a chain skill right after `/clear`, since the session that
+receives the summary pays for whatever it already holds on every turn until
+then. And for a run nobody is watching — a drain, an overnight loop — start it
+from a terminal instead: `claude -p "/dror-implement-adr 12" --permission-mode
+acceptEdits`, which is the same run in a session that holds nothing else, and
+returns any question the run stops on as its output for you to answer in the
+next invocation. The reasons are ADR 0036.
 
 ## Style and tools
 

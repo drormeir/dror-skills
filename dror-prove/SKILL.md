@@ -1,6 +1,9 @@
 ---
 name: dror-prove
 description: Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. Use when the user names a ticket number and asks for tests for it, or asks which criteria are covered.
+context: fork
+background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-prove
@@ -10,8 +13,15 @@ run with **one final verdict** — what its test does against the real code once
 the run is over — and the report says which, for every criterion, with the
 failure that earned it.
 
-The ticket number is this skill's one argument. Without it, ask for it — there is
-no default ticket and guessing one is worse than asking.
+The ticket number is this skill's one argument. Without it, say so and stop —
+there is no default ticket and guessing one is worse than stopping.
+
+**This run has a context of its own.** The frontmatter forks it (ADR 0036):
+what reaches it is this file, the facts the line below injects, and the
+arguments it was invoked with — never the conversation that invoked it.
+Everything the run needs from that conversation arrives as an argument or not
+at all; a question only the user can answer is returned as the result, and the
+caller puts it; and what goes back to the caller is the closing summary.
 
 This skill is **repo-agnostic**: it names no tracker, no path and no runner of
 its own. Everything about the project in hand arrives through the facts below.
@@ -24,17 +34,22 @@ unproven vocabulary, the three rules every test obeys, where a test goes, how a
 test is proved to bite when the code already works, and how expensive setup is
 shared. Read it whole before writing anything. It is not restated here.
 
-## Learn the project first
+## The project facts
 
-Invoke the `dror-internal-project-facts` skill. Its test layout, verification commands and
-issue convention are what matter here: write the tests the way this project
-writes tests, run them with the command it actually uses, and read the ticket the
-way this project tracks tickets.
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
 
-That skill is a **step of this one**, not a hand-off —
-`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
-that means; read it whole before invoking. The moment the facts are
-in hand, **fetch the ticket, in the same turn**, the way step 1 says.
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). Its test layout, verification commands and issue
+convention are what matter here: write the tests the way this project writes
+tests, run them with the command it actually uses, and read the ticket the way
+this project tracks tickets. A block that begins `MISS:` means
+the store could not answer: invoke the `dror-internal-project-facts` skill — it
+gathers in a subagent, rewrites the store and returns the five facts — and hold
+what it returns as the facts from then on. That skill is a **step of this
+one**, not a hand-off; `../dror-internal-shared/DELEGATION.md` owns what that
+means, at authoring time. Either way, the moment the facts are in hand,
+**fetch the ticket, in the same turn**, the way step 1 says.
 
 ## Step 1 — read the ticket
 

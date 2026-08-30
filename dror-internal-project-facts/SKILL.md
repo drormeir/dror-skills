@@ -1,12 +1,18 @@
 ---
 name: dror-internal-project-facts
 description: Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. Use when another dror skill needs the project facts, or the user asks what rules this repo declares.
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/facts.sh)
 ---
 
 # dror-internal-project-facts
 
 Return five facts about the repo in hand, and leave them in the store for the
-next run. Gathering happens only when the store cannot answer.
+next run. Gathering happens only when the store cannot answer — and whether it
+can is decided by [`facts.sh`](facts.sh), beside this file, not by a model:
+every chain skill opens with the line
+`` !`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh` ``, which
+runs the stamp check before that skill's text is read and injects the facts on
+a hit, so this skill is invoked only on a `MISS` (ADR 0037).
 
 This skill is usually a **step inside another one** — its instructions are
 loaded into the run that asked for them, not run apart from it. So "return the
@@ -34,16 +40,19 @@ re-gather for nothing.
 
 ## Step 1 — Ask the store
 
-Read `<repo>/.claude/dror-skills/facts.md`. Take one `cksum` over the files its stamp
-names, plus any file on the **check list** the stamp omits. The check list is
-exactly: `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, `README*`, `CONTRIBUTING*`,
-`*.md` under `docs/` in a directory or file whose name contains `adr`,
-`*.md` under `docs/` in a directory or file whose name contains `agent`, and the
-repo-root build and runner files the verification commands come from —
-`package.json`, `Makefile`, `pyproject.toml`, `Cargo.toml`, `go.mod`,
-`pytest.ini`, `tox.ini` — closed
-on purpose, so the hit/miss decision comes out the same on every run; step 2's
-gather stays open to whatever else the repo uses.
+This step is [`facts.sh`](facts.sh). Run it — `bash
+${CLAUDE_SKILL_DIR}/facts.sh` — unless its output is already above you, injected
+by the skill that invoked this one. It reads `<repo>/.claude/dror-skills/facts.md`,
+takes one `cksum` over the files its stamp names, and looks for any file on the
+**check list** the stamp omits. The check list is exactly: `CLAUDE.md`,
+`AGENTS.md`, `CONTEXT.md`, `README*`, `CONTRIBUTING*`, `*.md` under `docs/` in a
+directory or file whose name contains `adr`, `*.md` under `docs/` in a directory
+or file whose name contains `agent`, and the repo-root build and runner files
+the verification commands come from — `package.json`, `Makefile`,
+`pyproject.toml`, `Cargo.toml`, `go.mod`, `pytest.ini`, `tox.ini` — closed on
+purpose, so the hit/miss decision comes out the same on every run; step 2's
+gather stays open to whatever else the repo uses. The script is where that list
+is enforced; this paragraph describes it.
 
 The build files are on the list for the case the stamp cannot cover. A stamped
 file that *changes* is a miss already; a file that **appears** is not, and the
@@ -54,13 +63,15 @@ in the chain runs that command; a stale one fails in a way that reads as the
 project being broken.
 
 **Stamp matches** — every stamped file present with the same size and checksum,
-and no check-list file has appeared since — then the facts stand. Take them as they
-are and go straight on to whatever asked for them; steps 2 and 3 are skipped.
-This is the common path: no rule file is opened, and nothing is written.
+and no check-list file has appeared since — then the script prints the facts and
+they stand. Take them as they are and go straight on to whatever asked for them;
+steps 2 and 3 are skipped. This is the common path: no rule file is opened, no
+model turn is spent comparing, and nothing is written.
 
 **Anything else** — a file changed, gone, or new; a `facts.md` that is absent,
-truncated or hand-edited — is a **miss**. Go to step 2. A miss is never an
-error; nothing here raises whatever it is handed.
+truncated or hand-edited — and the script prints one line beginning `MISS:` and
+the reason. Go to step 2. A miss is never an error; the script always exits 0,
+because a non-zero exit would abort the invoking skill.
 
 ## Step 2 — Gather
 
@@ -98,9 +109,10 @@ step 1 opens no rule file.
 
 ## What earns a line
 
-These facts are pasted into every agent prompt of every run that asks for them,
-so a `facts.md` that restates the conventions doc paragraph by paragraph is that
-document's whole token cost paid again per agent. The whole file stays under
+These facts are injected into every chain skill's text and read, by path, by
+every agent those runs spawn (ADR 0038), so a `facts.md` that restates the
+conventions doc paragraph by paragraph is that document's whole token cost paid
+again per run and per agent. The whole file stays under
 about **12 KB** — bytes, not lines, because bytes are what a prompt pays for and
 a line here can run to three hundred characters.
 

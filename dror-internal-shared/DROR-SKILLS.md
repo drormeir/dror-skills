@@ -55,15 +55,30 @@ ADR 0020. The glossary defines the six; `dror-adr-review` mints them.
 A typical ticket: implement → `dror-prove` → the review-repair loop →
 `dror-prove` on whatever is still unticked → commit, push, close — which is what
 `dror-implement-ticket <N>` runs in one go.
-`dror-show-tickets` is the map you read before and after. Matt's `/implement`
+`dror-show-tickets` is the map you read before and after.
+
+**Where the context boundaries are.** Every skill in the chain and above it —
+the ticket, the drain, the two loops, prove, review, repair and the three ADR
+skills — carries `context: fork` in its frontmatter (ADR 0036), so each runs in
+an agent of its own whether the user invoked it or another skill did: what
+reaches it is its own file, the facts its first line injects, and its
+arguments, never the conversation that invoked it, and what comes back is its
+closing summary. Beneath those, `dror-review` and `dror-adr-review` spawn a lens
+agent per lens with a refuter under each, and `dror-repair` and
+`dror-adr-repair` fan out per item; every such agent is given paths and never
+pasted text (ADR 0038). Each file owns its own arrangement and lists what its
+agent must return, and a step is a step either way — see `DELEGATION.md`.
+
+Matt's `/implement`
 does the same shape with his own `/tdd` and `/code-review` in place of the two
 middle steps — one or the other, never both, or one ticket gets two test sets.
 
 ## The three beside the chain
 
 - **`dror-internal-project-facts`** sits under all of them — it caches what the repo
-  declares in `<repo>/.claude/dror-skills/facts.md`, and every skill in the chain
-  invokes it as its first step. See ADR 0010 and ADR 0013.
+  declares in `<repo>/.claude/dror-skills/facts.md`, and every chain skill's file
+  opens with its stamp script, which injects the cached facts on a hit; the
+  skill itself is invoked only on a miss. See ADR 0010, ADR 0013 and ADR 0037.
 - **`dror-review-retrospective`** reads the refutation log across runs and says which
   lens is producing false positives and what wording to change. It proposes and
   stops.

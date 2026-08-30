@@ -23,8 +23,9 @@ that sharpening a rule sharpens every run that obeys it.
   one.
 - [`DELEGATION.md`](DELEGATION.md) — what a sub-skill's closing contract means to
   its caller, and the shape a delegating step must have: it ends on a named next
-  action, and the sub-skill's own stop is never edited to suit it. Read whole by
-  every skill that invokes another as a step.
+  action, and the sub-skill's own stop is never edited to suit it. Read whole at
+  authoring time by whoever writes a step that invokes another skill; never at
+  run time.
 - [`ADR-FILE.md`](ADR-FILE.md) — how an ADR number becomes the one file a run
   reads: the directories it searches and how a project declares another, the
   padding and prefix it tolerates, the path escape hatch, and the stop on a

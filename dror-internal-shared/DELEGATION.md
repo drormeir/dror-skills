@@ -3,10 +3,12 @@
 The shared rule for one `dror-*` skill invoking another. It owns **what a
 sub-skill's closing contract means to its caller**, and **the shape a delegating
 step must have** so that meaning survives the invocation. One copy, owned by the
-shelf and belonging to none of the callers. Read it whole in two situations: at
-run time, before a run's first invocation of another skill, and at authoring
-time, before writing or editing a step that invokes one. Do not restate it in the
-calling skill.
+shelf and belonging to none of the callers. Read it whole at **authoring
+time**, before writing or editing a step that invokes one — and never at run
+time. A running skill already holds the fix this file prescribes, the named
+action written into its step; reading the reasons behind it mid-run is a reading
+rule, which is the shape this file says does not hold, and it cost every
+context five kilobytes (ADR 0039). Do not restate it in the calling skill.
 
 What is **not** here is *which* action any particular step ends on. That is the
 caller's, and it is the whole point: the action has to be a real one, named in
@@ -42,8 +44,10 @@ and three things make a given step likelier to be where it happens:
 A step showing any of the three is named as such where it appears, by those
 words, so the caller knows the place is a trap before it is standing in it.
 
-**Both ways of invoking are covered, and one is worse.** Where the sub-skill runs
-**in the caller's own context** — a `Skill` invocation — its contract is the
+**Both ways of invoking are covered, and one is worse.** Since ADR 0036 every
+chain skill is forked by its own frontmatter, so the second way below is the
+ordinary one and the first survives only in skills that fork nothing. Where the
+sub-skill runs **in the caller's own context** — a `Skill` invocation — its contract is the
 nearest instruction in force and the failure is at its strongest. Where the step
 is **spawned as a subagent** and returns a result, the contract landed in the
 subagent's context instead, but its closing sentences come back inside the result

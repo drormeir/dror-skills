@@ -1,6 +1,8 @@
 ---
 name: dror-adr-review-repair
 description: Loop ADR review and repair over one decision document until it converges - dror-adr-review, then dror-adr-repair on what survived, round after round while a round is still owed. Use when the user names an ADR and asks to check and fix it in one run, or to keep going until nothing is left.
+context: fork
+background: false
 ---
 
 # dror-adr-review-repair
@@ -19,6 +21,12 @@ a conventional decision directory, resolved by
 `../dror-internal-shared/ADR-FILE.md`, which owns
 that rule — including the path escape hatch and what a repo keeping its
 decisions elsewhere is told.
+
+**This run has a context of its own, and so does each of its steps.** The
+frontmatter forks this file (ADR 0036), so what reaches it is this file and its
+arguments — the ADR, the focus — never the conversation that invoked it.
+`dror-adr-review` and `dror-adr-repair` are forked the same way, which is what
+"Each step runs in its own context" below rests on.
 
 ## What this run is given
 
@@ -91,8 +99,11 @@ from a stuck one.
 
 ### Each step runs in its own context
 
-Steps 1 and 3 are each **spawned as one subagent**, told to invoke the skill
-named and to work in that agent's own context — not run in this one. A review
+Steps 1 and 3 each run in an agent of their own, and nothing here arranges
+it: `dror-adr-review` and `dror-adr-repair` carry `context: fork` in their
+frontmatter (ADR 0036), so invoking either as a skill runs it apart from this
+context and lands only its closing summary here. The prompt each step writes
+below is that invocation's argument — the one thing that reaches the fork. A review
 that reads a document, the code it decides about and a fan-out of refuters, three
 times over, reads far more than one context should hold, and a loop that runs out
 of window mid-round loses the judgement it exists to make.
@@ -169,8 +180,8 @@ one:
 It finds and stops, which is what keeps the repair a separate step: the report is
 written before a sentence is changed. **That stop is the review's, not this
 run's** — `../dror-internal-shared/DELEGATION.md`, the shelf beside this skill,
-owns what that means and why this step ends the way it does; read it whole before
-invoking. A written report is **a deliverable's shape**, and the review's closing
+owns what that means and why this step ends the way it does, at authoring time.
+A written report is **a deliverable's shape**, and the review's closing
 stop is **a prohibition against guidance** — the two shapes a run ends on by
 mistake, in DELEGATION.md's words. So this step's named next action:
 **immediately after the review returns, and in the same turn, list

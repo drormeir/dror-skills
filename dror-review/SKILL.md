@@ -1,6 +1,9 @@
 ---
 name: dror-review
 description: Correctness review of the unpushed work - commits not yet on the remote plus the working tree - every finding refuted before it reaches you. Reports the survivors and changes no behaviour. Use when the user asks what is wrong with the work before pushing it, or wants findings without the fixing.
+context: fork
+background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-review
@@ -9,23 +12,33 @@ This skill **finds**. It produces a bug report and STOPS, changing no behaviour:
 the only source it writes is a comment where a refutation proved one was
 missing.
 
+**This run has a context of its own.** The frontmatter forks it (ADR 0036):
+what reaches it is this file, the facts the line below injects, and the
+arguments it was invoked with — never the conversation that invoked it. A
+ticket number, a scope, a focus paragraph or a report name arrives as an
+argument or not at all, and what goes back to the caller is the closing summary.
+
 It is **repo-agnostic**: it names no tracker and no path of its own, and
 everything about the project in hand arrives through the facts below. It does
 assume **git** — "unpushed" is a git question and the whole scope is found with
 git commands — which is the one thing it cannot take from the facts.
 
-## Learn the project first
+## The project facts
 
-Invoke the `dror-internal-project-facts` skill and carry what it returns into every agent
-prompt below: the `domain` lens reviews against its vocabulary and invariants,
-and its declared scope marks which findings are noise.
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
 
-That skill is a **step of this one**, not a hand-off —
-`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
-that means; read it whole before invoking. The moment the facts are
-in hand, **fetch the ticket where a number was passed, and otherwise list
-`<repo>/.claude/dror-skills/` for the concurrency check, in the same turn** — the
-sections below, in their order, from there.
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). The `domain` lens reviews against its
+vocabulary and invariants, and its declared scope marks which findings are
+noise. A block that begins `MISS:` means the store could not answer: invoke the
+`dror-internal-project-facts` skill — it gathers in a subagent, rewrites the
+store and returns the five facts — and hold what it returns as the facts from
+then on. That skill is a **step of this one**, not a hand-off;
+`../dror-internal-shared/DELEGATION.md` owns what that means, at authoring time.
+Either way, the moment the facts are in hand, **fetch the ticket where a number
+was passed, and otherwise list `<repo>/.claude/dror-skills/` for the concurrency
+check, in the same turn** — the sections below, in their order, from there.
 
 ## The ticket, when there is one
 
@@ -33,7 +46,7 @@ A ticket number may be passed to this run. If one is, read it the way the
 **issue convention** fact says this repo tracks work, and number its acceptance
 criteria 1..N, the same numbering `dror-prove` and `dror-repair` use. A repo whose
 convention came back unstated reviews without the ticket and says so. Carry that list into
-every lens prompt beside the project facts: it is what the diff was written to
+every lens prompt beside the facts path: it is what the diff was written to
 satisfy, and a lens that knows it stops reporting a deliberate choice as a
 defect.
 
@@ -148,8 +161,17 @@ worse than reviewing nothing.
 
 **Run the lenses.** [`LENSES.md`](LENSES.md) is a **pool**, not a running order.
 Choose from it the ones this diff raises and run each as one agent, all launched
-in parallel, each given the scratch path, the changed-paths list, the project
-facts above, and `LENSES.md`'s preamble plus its own lens section, verbatim.
+in parallel, each given the scratch path, the changed-paths list, the path of
+the store's `facts.md`, and the path of `LENSES.md` with the name of its lens —
+it reads that file itself, and is told that the preamble and the section headed
+with its name bind it while the other sections are other agents'.
+
+**Point, never paste** (ADR 0038). Text this run writes into a prompt is output
+tokens, and then sits in this context for the rest of the run, once per agent;
+a path costs one read in an agent that is gone when it returns. So every agent
+below is given paths — the facts, the lens file, the refuting file, its slice of
+the diff — and never their contents. What is written into a prompt is only what
+exists nowhere else: the finding, the criteria list, the lens's name.
 
 Choosing is this skill's job, not the user's. Skip a lens whose concerns the
 diff never raises — no cache, lifecycle or persisted data in the diff, no
@@ -180,17 +202,30 @@ finding, whatever found it.
 
 **Refute.** Hand each merged finding to one independent agent, all launched in
 parallel — one refuter per finding, however many survived the merge, with **no
-cap**. Each is given: its finding; the project facts; the diff hunks touching
-its finding's files, sliced from the scratch file by you — not the whole diff,
-since a refuter judges one `file:line` against the live tree and the full diff
-read once per refuter is the run's dominant token cost; the changed-paths list,
-so it still knows the run's scope; and the scratch path, named as a fallback to
-read only when its one finding genuinely needs the wider diff — that is the
-refuter's budget to spend, on one finding. It is also given
-[`REFUTING.md`](REFUTING.md)'s general sections verbatim — the
-default-to-refuted opening, the claim section and the return section; a `cover`
-finding (the `tests` lens's kind) additionally gets that file's missing-test
-section, which no other kind needs.
+cap**. Each is given: its finding; the path of the store's `facts.md`; the path
+of a **slice file** holding the diff hunks touching its finding's files — not
+the whole diff, since a refuter judges one `file:line` against the live tree
+and the full diff read once per refuter is the run's dominant token cost; the
+changed-paths list, so it still knows the run's scope; and the scratch path,
+named as a fallback to read only when its one finding genuinely needs the wider
+diff — that is the refuter's budget to spend, on one finding. It is also given
+the path of [`REFUTING.md`](REFUTING.md), told that its general sections — the
+default-to-refuted opening, the claim section and the return section — bind it,
+and that the missing-test section binds only a `cover` finding (the `tests`
+lens's kind); no other kind reads it.
+
+**The slice is cut by a command, not by you.** For each finding, once per file
+it names, append that file's hunks from the scratch capture to the finding's
+slice:
+
+```
+awk -v f='<path as it appears after b/>' \
+  '/^diff --git /{keep = ($0 ~ (" b/" f "$"))} keep' <scratch path> \
+  >> <scratch dir>/slice-<finding number>.diff
+```
+
+The capture is the one the lenses read, so the slice is the same diff they
+saw; and the hunks never pass through this context, which is the point.
 
 Every suspect is checked: cutting the list here would put unchecked suspicions
 in the report, which is the one thing this step exists to prevent, and a reader
