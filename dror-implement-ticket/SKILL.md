@@ -37,10 +37,13 @@ with the command it actually uses, and read the ticket the way this project
 tracks tickets. The later steps invoke it themselves and read the same cached
 facts.
 
-That skill is a **step of this one**, not a hand-off: the moment the facts are in
-hand, continue at **step 0** in the same turn. Step 0's two git questions need
-no facts, but its third — the baseline suite — needs the verification command,
-so the facts come first. What step 0 may not do is be skipped, which is what
+That skill is a **step of this one**, not a hand-off, and so is every other skill
+this file invokes: `../dror-internal-shared/DELEGATION.md` — the shelf beside this
+skill — owns what a sub-skill's closing contract means to a caller and why every
+delegating step below ends on a named next action. Read it whole before that
+first invocation. Here the action is: the moment the facts are in hand, **run step 0's `git status`
+in the same turn**. Step 0's two git questions need no facts, but its third — the
+baseline suite — needs the verification command, so the facts come first. What step 0 may not do is be skipped, which is what
 naming step 1 here would invite.
 
 **A repo whose issue convention came back unstated stops here**, and says so.
@@ -200,6 +203,12 @@ one still stops, and rightly, because guessing produces a green box against a
 test proving something else. It should rarely fire, since step 1 already ends
 the run on an ambiguous criterion.
 
+**Its closing summary is a step's output, not this run's reply.** A ticket list
+with fresh ticks is **a deliverable's shape** (DELEGATION.md), so this step's
+named next action: **immediately after that summary, and in the same turn, invoke
+`dror-review-repair` as step 3 says.** The boxes are proven, the ticket is
+not finished, and nothing but step 3 will find what the implementation got wrong.
+
 ## 3. Loop review and repair
 
 Invoke the `dror-review-repair` skill. It runs `dror-review` and `dror-repair` as
@@ -265,6 +274,16 @@ the three happened, and name the run that counted.
 writes tests, and production code for an `unmet criterion` no repair carried —
 so a step 4 that touched the tree owes the suite again, after it and before the
 summary. Never a chain that ends with code no full suite has seen.
+
+**The loop's summary is a step's result, not this run's reply**, and this is the
+hardest of the three to hold: where the loop ends **owed** it hands back a
+`/dror-review` command, **a hand-back command** in DELEGATION.md's words. It is
+not one here; the command travels into this run's summary unchanged and the
+ticket has still to be proven, committed, pushed and closed. So this step's named
+next action: **immediately after the loop returns, and in the same turn, run the
+full suite where the rule above owes one, and otherwise fetch the ticket's boxes
+for step 4.** One of those two calls is this step's last move, and a turn that
+relays the loop's summary and makes neither has stopped inside a step.
 
 ## 4. Prove what is still unticked
 
@@ -343,6 +362,16 @@ failed in step 2 is the ticket's problem, not a review's, and another pass over
 the code will not tick it. Say which box, why, and leave it — step 8 is where
 that costs the ticket its close.
 
+**This prove's summary is a step's output, not this run's reply** — the same
+**deliverable's shape** (DELEGATION.md) as step 2's, and the run's last
+finished-looking artifact before the commit. So this step's named next action:
+**immediately after the prove returns, and in the same turn, run the full suite
+where this step touched the tree; then, where step 3's word was owed on grounds
+a round can move, invoke `dror-review-repair` as step 5 says, and otherwise
+fetch the ticket body for step 6's count.** One of those is this step's last
+move, and a turn that relays the prove's summary and makes none has stopped
+inside a step.
+
 ## 5. Settle a round still owed
 
 Step 3's loop ends on one word — **owed**, **optional** or **no**. This step acts
@@ -374,6 +403,16 @@ ticks nothing — and **one box on that list is not proved by a test**: the
 criterion that *is* the project's verification gate is ticked on the full-suite
 run that counted for this round, quoted to it, exactly as step 4 does. A prove
 that touched the tree owes the suite before the commit, by step 3's rule.
+
+Both of those are steps of this run, and each ends on a shape DELEGATION.md
+names — the loop on **a hand-back command** where it is still owed, the prove on
+**a deliverable's shape**. So each has its named next action: **immediately
+after the loop returns, and in the same turn, invoke `dror-prove` for the boxes
+it unticked, or where it unticked none, fetch the ticket body for step 6's
+count; immediately after that prove returns, run the full suite where it touched
+the tree, then fetch the ticket body for step 6's count.** The still-owed case
+below changes what the commit says and whether the push runs, not whether the
+commit is made.
 
 **optional** or **no** — nothing to settle. Optional is the user's call to make
 later, on the branch.

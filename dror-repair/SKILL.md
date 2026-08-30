@@ -82,8 +82,13 @@ Invoke the `dror-internal-project-facts` skill. The verification commands, the t
 and the declared scope are the ones that matter here: write the new tests the way this project
 writes tests, and verify with the commands it actually uses.
 
-That skill is a **step of this one**, not a hand-off: the moment the facts are
-in hand, continue at **Step 1 — Red** in the same turn.
+That skill is a **step of this one**, not a hand-off —
+`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
+that means; read it whole before invoking. The moment the facts are
+in hand, **open the list's first item at its `file:line`, in the same turn** —
+the report's first finding, or the conversation's — which is step 1's first look
+at whether a test can catch it, and what grouping the list for step 1's fan-out
+needs from every item.
 
 ## Step 1 — Red
 

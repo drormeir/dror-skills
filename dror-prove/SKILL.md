@@ -31,8 +31,10 @@ issue convention are what matter here: write the tests the way this project
 writes tests, run them with the command it actually uses, and read the ticket the
 way this project tracks tickets.
 
-That skill is a **step of this one**, not a hand-off: the moment the facts are
-in hand, continue at **Step 1** in the same turn.
+That skill is a **step of this one**, not a hand-off —
+`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
+that means; read it whole before invoking. The moment the facts are
+in hand, **fetch the ticket, in the same turn**, the way step 1 says.
 
 ## Step 1 — read the ticket
 
@@ -262,29 +264,3 @@ Where this run found such a criterion, name it at the end of what this run
 reports and ask the user to settle it — this is the one outcome the skill
 cannot carry any further on its own. Where it found none, this section produces
 nothing and there is nothing to ask.
-
-## This skill's end is not the turn's end
-
-The lines above are the end of **this skill**, and that is all they are. Nothing
-here ends a turn.
-
-Where `dror-prove` was invoked as a step of another skill — `dror-implement-ticket`
-runs it twice, once after the implementation and once over whatever is still
-unticked when the loop returns, and `dror-implement-adr` runs it per ticket, and
-the rule is the same for any caller that has a step after this one — the
-caller's step list says what comes next, and the next step runs **in the same
-turn**, immediately, with the next tool call. The caller said so thousands of
-tokens before this file was injected; this file is the newer text in front of
-you and it does not overrule it. So: report, then continue at the caller's next
-step without handing back.
-
-Two things, and only these two, genuinely stop a chain run here: a criterion
-that reads two ways with the split unshown (Step 3), and a repo whose issue
-convention came back unstated (Step 1). Both are questions for the user with no
-answer this skill can compute. A finished criteria table is not one of them —
-it is the largest, most conclusive-looking artifact this chain produces, which
-is exactly why it gets mistaken for a conclusion. It is a step boundary, and a
-step boundary gets a tool call.
-
-Only a run the user invoked **directly** — `dror-prove` and nothing around it —
-ends its turn on that report.

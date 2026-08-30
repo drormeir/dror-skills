@@ -1,6 +1,6 @@
 ---
 name: dror-internal-shared
-description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the ADR worktree's rules, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run.
+description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the ADR worktree's rules, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run.
 disable-model-invocation: true
 ---
 
@@ -21,6 +21,10 @@ that sharpening a rule sharpens every run that obeys it.
   what is symlinked in, the preflight that proves the environment, and how a
   later run adopts what it finds. Read whole by the drains that create or resume
   one.
+- [`DELEGATION.md`](DELEGATION.md) — what a sub-skill's closing contract means to
+  its caller, and the shape a delegating step must have: it ends on a named next
+  action, and the sub-skill's own stop is never edited to suit it. Read whole by
+  every skill that invokes another as a step.
 - [`ADR-FILE.md`](ADR-FILE.md) — how an ADR number becomes the one file a run
   reads: the directories it searches and how a project declares another, the
   padding and prefix it tolerates, the path escape hatch, and the stop on a

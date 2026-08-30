@@ -79,8 +79,12 @@ made the document worse while making it true. The declared scope matters too: a
 sentence describing a retired directory is repaired to say it is retired, not
 updated to track it.
 
-That skill is a **step of this one**, not a hand-off: the moment the facts are
-in hand, continue at **Step 1 — Ground** in the same turn.
+That skill is a **step of this one**, not a hand-off —
+`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
+that means; read it whole before invoking. The moment the facts are
+in hand, **spawn step 1's grounding agents, one per item, in the same turn** —
+step 1 is read-only and runs fanned out, so the first call after the facts is
+the fan-out itself.
 
 ## The evidence a document repair stands on
 

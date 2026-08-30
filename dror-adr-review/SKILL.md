@@ -53,8 +53,11 @@ prompt: the domain vocabulary is what the `neighbours` lens reads drift
 against, and the declared scope marks which findings are noise — an ADR
 describing a retired directory is describing something nobody will fix.
 
-That skill is a **step of this one**, not a hand-off: the moment the facts are
-in hand, continue at **Read the ADR** in the same turn.
+That skill is a **step of this one**, not a hand-off —
+`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
+that means; read it whole before invoking. The moment the facts are
+in hand, **resolve the ADR number to its file, in the same turn**, by the next
+section's rule.
 
 ## Read the ADR
 

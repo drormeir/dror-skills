@@ -167,7 +167,25 @@ one:
 > whole.
 
 It finds and stops, which is what keeps the repair a separate step: the report is
-written before a sentence is changed.
+written before a sentence is changed. **That stop is the review's, not this
+run's** — `../dror-internal-shared/DELEGATION.md`, the shelf beside this skill,
+owns what that means and why this step ends the way it does; read it whole before
+invoking. A written report is **a deliverable's shape**, and the review's closing
+stop is **a prohibition against guidance** — the two shapes a run ends on by
+mistake, in DELEGATION.md's words. So this step's named next action:
+**immediately after the review returns, and in the same turn, list
+`<repo>/.claude/dror-skills/` and confirm the file it named is there** — or,
+where it named none, **say the review wrote no report and print §Present's
+summary**. That is not an error: `dror-adr-review` writes none for a stub ADR —
+a title and no decision — and ends on that one sentence, which step 0's `git`
+questions cannot see coming. That call is this step's last move, and it is the
+"path step 1 confirmed it wrote" that step 3 passes on.
+
+**Confirm the path; do not read the report.** Step 2 judges from the review's own
+returned verdict and survivor list, and the loop's context holds only what the
+rule above allows it. The report is written for `dror-adr-repair` to read. Nor is
+this listing the concurrency check — that one reads other runs' front matter and
+runs once, before round 1; this one confirms one path and runs every round.
 
 ### 2. Exit if nothing needs repairing
 
@@ -207,6 +225,13 @@ than work around.
 it wrote was **grounded** in the tree, and its step 3 reads the document whole
 afterwards. Take its `ungrounded` items as they come — they are questions for the
 user, not work for another round.
+
+**The repair's summary is a step's result, not this run's reply**, and a rewritten
+document is a deliverable's shape (DELEGATION.md). So this step's named next
+action, and it has two branches, both concrete: judge the round at step 4 and then
+**either invoke `dror-adr-review` again for the next round, in the same turn, or
+print §Present's summary**. One of those two is how the turn ends; a turn that
+relays the repair and does neither has stopped mid-round.
 
 ### 4. Judge the round
 

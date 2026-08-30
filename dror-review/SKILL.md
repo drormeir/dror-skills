@@ -20,8 +20,12 @@ Invoke the `dror-internal-project-facts` skill and carry what it returns into ev
 prompt below: the `domain` lens reviews against its vocabulary and invariants,
 and its declared scope marks which findings are noise.
 
-That skill is a **step of this one**, not a hand-off: the moment the facts are
-in hand, continue at **Review** below in the same turn.
+That skill is a **step of this one**, not a hand-off —
+`../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
+that means; read it whole before invoking. The moment the facts are
+in hand, **fetch the ticket where a number was passed, and otherwise list
+`<repo>/.claude/dror-skills/` for the concurrency check, in the same turn** — the
+sections below, in their order, from there.
 
 ## The ticket, when there is one
 

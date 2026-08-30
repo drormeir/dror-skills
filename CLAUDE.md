@@ -18,6 +18,11 @@ Rules — each exists because its violation already produced a defect here:
 - A closed vocabulary is defined inside the text that is pasted into the prompt
   of the agent that mints its values (a lens preamble, a refuter brief). The
   orchestrating file points at it and never restates it.
+- A step that invokes another skill ends on a named next action — a command, a
+  file to read, the next invocation — never on a rule about how to read the
+  sub-skill's closing contract. The sub-skill's own stop stays untouched, so a
+  direct run still ends there. The shape is
+  [`DELEGATION.md`](dror-internal-shared/DELEGATION.md); the reasons are ADR 0034.
 - A shared rule lives once, on the shelf (`dror-internal-shared/`), under a
   header saying what the file owns and what it deliberately does not; a calling
   skill points and never restates.

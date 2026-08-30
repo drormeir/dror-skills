@@ -18,13 +18,11 @@ bookkeeping between them — the same relationship `dror-implement-ticket` has t
 
 The ADR number is this skill's one argument. Without it, ask for it.
 
-**Every delegated skill is a step of this one, not a hand-off.** Each ends on a
-reply contract of its own — `dror-show-tickets` "nothing else", `dror-review`
-"STOPS", `dror-implement-ticket` its summary. Those govern **that step's output,
-not this run's**: read every such "stop" as "this step is finished", and return
-in the same turn to the numbered step that invoked it. A drain that ends on a
-sub-skill's closing sentence has worked no ticket at all, and that is the
-ordinary way this skill fails, not a rare one.
+**Every delegated skill is a step of this one, not a hand-off.**
+`../dror-internal-shared/DELEGATION.md` — the shelf beside this skill — owns what
+a sub-skill's closing contract means to a caller and why every step below ends on
+a named next action. Read it whole before the first invocation. A drain that ends
+on a sub-skill's closing sentence has worked no ticket at all.
 
 No tension with §0a: a skill of this chain is a step, while the lens and refuter
 agents `dror-review` spawns beneath itself are real spawns that start where the
@@ -123,9 +121,15 @@ are `Ready`, which are blocked and behind what, which can close.
 leaning on a later one to correct it — §3 builds its whole work list from it and
 never asks again.
 
-Its table is a step's output and not this run's reply: show it, and continue at
-§3 in the same turn. Its "nothing else — no plan, no next steps" is that skill
-refusing to invent work of its own, and the loop below is not invented work.
+Its table is a step's output and not this run's reply. Its "nothing else — no
+plan, no next steps" is that skill refusing to invent work of its own, and the
+loop below is not invented work.
+
+**The table is where this skill most often ends by mistake** — **a deliverable's
+shape** followed by **a prohibition against guidance**, in DELEGATION.md's words. So this step's named next action:
+**immediately after printing the table, and in the same turn, run `date +%s` for
+§3's start-of-run reading.** That call is the step's last move, and a turn that
+shows the table and makes no such call has stopped here.
 
 That skill's vocabulary is convention-bound — it knows this project's tracker —
 and this skill inherits that binding by using its words. Nothing else here names
@@ -231,12 +235,12 @@ re-enters. Its outcome is an amended list and one line saying what it found.
 
 You have no clock of your own, so the drain reads one: `date +%s`, epoch
 seconds, arithmetic without a date library. Three moments and no others —
-**once** here before the first round, then once at each round's step 1 and once
-at its step 7. Every duration below is a subtraction between two of them, so a
-round costs two `date` calls and the run costs one more.
+**once** at §2's end, where that section sends you, then once at each round's
+step 1 and once at its step 7. Every duration below is a subtraction between two
+of them, so a round costs two `date` calls and the run costs one more.
 
-The first round's step 1 reading is the run's start, near enough: drop the
-`elapsed` field from that one line rather than printing `elapsed 0m`.
+§2's reading is the run's start, and round 1's step 1 lands seconds after it:
+drop the `elapsed` field from that one line rather than printing `elapsed 0m`.
 
 Write all three into the state file — the run's start, and per round its start,
 its end and the ticket's number — because a mid-drain compaction loses them
@@ -326,7 +330,9 @@ summary, not on every line.
    name goes on the same line.
 
    That run ends on a summary of its own. **It is one ticket's summary, not the
-   drain's**: read it, record it, and continue at step 5 in the same turn.
+   drain's** — a deliverable's shape (DELEGATION.md), and one ticket of many. So
+   this step's named next action: record the summary, then **immediately, in the
+   same turn, run step 5's `git log --oneline <the previous tip>..HEAD`.**
 
    Four things stop that run — a repo tracking no tickets, a dirty or unpushed
    tree, an open blocker, an implementation it could not honestly finish — and
