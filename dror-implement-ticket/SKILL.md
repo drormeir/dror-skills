@@ -128,8 +128,11 @@ step 3 will name it again and the two must agree.
 
 - **The project's full suite**, in its quiet form, over the tree as found — the
   **baseline**. A caller may hand this step a green run instead: the command,
-  its summary line and the sha it ran over. Take it only where `HEAD` is that
-  sha and the tree is clean; otherwise run the suite here. Name which.
+  its summary line and the commit whose tree it ran over. Take it only where
+  `HEAD` is that commit and the tree is clean; otherwise run the suite here.
+  Name which. A run made over a working tree that was then committed whole is
+  a run over that commit's tree — the sha to check is the commit's, which is
+  how §Present names this run's own, and not the `HEAD` of the moment it ran.
 
 A non-empty status, or a count that is anything but `0`, and the run **stops
 before step 1**, naming what it found. The two commands say "nothing"
@@ -522,7 +525,12 @@ into its own report and posts nothing. The three logs under
 `~/.claude/dror-skills/` carry a line per round for a later retrospective. Then
 the commit: its short sha, its subject, and the branch it was pushed to — or, on
 the default branch, a repo with no remote, or a round still owed, that it is
-unpushed and why. Then
+unpushed and why. Then **the counted run**, on one line the next ticket's step 0
+can take as its baseline: its command, its summary line, green or red, and
+**that commit's sha** — the run was made over the tree the commit holds, since
+every edit after it owed a suite before step 6 by step 3's rule, and a caller
+handed the `HEAD` it ran under instead pays for the suite again over a tree it
+has already seen (ADR 0040). Then
 whether the ticket was **closed**, and where it was not, which of step 8's three
 conditions did not hold. Say it rather than leave it to be discovered.
 

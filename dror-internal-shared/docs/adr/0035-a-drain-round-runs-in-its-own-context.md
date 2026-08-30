@@ -1,5 +1,7 @@
 # A drain round runs in its own context
 
+> **Seven facts are eight since ADR 0040**, which added the counted run.
+>
 > **Mechanism superseded by ADR 0036.** The boundary this ADR argues for is
 > now provided by `dror-implement-ticket`'s own `context: fork` frontmatter, and
 > the drain no longer spawns anything; every reason below still stands.

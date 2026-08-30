@@ -93,7 +93,11 @@ ticket's prompt. Green, record the command, its summary line and the sha, and
 hand them to the first ticket's prompt as its baseline; each later ticket's
 baseline is the previous ticket's counted full-suite run over the tip it
 starts from, handed the same way, so no ticket pays for a suite the chain has
-already seen.
+already seen. That run comes back in the ticket's summary named against **its
+commit's sha**, not the `HEAD` it ran under: it was made before the commit,
+over the tree the commit then held, and step 0 of the next ticket checks the
+sha against `HEAD` — handed the pre-commit sha it runs the suite again over a
+tree the chain has already seen, once per ticket (ADR 0040).
 
 ## 0a. Carry the path into every delegated prompt
 
@@ -354,6 +358,9 @@ what §Present relays:
   sentence, and where it ends **owed at the cap**, the hand-back command
   verbatim. Step 6 acts on this word and cannot re-derive it.
 - **The report tag**, where its step 5 ran a settling loop.
+- **The counted run** — the full-suite run its close read as the gate: its
+  command, its summary line, green or red, and the commit's sha it is named
+  against. Green, it is the next ticket's baseline; step 4 hands it on.
 - **Whether the ticket was closed**, and where it was not, which of that skill's
   three conditions did not hold.
 - **Where it stopped early**: which of the four stops below, what it wrote to the
@@ -436,8 +443,13 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    wherever it is standing, which decides what the whole chain reviews. Then the
    baseline, in one line: the green full-suite run over this tip — §0's for the
    first ticket, the previous ticket's counted run for every later one — as
-   command, summary line and sha, so that run's step 0 takes it instead of
-   paying for the suite again. Where §0 carried an out-of-scope failure, its
+   command, summary line and **the tip's sha**, so that run's step 0 takes it
+   instead of paying for the suite again. The previous ticket's summary already
+   names its counted run against its commit; pass that line as it came. A red
+   counted run, or a stopped ticket whose recovery in step 5 ran the suite,
+   hands on the recovery's run where it was green, and otherwise nothing —
+   step 0 then runs its own and finds the red as pre-existing, which is the
+   stop §0 describes. Where §0 carried an out-of-scope failure, its
    name goes on the same line.
 
    **Read the returned toplevel first, before the rest of the summary.** Anything
@@ -445,7 +457,7 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    counted — the work is wherever that agent left it and this skill did not watch
    it land — and the drain goes to §3a naming the path that came back. A summary
    that arrives without that line is the same stop; asking again is cheaper than
-   any of the seven facts below being about the wrong tree.
+   any of the eight facts below being about the wrong tree.
 
    What comes back is a summary. **It is one ticket's summary, not the drain's**
    — a deliverable's shape (DELEGATION.md), arriving as an agent's *result*,
@@ -484,7 +496,8 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    - **A green full suite before the commit.** The chain's rule is that the
      suite is owed to the last code change, and a run that stopped early may
      have made none since its last edit: run the project's full suite, lint and
-     the type-check, and name the run. Red, commit all the same, marked partial
+     the type-check, and name the run — green, it is the next ticket's baseline,
+     named against the commit this makes. Red, commit all the same, marked partial
      — step 7 then leaves the ticket open on the gate. Otherwise the commit is
      pushed carrying code nothing has run, the next ticket is written on top of
      it, and the first full suite to see it fails under a later ticket's number.
