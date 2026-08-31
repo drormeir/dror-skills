@@ -132,11 +132,17 @@ Only for tickets whose code could plausibly exist. Cheap checks, in this order:
 
 The **How to see it** cell is the gesture that shows this ticket working in the
 running application — *open the same file twice; the second open is instant* — taken
-from the ticket's own criteria and shortened, never invented. Where the criteria
-describe no user-visible behaviour, or nothing in the application imports the
-module yet, the cell reads `nothing to see`; that empty answer is the column's
-main worth, because it says which rows the user can check and which they cannot.
-`—` where nothing is built.
+from the ticket's own criteria and shortened, never invented. Read in this
+order, first answer wins:
+
+- `—` where step 4's **Module built** cell says the file is not there. Nothing
+  is built, so there is no gesture to shorten, and this answer is taken first
+  because an absent module is imported by nothing and would otherwise fall
+  into the answer below.
+- `nothing to see` where the criteria describe no user-visible behaviour, or
+  nothing in the application imports the module yet; that empty answer is the
+  column's main worth, because it says which rows the user can check and which
+  they cannot.
 
 ## The table
 
