@@ -267,8 +267,12 @@ pools apart; nothing else has to.
 
 One tab-separated line per finding — the columns and their order are the store
 reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
-values: `path` is **the skill's `SKILL.md`, repo-relative**, even for a finding
-whose evidence sits elsewhere; `kind` is `text / hole / sprawl / echo /
+values: `path` is **the file the finding's own sentence sits in, repo-relative**
+— the skill's `SKILL.md`, or the companion beside it the finding is about, since
+the unit of review is the whole directory and a log that flattened every finding
+onto `SKILL.md` could not say which file drifted; a finding whose *evidence*
+sits elsewhere still takes the path of the sentence it is about; `kind` is
+`text / hole / sprawl / echo /
 conflict`; `claim` is always `no` — this skill writes no claim comments, and
 the column stays so the pools share one schema; `subject` is **the skill's
 name**; `round` is the round a looping caller named, or `-`; and `run_tag` is
