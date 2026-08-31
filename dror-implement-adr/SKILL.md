@@ -107,7 +107,8 @@ prompt's commands run in, named in its first sentence:
 
 > All commands run in `<absolute worktree path>`. It is a `git worktree`, not
 > the primary working directory; use `git -C <path>` for every git command and
-> read and write files under that path only.
+> read and write files under that path only. Carry this paragraph verbatim
+> into every prompt you hand to another skill or agent.
 
 **This is the whole isolation, and prose is the only thing holding it.** A
 changed working directory is **not inherited by a spawned agent**, and a skill
@@ -120,9 +121,14 @@ ticket's, and lets `dror-repair` edit it under this ticket's number. Silently,
 and by default rather than by accident — which is what §0 built the second
 checkout to prevent.
 
-Nothing downstream takes a directory argument, which is why this is stated in
-words rather than passed: say it in the prompt, and say it again in the prompt
-each round, since a prompt is all a fresh agent has.
+Downstream, the sentence is more than prose: `dror-implement-ticket` reads it
+as the directory override that folds its review-repair loop into its own
+context, and `dror-review` and `dror-repair` take it as an argument of their
+own — which is what keeps every fork of the chain under the harness's
+spawn-depth cap and its arguments delivered (ADR 0043). The forwarding clause
+above is how it travels. Everything else obeys it as prose: say it in the
+prompt, and say it again in the prompt each round, since a prompt is all a
+fresh agent has.
 
 **Check this skill's own commands too**, cheaply: `git -C <path> rev-parse
 --show-toplevel` must answer the worktree before the loop starts and after any

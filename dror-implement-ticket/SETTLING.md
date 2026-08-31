@@ -33,9 +33,11 @@ that touched production code — are exactly what a further round is for.
 
 ## owed, on grounds a round can move
 
-Settle it now, before the commit, by invoking `dror-review-repair` **capped at
-two rounds**, telling it **this is a chain run, so it notifies nothing**. Not an
-inline review-then-repair: that skill owns the round, judges
+Settle it now, before the commit, by running `dror-review-repair` **capped at
+two rounds**, telling it **this is a chain run, so it notifies nothing** — the
+same way step 3 ran it: invoked as a skill, or folded into this context under
+a directory override (ADR 0043). Not a freehand review-then-repair either way:
+that skill's file owns the round, judges
 it, and carries the account of why the tree is dirty into every round, its run
 tag, and the rule that the full suite is owed to the last code change.
 

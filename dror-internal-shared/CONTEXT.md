@@ -136,6 +136,13 @@ holds the rules that go with them.
   `skipped` or `stopped` when its round ends. An entry left at `picked` is an
   interrupted round, and it is the only thing that distinguishes one from a
   completed ticket (ADR 0031).
+- **Directory override** — `dror-implement-adr` §0a's sentence, "All commands
+  run in `<path>` …", carried verbatim into every prompt a drain hands down.
+  Prose to every agent that obeys it; an argument to `dror-review` and
+  `dror-repair`, and the signal on which `dror-implement-ticket` folds its
+  review-repair loop into its own context, keeping the chain's forks under
+  the harness's spawn-depth cap — which strips an agent at the cap of its
+  spawn tool and silently drops a forked skill's arguments (ADR 0043).
 
 ## The stores
 

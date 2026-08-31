@@ -237,7 +237,23 @@ not finished, and nothing but step 3 will find what the implementation got wrong
 
 Invoke the `dror-review-repair` skill. It runs `dror-review` and `dror-repair` as
 rounds until the work converges, judges each round itself, and stops on its own
-cap — none of which is this file's business any more:
+cap — none of which is this file's business any more.
+
+**Under a directory override, fold the loop in instead of invoking it.** A
+drain run's arguments carry §0a's sentence — "All commands run in `<path>` …"
+— and one fork below this run is the harness's spawn-depth cap, which delivers
+a fork invoked from there with no arguments at all (ADR 0043): a forked loop
+would fork `dror-review` at the cap, and that review would review the
+session's checkout in good faith and never learn it. So where the sentence is
+in this run's arguments, read `../dror-review-repair/SKILL.md` — beside this
+skill's own base directory — and follow it here, whole: it still owns the
+rounds, the tag, the floor and the judgement, and its sub-skills are invoked
+exactly as it says, their forks now one level down with their arguments
+intact. Carry the override sentence into each of those invocations, as it
+instructs. The loop file's closing summary becomes this step's result rather
+than a returned one, and its stop is its own (DELEGATION.md) — this step's
+named next action below still ends the step. Without the sentence, invoke the
+skill as ever. Either way, the prompt:
 
 > Review and repair the unpushed work for ticket `<N>`. **A `dror-prove` follows
 > this loop**, so pass the ticket number down to every round's review and every

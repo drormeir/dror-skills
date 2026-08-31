@@ -200,6 +200,16 @@ acceptEdits`, which is the same run in a session that holds nothing else, and
 returns any question the run stops on as its output for you to answer in the
 next invocation. The reasons are ADR 0036.
 
+The forks nest, and the harness caps how deep: an agent at the cap cannot
+spawn, and a skill forked from just below it arrives without its arguments.
+The chain stays under that ceiling by one fold — a drain-run
+`dror-implement-ticket` follows `dror-review-repair`'s file in its own context
+instead of forking it, keyed on the directory override in its arguments — so
+every fork still gets its arguments and every review keeps its parallel
+fan-out, whichever of the three entry points (`dror-implement-adr`,
+`dror-implement-ticket`, `dror-review-repair`) you invoke yourself. The
+reasons, and the depth arithmetic, are ADR 0043.
+
 ## Style and tools
 
 These work at the level of the session itself: two change how answers come back

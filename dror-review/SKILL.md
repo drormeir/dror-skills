@@ -15,13 +15,28 @@ missing.
 **This run has a context of its own.** The frontmatter forks it (ADR 0036):
 what reaches it is this file, the facts the line below injects, and the
 arguments it was invoked with — never the conversation that invoked it. A
-ticket number, a scope, a focus paragraph or a report name arrives as an
+ticket number, a scope, a focus paragraph, a report name or a directory
+override arrives as an
 argument or not at all, and what goes back to the caller is the closing summary.
 
 It is **repo-agnostic**: it names no tracker and no path of its own, and
 everything about the project in hand arrives through the facts below. It does
 assume **git** — "unpushed" is a git question and the whole scope is found with
 git commands — which is the one thing it cannot take from the facts.
+
+**A directory override may arrive as an argument** — the sentence "All
+commands run in `<path>` …", passed down by a drain (ADR 0043) because this
+fork starts in the session's primary working directory, which is then the
+wrong repository. Honour it everywhere: every git command in this file runs
+with `-C <path>`, `<repo>` in every path below means that directory, the
+store and the facts are that directory's, and every agent this run spawns —
+lens and refuter alike — is given the sentence at the top of its prompt. One
+consequence needs saying: the facts block injected below was printed in the
+session's primary directory, before this argument could be read — so under an
+override, disregard it and run the same stamp script again with `<path>` as
+its working directory, treating what that prints, `MISS` included, as the
+facts from then on. No
+override means the session's own checkout, which is every direct run.
 
 ## The project facts
 

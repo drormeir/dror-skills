@@ -26,6 +26,19 @@ arguments — the focus, the scope, the cap, the declaration that a prove follow
 forked the same way, which is what "Each step runs in its own context" below
 rests on.
 
+**A drain folds this file instead of forking it.** Under a directory override
+— §0a's "All commands run in `<path>` …" sentence — `dror-implement-ticket`
+follows this file in its own context, because a fork made from where it
+stands would put the steps at the harness's spawn-depth cap, where a forked
+skill's arguments are silently dropped (ADR 0043). A folded run changes
+nothing below: the steps still fork, one level lower, with their arguments
+intact. The override itself carries one duty, and it binds any run given the
+sentence — folded under a drain or invoked directly with it in the arguments:
+every command this file makes obeys it, `<repo>` means that directory, and
+the sentence goes verbatim into every prompt built below, step 1's and step
+3's alike, so each sub-skill hears it from its own arguments and not from
+memory.
+
 ## What this run is given
 
 This skill takes a **focus** and a **scope**, both optional. Given neither, it

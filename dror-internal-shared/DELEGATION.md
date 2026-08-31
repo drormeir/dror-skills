@@ -46,7 +46,10 @@ words, so the caller knows the place is a trap before it is standing in it.
 
 **Both ways of invoking are covered, and one is worse.** Since ADR 0036 every
 chain skill is forked by its own frontmatter, so the second way below is the
-ordinary one and the first survives only in skills that fork nothing. Where the
+ordinary one and the first survives in skills that fork nothing and in
+`dror-implement-ticket`'s folded loop, which follows `dror-review-repair`'s
+file in its own context under a directory override to stay beneath the
+spawn-depth cap (ADR 0043). Where the
 sub-skill runs **in the caller's own context** — a `Skill` invocation — its contract is the
 nearest instruction in force and the failure is at its strongest. Where the step
 is **spawned as a subagent** and returns a result, the contract landed in the
