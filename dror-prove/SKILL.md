@@ -200,8 +200,8 @@ the rest can be**. Never report a count you did not run.
 
 ## Step 6 — tick what went green
 
-This skill holds the criterion-to-test mapping, so this skill owns the boxes: a
-green suite says a criterion is met only to whoever knows which test covers it.
+This skill holds the criterion-to-test mapping, so this skill owns the boxes
+(ADR 0004).
 
 Tick — `- [ ]` to `- [x]` — every criterion whose verdict is `green`,
 `already covered`, or a `gate` whose run is green **and already made**; a `gate`
