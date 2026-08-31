@@ -18,8 +18,9 @@ thing. Find your axis before you raise anything:
   and what the tree answered instead.
 - **Against itself** — `sequence`. The evidence is this document: two passages
   that disagree, or one passage and the question it forces and leaves
-  unanswered, each quoted with its line number. **There is no `file:line`
-  elsewhere to carry and none is owed.**
+  unanswered, each quoted with its line number. **No `file:line` elsewhere is
+  owed** — cite one only where a spawn step rests on an ADR that fixes its
+  parameters.
 - **Against the shelf and the siblings** — `ownership`, `mirrors`. The
   evidence is the other file, quoted with its own `file:line`: a shelf
   document, a sibling skill, an index row, a glossary line.
@@ -119,12 +120,26 @@ skill and another owner both changed and now disagree with each other
   fix in the caller and never in the sub-skill, and every one of these skills is
   also typed by a user on its own. Quote the closing sentence and say what that
   user gets instead — findings asked for and a tree edited. Kind `text`.
+- A **spawn step against the brief it hands** — a step that launches an agent
+  and names the inputs it gets, beside the companion file that agent is told to
+  read whole. The finding is an input the brief works from and the step never
+  passes, an input passed that the brief never reads, or a spawn parameter the
+  repo's own decisions fix (which model a lens runs on is ADR 0003's) that the
+  step omits. Quote both, and say what the spawned agent does with what it
+  actually receives. Kind `hole` where an input is missing, `text` where the
+  step and the brief simply disagree.
 - A **word used before or without definition** — a term of art the skill
   coins mid-procedure and never fixes, or uses in two senses. Kind `hole`.
 - **Two passages that disagree**: a cap stated twice with two values, a step
   order stated one way and diagrammed another, an "always" up top and an
   exception below that the top never grants. `text` when one passage is
   plainly the stale copy; `conflict` when both read as deliberate.
+- A **step that says only what success does** — a command that can fail, a
+  lookup that can come back empty, a name that can resolve to two things — and
+  leaves the run nothing for the other outcome. Raise it only where that
+  outcome is one the step's own command produces and the next move genuinely
+  differs; a step that lands the same either way is nothing. Say what the agent
+  improvises instead. Kind `hole`.
 - A **return contract** the closing section does not carry: a skill that
   ends on a bare "done" leaves its caller nothing to relay.
 - A **done-when line** that does not match the steps above it — an obligation
@@ -208,6 +223,18 @@ Read the skill once, cold, the way a fresh context would. Then:
 - **The buried obligation.** A duty stated once, in a subordinate clause, in
   the middle of a paragraph about something else — an append, a log line, a
   file to mark — that a run skims past and never performs.
+- **The unpaired prohibition.** A step that steers by ban alone, naming no
+  target behaviour in the same breath. Naming the forbidden move puts it in
+  context and makes it *more* available, not less — the ban half-reads as the
+  instruction — so the fix is the positive target stated beside it, and a
+  prohibition earns its place only as a guardrail that cannot be phrased
+  positively. The finding is the ban standing alone, not the word "never": a
+  prohibition paired with the move it sharpens is the house style.
+- **The no-op.** A sentence the agent already obeys by default, paying context
+  for nothing. The test is behavioural and model-relative — would a run without
+  this line do anything different? — so raise it only where you can say what
+  the default already is, and let the finding cover the whole sentence rather
+  than the words you would trim from it.
 - **The trap boundary.** A step whose *output shape* invites a stop — a
   finished table, a written report, a returned command — in a skill that must
   continue. `DELEGATION.md` names the pattern; the finding is a boundary the

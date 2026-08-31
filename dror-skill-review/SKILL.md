@@ -144,7 +144,8 @@ own. Spend the tokens where the judgement is.
 **Cap what a lens reads, on its own axis.** Every lens gets the skill's
 directory. Beyond it: `anchors` gets the files the skill points at, `ownership`
 and `mirrors` get the shelf files and index rows the grep capture names,
-`contract`, `sequence` and `execution` get the skill alone. A lens that cannot
+`contract` and `execution` get the skill alone, and `sequence` gets the skill
+plus any ADR a spawn step's parameters rest on. A lens that cannot
 reach a verdict inside its boundary says so and returns the question rather
 than widening — reading a subsystem to settle one sentence is the refuter's
 budget to spend, on one finding.
