@@ -247,10 +247,10 @@ would fork `dror-review` at the cap, and that review would review the
 session's checkout in good faith and never learn it. So where the sentence is
 in this run's arguments, read `../dror-review-repair/SKILL.md` — beside this
 skill's own base directory — and follow it here, whole: it still owns the
-rounds, the tag, the floor and the judgement, and its sub-skills are invoked
-exactly as it says, their forks now one level down with their arguments
-intact. Carry the override sentence into each of those invocations, as it
-instructs. The loop file's closing summary becomes this step's result rather
+rounds, the tag, the floor and the judgement, and its steps run exactly as it
+says — which, under the override, is as spawned agents given the step files,
+so no fork is left to lose its arguments. Carry the override sentence into
+each of those invocations, as it instructs. The loop file's closing summary becomes this step's result rather
 than a returned one, and its stop is its own (DELEGATION.md) — this step's
 named next action below still ends the step. Without the sentence, invoke the
 skill as ever. Either way, the prompt:

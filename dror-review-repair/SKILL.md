@@ -26,18 +26,22 @@ arguments — the focus, the scope, the cap, the declaration that a prove follow
 forked the same way, which is what "Each step runs in its own context" below
 rests on.
 
-**A drain folds this file instead of forking it.** Under a directory override
-— §0a's "All commands run in `<path>` …" sentence — `dror-implement-ticket`
-follows this file in its own context, because a fork made from where it
-stands would put the steps at the harness's spawn-depth cap, where a forked
-skill's arguments are silently dropped (ADR 0043). A folded run changes
-nothing below: the steps still fork, one level lower, with their arguments
-intact. The override itself carries one duty, and it binds any run given the
-sentence — folded under a drain or invoked directly with it in the arguments:
-every command this file makes obeys it, `<repo>` means that directory, and
-the sentence goes verbatim into every prompt built below, step 1's and step
-3's alike, so each sub-skill hears it from its own arguments and not from
-memory.
+**A drain folds this file instead of forking it, and an override unforks the
+steps.** Under a directory override — §0a's "All commands run in `<path>` …"
+sentence — `dror-implement-ticket` follows this file in its own context,
+because a fork made from where it stands risks the harness's spawn-depth cap,
+where a forked skill's arguments are silently dropped (ADR 0043). The same
+drop has since been seen one level shallower, so any run of this file holding
+the sentence — folded under a drain, or invoked directly with it in the
+arguments — drives step 1 and step 3 as spawned agents given `dror-review`'s
+and `dror-repair`'s files and the sentence, never as `Skill` invocations: a
+review whose fork arrives bare reviews the session's checkout in good faith
+and never learns it. The override's other duty binds the same runs: every
+command this file makes obeys it, `<repo>` means that directory, and the
+sentence goes verbatim into every prompt built below, step 1's and step 3's
+alike, so each sub-skill hears it from its own arguments and not from memory.
+Without the sentence, the steps are the forks the step-context section below
+describes.
 
 ## What this run is given
 
@@ -158,7 +162,10 @@ Steps 1 and 3 each run in an agent of their own, and nothing here arranges
 it: `dror-review` and `dror-repair` carry `context: fork` in their frontmatter
 (ADR 0036), so invoking either as a skill runs it apart from this context and
 lands only its closing summary here. The prompt each step writes below is that
-invocation's argument — the one thing that reaches the fork. Seven rounds
+invocation's argument — the one thing that reaches the fork. Under an
+override the carrier changes — a spawned agent given the step's file, per the
+fold passage above — but the boundary and what crosses it do not: the same
+prompt goes in, the same facts come back. Seven rounds
 of review and repair read far more than a single context should hold, and a loop
 that runs out of window mid-round loses the judgement it exists to make.
 
@@ -447,6 +454,10 @@ it would be typed:
 > `/dror-review`, writing its report to
 > `<repo>/.claude/dror-skills/review-report-<tag>-r<n+1>.md`, then `/dror-repair`
 > on what it finds in that file.
+
+Where this run holds a directory override, the sentence goes into that command
+too — both invocations, exactly as this run received it — or the user's typed
+round reviews the session's own checkout instead of `<repo>`.
 
 `<n+1>` and not the cap's own round: the user is being handed the round this
 loop did not take, and pointing them at the last round's file would have them

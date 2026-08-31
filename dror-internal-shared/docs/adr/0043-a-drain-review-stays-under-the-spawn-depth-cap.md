@@ -29,6 +29,17 @@ why ADR 0036's probe passed and its shape is not the bug: a direct ticket run
 puts the review at depth 2, and every manual invocation works as that ADR
 says. Only the drain adds the level that crosses the cap.
 
+The depth arithmetic did not hold. On 2026-08-31, in this repo's own tree, a
+`dror-review-repair` invoked directly with the override in its arguments —
+the shape whose forks `fa0c6093` saw arrive intact — called `Skill
+dror-review` and the fork arrived bare, one level shallower than the drop
+described above; a drain-free run earlier the same day dropped the same way.
+The sessions disagree about the depth at which a fork loses its arguments, so
+no level count is trusted here. What every run agrees on is narrower: a
+`Skill` fork made from inside a forked context can arrive without its
+arguments, and a spawned agent given the skill file and the sentence never
+has.
+
 ## Considered options
 
 **Unforking `dror-review-repair` outright** — dropping its `context: fork` —
@@ -63,8 +74,8 @@ made it.
 
 Folded, the chain under the drain is `dror-implement-adr` (0) →
 `dror-implement-ticket` (1, now carrying the loop) → `dror-review` /
-`dror-repair` (2) → lenses, refuters, test-writers (3, leaves). Every fork
-receives its arguments, and both fan-outs survive. The loop's file is still
+`dror-repair` (2) → lenses, refuters, test-writers (3, leaves). Each step
+carries its brief whole, and both fan-outs survive. The loop's file is still
 followed whole — it owns the rounds, the tag, the floor and the judgement;
 what changes is only whose window its few kept lines sit in.
 
@@ -74,6 +85,14 @@ command with `-C` that path and keep every read and write under it. §0a's
 sentence carries a forwarding clause, so the override reaches them by
 instruction rather than by a run's initiative — which is how it travelled in
 `fa0c6093`.
+
+The shallower drop widens the rule by one clause: **wherever the loop holds
+the override — folded under the drain, or invoked directly with the sentence
+in its arguments — its steps are driven as spawned agents given
+`dror-review`'s and `dror-repair`'s files and the sentence, not as `Skill`
+forks.** The agent is the one carrier that has never dropped the sentence,
+and an agent one level down still spawns its leaves, so both fan-outs keep
+theirs. A run without the override keeps the forks ADR 0036 made.
 
 ## Consequences
 

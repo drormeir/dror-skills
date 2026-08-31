@@ -88,7 +88,8 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
 `dror-internal-shared` is the shelf the others read from, holding
 [`WRITING-TESTS.md`](WRITING-TESTS.md), [`REPORT-STORE.md`](REPORT-STORE.md),
 [`WORKTREE.md`](WORKTREE.md), [`DELEGATION.md`](DELEGATION.md),
-[`ADR-FILE.md`](ADR-FILE.md), this map, the glossary and the ADRs.
+[`ADR-FILE.md`](ADR-FILE.md), [`DIRECTORY-OVERRIDE.md`](DIRECTORY-OVERRIDE.md),
+this map, the glossary and the ADRs.
 
 ## Which of them know your repo's conventions
 

@@ -25,18 +25,14 @@ assume **git** — "unpushed" is a git question and the whole scope is found wit
 git commands — which is the one thing it cannot take from the facts.
 
 **A directory override may arrive as an argument** — the sentence "All
-commands run in `<path>` …", passed down by a drain (ADR 0043) because this
-fork starts in the session's primary working directory, which is then the
-wrong repository. Honour it everywhere: every git command in this file runs
-with `-C <path>`, `<repo>` in every path below means that directory, the
-store and the facts are that directory's, and every agent this run spawns —
-lens and refuter alike — is given the sentence at the top of its prompt. One
-consequence needs saying: the facts block injected below was printed in the
-session's primary directory, before this argument could be read — so under an
-override, disregard it and run the same stamp script again with `<path>` as
-its working directory, treating what that prints, `MISS` included, as the
-facts from then on. No
-override means the session's own checkout, which is every direct run.
+commands run in `<path>` …". Its provenance and the duties it obliges —
+`<repo>` and the store, the void facts block and its stamp-script re-run
+under `<path>`, the sentence at the top of every spawned agent's prompt, and
+the no-override default — are the shelf's, in one copy:
+`../dror-internal-shared/DIRECTORY-OVERRIDE.md`, read whole when the sentence
+arrives. This skill's own part of the contract: every git command in this
+file runs with `-C <path>`, and "every agent this run spawns" means lens and
+refuter alike.
 
 ## The project facts
 

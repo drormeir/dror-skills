@@ -142,7 +142,8 @@ holds the rules that go with them.
   `dror-repair`, and the signal on which `dror-implement-ticket` folds its
   review-repair loop into its own context, keeping the chain's forks under
   the harness's spawn-depth cap — which strips an agent at the cap of its
-  spawn tool and silently drops a forked skill's arguments (ADR 0043).
+  spawn tool and silently drops a forked skill's arguments (ADR 0043). The
+  duties an obeying fork honours are `DIRECTORY-OVERRIDE.md`'s, on the shelf.
 
 ## The stores
 
