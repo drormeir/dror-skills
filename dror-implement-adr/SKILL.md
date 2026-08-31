@@ -208,11 +208,16 @@ list is blocked by a ticket that comes after it.** Table order is not that
 property — issue numbers usually agree with dependency order and are not required
 to — so derive the order rather than assuming it.
 
-**The graph.** Take every row of §2's table that is not `Closed` and not
-`Can close`; those two are done. A `Can close` row is a ticket some earlier run
-finished and did not close — no gate of this run's has been over it, so it is
-neither implemented again nor closed here: report it, and let the user close it
-or re-run its ticket. Each remaining row is a node. Its edges come from its status: a
+**The graph.** Take every row of §2's table that is not `Closed`; that one is
+done. **A `Can close` row is a node like any other**, and its round is what
+closes it. It is a ticket some earlier run implemented and did not close, and no
+gate of this run's has been over it — which is an argument for spending a round
+on it, not for skipping it: its round writes no code, re-reads the boxes off the
+tracker, runs the gate, and closes on evidence of its own. Left out of the node
+set it is left open for the user to close by hand, and everything `Awaiting` it
+is stranded behind a ticket the sort can never place — which is what
+[`RESUME.md`](RESUME.md) means when it puts an open ticket with every box ticked
+at the *front* of the list. Each remaining row is a node. Its edges come from its status: a
 `Blocked by #NN` or `Awaiting #NN` row **depends on `#NN`** — one edge per number
 named, since a row may name several. `Ready` names none, which is what `Ready`
 means. No other column is read for edges, and no ticket body is opened to look
@@ -492,6 +497,16 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    `git status --porcelain` for a clean tree, and `git rev-list --count
    @{upstream}..HEAD` for `0`. All three hold, and there is nothing to do here;
    record the sha with the round.
+
+   **A ticket that needed no code makes no commit, and an empty range here is
+   its right answer.** A `Can close` row's round writes nothing — the work landed
+   in an earlier session and is already pushed — so `git log <the previous
+   tip>..HEAD` is empty, the tree is clean and the branch is level with its
+   upstream, and all of that is the round succeeding. The test that separates it
+   from a run that stopped before committing is the ticket run's summary, which
+   says which: it reports a close, or it reports where it stopped. Read that
+   before reading the range, and manufacture no commit for a ticket that had
+   nothing to write.
 
    **A dirty tree, no commit, or an unpushed one is this skill's to finish** — a
    run that stopped early, one whose commit missed a file, or one that refused
