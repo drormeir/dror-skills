@@ -86,7 +86,8 @@ Split what is left:
 - **Structural** — "imports neither Qt nor numpy", "the name exists in exactly
   one place in the source", "nothing here raises, whatever it is handed". These
   are testable too: an import assertion, a `Grep` count asserted in a test, a
-  fuzz over hostile inputs. Prefer a real test over a note. A test that counts
+  fuzz over hostile inputs. Prefer a real test over a note; where a note is the
+  honest outcome, it is reported as `noted` and does not tick. A test that counts
   what is in the source is reading the tree rather than calling it, so
   `WRITING-TESTS.md`'s rule for a walk applies to it — an unpruned walk from the
   repository root finds the ADR worktree's copy of every file it matches, and
@@ -123,7 +124,24 @@ The test's name and a comment carry the criterion's number and its text, so a
 reader of the test file can find the criterion and a reader of the ticket can
 find the test.
 
-## Step 5 — report
+## Step 5 — re-run everything this run touched
+
+The loop wrote code criterion by criterion, so a criterion proved early can be
+broken by code written late: criterion 2's test passed in its own iteration and
+criterion 5's implementation moved the ground under it. Nothing so far would
+notice.
+
+So once the loop is done and before a single row is written, run every test this
+run wrote and every existing test Step 2 found — all of them, once, against the
+unmutated tree — and paste the output. **The next step's States come from this
+run, not from what each test did in its own iteration.** A test that was green in
+Step 4 and is red here is red: report it so, and say which criterion's code broke
+it.
+
+This is still not the project's full suite. It is exactly the tests this run
+wrote or named, which is the same set Step 6's summary line already reports.
+
+## Step 6 — report
 
 Run `printenv CLAUDE_CODE_ENTRYPOINT`. If it is `claude-vscode`, report one row
 per criterion: **# | Criterion | Test | State | Note**. Otherwise the same rows
@@ -131,7 +149,8 @@ as one line each, in the same order, reading
 `<n> — test: <name or none> — <state> — <note>`.
 
 **State is the criterion's one final verdict**: what its test does against the
-**real, unmutated code** at the end of this run. Seeing it fail first — before
+**real, unmutated code** at the end of this run — which is Step 5's run, not the
+test's own iteration in Step 4. Seeing it fail first — before
 the code, or in a mutated copy — is the *evidence* that the pass means
 something, never a state of its own; a run that ends with a mutation still in
 the tree has not finished. So `red by mutation` is not a verdict, it is what the
@@ -168,6 +187,11 @@ State is one of:
   either — that word is for work not done; say the gate is failing and quote it.
   Never write `not testable` for one of these: a criterion green in fact and
   unticked when its ticket closes is what that mistake produces.
+- **`noted`** — the criterion **could** be tested and was not: it was checked by
+  hand and the check written down. It is for a structural criterion whose test
+  would cost more than it proves, never for one a test would hold plainly. The
+  Note carries what was checked, how, and what a real test would have to do —
+  and a `noted` never ticks, because a check nobody can re-run is not a proof.
 - **`not testable`** — with the reason. No test written. It is for a criterion
   nothing here *can* judge — another ticket's work, a platform this machine is
   not, a process — never for one that is merely not held by a test of its own.
@@ -188,8 +212,8 @@ State is one of:
 it carries the failure that earned a `green`, the clause a `partial` leaves out,
 or what could not be staged.
 
-Below the rows: the summary line of the **targeted runs you actually made** —
-the criteria's own tests and the existing tests found in Step 2, not the
+Below the rows: the summary line of **Step 5's run** — the criteria's own tests
+and the existing tests found in Step 2, not the
 project's full suite. Do not run the full suite here: this skill proves
 criteria one at a time, and the suite gate belongs to the skill that changed
 the code. A `gate` criterion is the one exception, and a narrow one: it quotes
@@ -198,7 +222,7 @@ earns a single run of its own only where neither is true. Then one closing
 line — **how many criteria of N are ticked, and what the ticket needs before
 the rest can be**. Never report a count you did not run.
 
-## Step 6 — tick what went green
+## Step 7 — tick what went green
 
 This skill holds the criterion-to-test mapping, so this skill owns the boxes
 (ADR 0004).
@@ -211,14 +235,15 @@ stands: ticking it would claim a proof, unticking or rewording it would settle
 a question that is the user's. **A `green` earned by mutation ticks exactly
 like one earned by writing the code**: the mutation is what made the pass count,
 and a criterion the code already satisfies is met. `red`, `unproven`, `partial`,
-`not testable` and `question open` leave the box as it stands. Write the body
+`noted`, `not testable` and `question open` leave the box as it stands. Write the
+body
 back in one edit, and never untick a box this run did not judge — another run's
 verdict is not this run's to withdraw.
 
 Say how many boxes moved. A tests-only run that ended at red moves none, which
 is the ordinary case and not a failure.
 
-## Step 7 — record what the ticket is awaiting
+## Step 8 — record what the ticket is awaiting
 
 A `partial` or a `not testable` whose reason is **another ticket's work** is a
 dependency nobody wrote down: it was discovered here, by trying to prove the
@@ -252,7 +277,7 @@ Say which tickets the section now names. `dror-show-tickets` reads it as the
 `Awaiting #NN` status, so a ticket that has finished everything it owns stops
 looking like one nobody got round to.
 
-## Step 8 — record what needs the user's call
+## Step 9 — record what needs the user's call
 
 A `criterion wrong` is recorded the same way and in the same edit, because it
 too is a thing this run learned that the body does not say, and a red box says
