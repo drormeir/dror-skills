@@ -8,7 +8,7 @@ allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/fact
 
 # dror-adr-repair
 
-Repair the ADR text this conversation has already found fault with. Runs start
+Repair the ADR text a review has already found fault with. Runs start
 to finish without stopping.
 
 **It writes prose and nothing else.** No production code, no tests. A finding
@@ -19,7 +19,7 @@ names it and only as text; the line below it is not this run's. That is the same
 document repair from quietly changing behaviour to make a sentence true.
 
 **Every finding is on the list.** The default is the whole report, or everything
-the conversation named. The user subtracts from it — "skip 3", "leave the
+the findings file names. The user subtracts from it — "skip 3", "leave the
 holes" — and may add a finding of their own; naming a few is not a way of
 choosing only those. Work that list and only that list; discovering further
 faults is `dror-adr-review`'s run.
@@ -63,11 +63,6 @@ and evidence. Read it and work from it.
 the naming, identity, staleness, finding-id and log rules every `dror-*` report
 obeys, in one copy. Read it whole before working from a file. It is not restated
 here.
-
-One thing it says is worth reading twice here: where the report's recorded `HEAD`
-— or the ADR's own last commit — has moved, the evidence as well as the line
-numbers came from another state of the tree, so locate each finding by the
-sentence it quotes rather than by the number.
 
 Its `## Refuted` section is **not** the list. Those findings were raised and then
 disproved, and repairing one is editing a true sentence to satisfy a mistake.
@@ -152,7 +147,7 @@ Grouping is by item and not by file because every edit lands in one document,
 which is precisely why the *writing* below is not parallelized.
 
 Done when every item is grounded, ungrounded, not reproduced, or carried as a
-`breach`, with the evidence on screen for each.
+`breach` or a `revisit`, with the evidence on screen for each.
 
 ## Step 2 — Write
 
@@ -179,7 +174,7 @@ which an agent holding one sentence cannot make.
 - **Never delete a decision.** Superseded text is marked as superseded, with
   what replaced it. Deleting it destroys the only record that the question was
   ever settled the other way.
-- **An `echoes` item is repaired in every copy it names**, in one pass, before
+- **An `echo` item is repaired in every copy it names**, in one pass, before
   the next item starts. Repairing three of four leaves the fourth to be found
   again next quarter, and the ADR is rarely the copy that governs behaviour —
   the conventions doc is, because that is what gets read on every run. Each copy
@@ -217,7 +212,8 @@ The document has no suite, so the check is a reading and two searches:
 Where the project declares a docs check of its own — a link checker, a
 formatter, a spell pass — run it and paste its output.
 
-The run ends here, with the changes uncommitted. Committing is the user's.
+The editing ends here, with the changes uncommitted. Committing is the user's.
+The run goes on to the report below.
 
 ## Report
 
@@ -296,9 +292,8 @@ So for every finding that carried an **id** in the report, append one line to
 store reference's terms for every log:
 
 The columns and their order are the store reference's (`REPORT-STORE.md`, "The
-logs"), stated there once, including the six-file cap on `files_edited` and the
-rule that the same values go on every row this run appends. This run's own
-values: `outcome` is the word from this run's report — `Corrected (grounded)`,
+logs"), stated there once, including the cap on `files_edited` and the rule that
+the same values go on every row this run appends. This run's own values: `outcome` is the word from this run's report — `Corrected (grounded)`,
 `Left — ungrounded`, `Not reproduced`, … — and `production` is **always `no`**,
 since this skill writes prose and nothing else; the column stays so the pools
 share one schema.
