@@ -144,6 +144,11 @@ holds the rules that go with them.
   the harness's spawn-depth cap — which strips an agent at the cap of its
   spawn tool and silently drops a forked skill's arguments (ADR 0043). The
   duties an obeying fork honours are `DIRECTORY-OVERRIDE.md`'s, on the shelf.
+- **Step agent** — a spawned agent given another dror skill's file to follow,
+  the carrier `dror-review-repair` and the drain's fold use in place of a
+  `Skill` fork, which can arrive without its arguments when made from inside
+  a fork (ADR 0044). How one is spawned and what its brief opens with are
+  `STEP-AGENT.md`'s, on the shelf.
 
 ## The stores
 

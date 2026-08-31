@@ -92,7 +92,9 @@ in its arguments — its steps are driven as spawned agents given
 `dror-review`'s and `dror-repair`'s files and the sentence, not as `Skill`
 forks.** The agent is the one carrier that has never dropped the sentence,
 and an agent one level down still spawns its leaves, so both fan-outs keep
-theirs. A run without the override keeps the forks ADR 0036 made.
+theirs. A run without the override kept the forks ADR 0036 made — until
+ADR 0044 dropped that last clause: the loop's steps ride agents always, and
+the carrier's mechanics moved to the shelf's `STEP-AGENT.md`.
 
 ## Consequences
 

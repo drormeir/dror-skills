@@ -22,26 +22,28 @@ says so.
 **This run has a context of its own, and so does each of its steps.** The
 frontmatter forks this file (ADR 0036), so what reaches it is this file and its
 arguments — the focus, the scope, the cap, the declaration that a prove follows
-— never the conversation that invoked it. `dror-review` and `dror-repair` are
-forked the same way, which is what "Each step runs in its own context" below
-rests on.
+— never the conversation that invoked it. `dror-review` and `dror-repair` run
+apart from it too — as spawned agents, per the passage below — which is what
+"Each step runs in its own context" below rests on.
 
-**A drain folds this file instead of forking it, and an override unforks the
-steps.** Under a directory override — §0a's "All commands run in `<path>` …"
-sentence — `dror-implement-ticket` follows this file in its own context,
-because a fork made from where it stands risks the harness's spawn-depth cap,
-where a forked skill's arguments are silently dropped (ADR 0043). The same
-drop has since been seen one level shallower, so any run of this file holding
-the sentence — folded under a drain, or invoked directly with it in the
-arguments — drives step 1 and step 3 as spawned agents given `dror-review`'s
-and `dror-repair`'s files and the sentence, never as `Skill` invocations: a
+**The steps ride spawned agents, never `Skill` forks** (ADR 0044). A fork made
+from inside a forked context can arrive without its arguments — silently, and
+at depths no level count has predicted twice the same way (ADR 0043) — and a
 review whose fork arrives bare reviews the session's checkout in good faith
-and never learns it. The override's other duty binds the same runs: every
-command this file makes obeys it, `<repo>` means that directory, and the
-sentence goes verbatim into every prompt built below, step 1's and step 3's
-alike, so each sub-skill hears it from its own arguments and not from memory.
-Without the sentence, the steps are the forks the step-context section below
-describes.
+and never learns it. A spawned agent given the step's file has never arrived
+bare. So step 1 and step 3 below are driven by the shelf's carrier —
+`../dror-internal-shared/STEP-AGENT.md`, read whole before round 1 — and the
+prompt each step writes below is that agent's brief.
+
+**A drain folds this file instead of forking it.** Under a directory override
+— §0a's "All commands run in `<path>` …" sentence — `dror-implement-ticket`
+follows this file in its own context (ADR 0043) and drives the same carrier.
+The override binds any run holding the sentence, folded or invoked directly
+with it in the arguments: every command this file makes obeys it, `<repo>`
+means that directory, and the sentence goes verbatim into every step agent's
+brief, step 1's and step 3's alike — `../dror-internal-shared/DIRECTORY-OVERRIDE.md`
+owns the duties. Without the sentence, `<repo>` is the session's own checkout
+and nothing else changes: the carrier is the same either way.
 
 ## What this run is given
 
@@ -158,14 +160,15 @@ sees nothing of it (ADR 0042), which is what the notification below is for.
 
 ### Each step runs in its own context
 
-Steps 1 and 3 each run in an agent of their own, and nothing here arranges
-it: `dror-review` and `dror-repair` carry `context: fork` in their frontmatter
-(ADR 0036), so invoking either as a skill runs it apart from this context and
-lands only its closing summary here. The prompt each step writes below is that
-invocation's argument — the one thing that reaches the fork. Under an
-override the carrier changes — a spawned agent given the step's file, per the
-fold passage above — but the boundary and what crosses it do not: the same
-prompt goes in, the same facts come back. Seven rounds
+Steps 1 and 3 each run in an agent of their own, and this file arranges it:
+each is a spawned agent given the step's file to follow, by the shelf's
+carrier — never a `Skill` invocation, though both skills carry `context: fork`
+of their own, because a fork made from inside this forked run can arrive
+without its arguments (ADR 0043, ADR 0044). The mechanics — the absolute file
+path, the dead facts injection and its re-run, what the brief opens with —
+are `../dror-internal-shared/STEP-AGENT.md`'s, and only the agent's closing
+summary lands here. The prompt each step writes below is that agent's brief —
+the one thing that reaches it. Seven rounds
 of review and repair read far more than a single context should hold, and a loop
 that runs out of window mid-round loses the judgement it exists to make.
 
@@ -175,7 +178,8 @@ only things that have to survive a step are the report's path and a short
 summary, so an agent boundary between them drops nothing a later round needs.
 
 What each agent returns is exactly what step 4 weighs and what the summary
-prints, and nothing else: **from the review** — the report path it wrote, how
+prints, and nothing else — after the toplevel line the carrier requires
+first: **from the review** — the report path it wrote, how
 many survivors, their kinds, which files they name, which lenses it dropped, and
 its own one-line verdict on **whether a repair should follow**; **from the
 repair** — one line per finding (what was found, the outcome), which files it
@@ -278,8 +282,8 @@ and which nothing but the caller can decide.
 
 ### 1. Review
 
-Invoke the `dror-review` skill, with the focus paragraph where this run has one
-and no ticket number:
+Spawn the review agent — `dror-review`'s file, by the shelf's carrier — with
+the focus paragraph where this run has one and no ticket number:
 
 > Review the unpushed work. Report the survivors and change no behaviour. Write
 > your report to `<repo>/.claude/dror-skills/review-report-<tag>-r<n>.md` — that
@@ -337,7 +341,7 @@ review's "nothing here needs an edit" is inventing work under this loop's name.
 
 ### 3. Repair
 
-Invoke the `dror-repair` skill:
+Spawn the repair agent — `dror-repair`'s file, by the shelf's carrier:
 
 > Repair the findings in `<the report file step 1 named>`: every confirmed bug
 > and every gap in cover, each red before its fix and green after. For context,
@@ -371,7 +375,7 @@ repair's own run. Name the run that counted.
 **The repair's summary is a step's result, not this run's reply**, and an edited
 tree with a green suite behind it is a deliverable's shape (DELEGATION.md). So
 this step's named next action, and it has two branches, both concrete: judge the
-round at step 4 and then **either invoke `dror-review` again for the next round,
+round at step 4 and then **either spawn the next round's review agent,
 in the same turn, or print §Present's summary**. One of those two is how the turn
 ends; a turn that relays the repair and does neither has stopped mid-round.
 
