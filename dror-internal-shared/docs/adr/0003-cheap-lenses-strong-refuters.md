@@ -12,7 +12,8 @@ cheaper model.
 ## Consequences
 
 The cost of a review is controlled before the refute step, not inside it: fewer
-lenses (five at most), a tighter read boundary, and lenses that kill their own
-weak findings. Every merged finding faces a refuter, with no cap — cutting that
+lenses where the pool caps their number, a tighter read boundary, and lenses
+that kill their own weak findings. Each review's own file states whether it caps
+the count and at what — `dror-skill-review` does not, and says why there. Every merged finding faces a refuter, with no cap — cutting that
 list would put unchecked suspicions in the report, and a reader cannot tell an
 unchecked finding from a confirmed one.

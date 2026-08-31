@@ -117,10 +117,21 @@ sections are other agents'. Paths, never contents.
 Choosing is this skill's job, not the user's. Skip a lens whose concerns the
 skill never raises — a skill that invokes no other skill and spawns nothing
 needs no `sequence` bullets about delegation, though its other bullets may
-still earn it a place; a repo with no index needs no `mirrors`. **Five at
-most**, whatever the skill's length. Where more than five qualify, keep the
-ones the skill most obviously raises and say in the report which were dropped,
-so a reader knows what was not looked at.
+still earn it a place; a repo with no index needs no `mirrors`. Say in the
+report which were dropped, so a reader knows what was not looked at.
+
+**There is no count cap here, and that is a decision.** Every lens the skill
+raises runs, up to the whole pool. A numeric cap below the pool's size drops a
+lens on every run whatever the skill is, and the log says what it dropped: over
+this pool's first four runs it took out `ownership` — the most precise lens on
+record — twice, while the least precise ran every time. The cap also bound the
+wrong half: a lens is one cheap agent (ADR 0003) and the refuters under its
+findings are on the strong model with no cap at all, so a lens refused entry
+saves the cheapest thing in the run and buys a blind spot with it. The budget
+is held instead by the read boundary below and by lenses that kill their own
+weak findings. Neither `dror-code-review` nor `dror-adr-review` is changed by
+this: a diff spread over many files, and a pool much larger than this one, are
+different arguments, and each states its own.
 
 `anchors` and `execution` are the two that earn their place on nearly every
 run: between them they are the whole question of whether the skill still runs
@@ -161,9 +172,8 @@ Paths, never contents.
 
 Every suspect is checked. Cutting the list here would put unchecked suspicions
 in the report, and a reader cannot tell an unchecked finding from a confirmed
-one. The cost is controlled before this point — fewer lenses, a tighter read
-boundary, and lenses that kill their own weak findings rather than passing them
-on.
+one. The cost is controlled before this point — a tighter read boundary, and
+lenses that kill their own weak findings rather than passing them on.
 
 Survivors are the report.
 
