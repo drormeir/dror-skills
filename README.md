@@ -49,6 +49,12 @@ An ADR is checked against five different things, which is why one read is worth
 it: the **code** it governs, **itself**, **other documents** that restate its
 rules, **its own tickets**, and **the reader** who will act on it. Only three of
 the ten lenses read code at all.
+
+The same shape turns on the skills themselves: `dror-skill-review` reviews one
+skill's directory — against the harness contract, the tree it runs in, itself,
+the shelf and the agent that reads it — `dror-skill-repair` corrects its
+text from the findings without redesigning what the skill does, and
+`dror-skill-review-repair` loops the two the way the other loops do.
 Beside it, `dror-review-retrospective`
 reads the refutation log across runs and says which lens is producing false
 positives.

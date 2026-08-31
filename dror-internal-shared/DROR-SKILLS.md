@@ -4,7 +4,7 @@ The agent-facing map. It owns the tier lists, the checkbox rules and the
 finding-kind routing; the glossary owns the terms, and each skill's own file its
 procedure.
 
-Thirteen skills over one way of working: an **ADR** states a decision, a **spec
+Sixteen skills over one way of working: an **ADR** states a decision, a **spec
 issue** turns it into work, **child tickets** carry the pieces, and each ticket's
 **acceptance criteria** are checkboxes in its body. The criteria are the contract
 — they are what a test is written against, what a review judges, and what a
@@ -52,14 +52,35 @@ kinds, and this is where each one goes:
 Neither skill writes code, and neither may rewrite what was decided — see
 ADR 0020. The glossary defines the six; `dror-adr-review` mints them.
 
+## On the machinery itself
+
+The same shape once more, turned on the skills: find, then fix, in two runs,
+with the finding refuted before it reaches you. The subject is one skill's
+directory — its `SKILL.md` and companions — judged against the harness
+contract, the tree it runs in, itself, the shelf and the agent that reads it.
+
+| Skill | Question it answers | Writes |
+|---|---|---|
+| `dror-skill-review` | Is this skill still true, still coherent, still executed as meant? | `skill-review-report-<name>.md` |
+| `dror-skill-repair` | Bring the skill's text, and every drifted copy of it, back in line with the repo | the skill's prose, and any index row, map entry or glossary line an `echo` names |
+| `dror-skill-review-repair` | Loop the two over one skill until it converges, up to a cap of its own — the ADR loop's cap and no round-1 floor, for the same one-document reason | whatever its two steps write |
+
+Its kinds and their routing: `text`, `hole`, `sprawl` and `echo` go to
+`dror-skill-repair` — a `sprawl` is a rule, tunable or vocabulary living in
+more places than its owner, collapsed to a pointer — and a `conflict` between
+two owners is nobody's until the user says which wins. `dror-skill-review`'s
+own `LENSES.md` mints them. `dror-skill-repair` may not redesign a skill: it
+makes sentences true and never changes what a skill does.
+
 A typical ticket: implement → `dror-prove` → the review-repair loop →
 `dror-prove` on whatever is still unticked → commit, push, close — which is what
 `dror-implement-ticket <N>` runs in one go.
 `dror-show-tickets` is the map you read before and after.
 
 **Where the context boundaries are.** Every skill in the chain and above it —
-the ticket, the drain, the two loops, prove, review, repair and the three ADR
-skills — carries `context: fork` in its frontmatter (ADR 0036), so each runs in
+the ticket, the drain, the three loops, prove, review, repair, the three ADR
+skills and the three skill-on-skill ones — carries `context: fork` in its
+frontmatter (ADR 0036), so each runs in
 an agent of its own whether the user invoked it or another skill did: what
 reaches it is its own file, the facts its first line injects, and its
 arguments, never the conversation that invoked it, and what comes back is its
@@ -97,7 +118,7 @@ Two tiers, and each skill says which it is in (ADR 0011):
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
   `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
-  `dror-adr-repair`, `dror-guide`.
+  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`.
   They name no path and no tracker; whatever a repo
   declares reaches them through the facts. It does not mean free of **git**:
   `dror-code-review`'s scope is the unpushed work and `dror-implement-ticket`'s
@@ -105,8 +126,11 @@ Two tiers, and each skill says which it is in (ADR 0011):
 - **Convention-bound** — `dror-implement-adr`, which inherits the binding from
   `dror-show-tickets` by using its vocabulary, `dror-show-tickets`, which assumes GitHub issues
   reachable by `gh` and ADRs in a conventional decision directory, `dror-adr-review`,
-  which assumes the second of those, and `dror-adr-review-repair`, which inherits
-  it from `dror-adr-review` by taking an ADR by number. In a repo that does
+  which assumes the second of those, `dror-adr-review-repair`, which inherits
+  it from `dror-adr-review` by taking an ADR by number, `dror-skill-review`,
+  which assumes skills as directories holding a `SKILL.md`, resolved by the
+  rule its own file states, and `dror-skill-review-repair`, which inherits
+  that from `dror-skill-review` by taking a skill by name. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 ## Why these skills exist beside Matt's

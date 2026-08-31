@@ -58,7 +58,8 @@ path that no longer resolves is a miss and never an error, and a row with no
 
 `lens` is the lens that raised it, or several joined by `+` where the merge
 folded them together. It is a **closed vocabulary** — a section name from
-`dror-code-review/LENSES.md` or from `dror-adr-review/LENSES.md`, or the reserved
+`dror-code-review/LENSES.md`, `dror-adr-review/LENSES.md` or
+`dror-skill-review/LENSES.md`, or the reserved
 `criterion` or `tool` — so a name outside that set is a
 defective row from an older run, not a lens to report on: count it out, and say
 how many rows were dropped and under what names.
@@ -67,10 +68,11 @@ A `tool` row (ADR 0045) faced no refuter — its verdict is `survived` by
 construction — so it is counted out of every precision rate, and a refuted
 `tool` row is a defective row, not a signal.
 
-The two pools answer different questions and their rates are **not comparable**
+The pools answer different questions and their rates are **not comparable**
 (ADR 0020): a code lens's finding is about a diff, an ADR lens's is about a
-sentence, and a document's `hole` is refuted on grounds no code finding faces.
-Report them apart, and never rank a lens of one against a lens of the other.
+sentence, a skill lens's is about a document an agent executes, and a
+document's `hole` is refuted on grounds no code finding faces.
+Report them apart, and never rank a lens of one against a lens of another.
 
 **Inside the ADR pool the same split runs again, along its five axes** (ADR
 0033). Only `claims`, `breach` and `outcome` are judged against the code; the
@@ -269,13 +271,14 @@ Four things can be the target, and the question decides which:
 
 - A lens raising false positives is a section of that lens's own `LENSES.md` —
   name the sentence or bullet. **Which file that is follows from the lens's
-  pool**, the same disjoint naming that kept the two apart in every count above:
-  a code lens is `dror-code-review/LENSES.md`, an ADR lens is
-  `dror-adr-review/LENSES.md`. A proposal aimed at the wrong pool's file edits a
+  pool**, the same disjoint naming that kept the pools apart in every count
+  above: a code lens is `dror-code-review/LENSES.md`, an ADR lens is
+  `dror-adr-review/LENSES.md`, a skill lens is `dror-skill-review/LENSES.md`.
+  A proposal aimed at the wrong pool's file edits a
   lens that never raised the finding.
 - Refuters killing real bugs, or letting weak findings through, is that pool's
-  `REFUTING.md` — `dror-code-review/REFUTING.md` or `dror-adr-review/REFUTING.md`,
-  chosen the same way.
+  `REFUTING.md` — `dror-code-review/REFUTING.md`, `dror-adr-review/REFUTING.md`
+  or `dror-skill-review/REFUTING.md`, chosen the same way.
 - A file that keeps needing claims is neither: the change belongs in **that
   project's code**, as a comment, and no skill edit will help. This one is a
   code-pool answer only; an ADR review writes no claim comments.

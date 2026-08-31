@@ -296,23 +296,23 @@ own precision.
 The report is overwritten every run, so every **merged finding**, survivor and
 kill alike, is also appended as one line to `~/.claude/dror-skills/refutations.tsv`
 — the same log `dror-code-review` writes, on the reference's terms for every log. The
-`lens` column keeps the two pools apart; nothing else has to.
+`lens` column keeps the pools apart; nothing else has to.
 
 One tab-separated line per finding — the columns and their order are the store
 reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
 values: `path` is **the ADR's repo-relative path**, which is what this run
 reviewed, even for a `breach` whose evidence sits in code; `kind` is `text /
 hole / breach / conflict / revisit / echo`; `claim` is always `no` — this skill
-writes no claim comments, and the column stays so the two pools share one
+writes no claim comments, and the column stays so the pools share one
 schema; `subject` is **the ADR's number**, the same one the identity line
 carries; `round` is the round a looping caller named, or `-`; and `run_tag` is
 this run's tag — the caller's where one was given, the minted one otherwise.
 
 **`subject` holds an ADR number here and a ticket number in `dror-code-review`'s
-rows**, which is safe only because the two pools are never read against each
+rows**, which is safe only because the pools are never read against each
 other — the rule for keeping them apart is
 `dror-review-retrospective`'s, and it turns on the disjoint lens names rather
-than on this column. A reader that groups by `subject` alone across both pools
+than on this column. A reader that groups by `subject` alone across pools
 is comparing an ADR with a ticket that happens to share its number.
 
 **The `id` column is what lets a `breach` be followed.** A breach goes to
@@ -324,8 +324,8 @@ name `id`, it arrives on the header line, as any added column does.
 **The `lens` column is a closed vocabulary**: a section name from this skill's
 [`LENSES.md`](LENSES.md), or one from `dror-code-review`'s. Nothing else may be
 written there — a name outside that set silently corrupts every rate
-`dror-review-retrospective` computes. The two vocabularies are disjoint, which is
-what lets one log hold both pools and a reader tell them apart. Where the merge
+`dror-review-retrospective` computes. The pools' vocabularies are disjoint, which
+is what lets one log hold them all and a reader tell them apart. Where the merge
 joined several, join their names with `+`.
 
 ## Record the run itself

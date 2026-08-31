@@ -51,8 +51,8 @@ condensed pointer, and that file owns the term.
   It skips the refuter — the tool's output is its own proof — and carries the
   reserved lens name `tool` (ADR 0045).
 - **Lens** — one review perspective, defined by a section of
-  `dror-code-review/LENSES.md` or of `dror-adr-review/LENSES.md`, run as one agent
-  that proposes findings.
+  `dror-code-review/LENSES.md`, `dror-adr-review/LENSES.md` or
+  `dror-skill-review/LENSES.md`, run as one agent that proposes findings.
 - **Refuter** — the agent handed one merged finding whose job is to kill it.
 - **Claim** — a comment written into source recording an invariant that is
   invisible at the site. Written by a refuter, verified rather than trusted by a
@@ -84,6 +84,16 @@ names a different hand as the one that fixes it.
   copy that gets read is the one that governs, so a correct ADR beside a stale
   copy is a rule not in force. An `echo` finding names every copy and is
   repaired in all of them at once.
+
+## Findings about a skill
+
+The kinds `dror-skill-review` returns, minted and defined in its own
+`LENSES.md` — this entry is the condensed pointer, and that file owns them.
+Four are repaired by `dror-skill-repair`: `text`, `hole` and `echo` carry the
+meanings above with the skill as the document, and **`sprawl`** — this pool's
+own word — is a rule, tunable or vocabulary living in more places than its
+owner, drifted or not, collapsed to a pointer rather than corrected. A
+`conflict` between two owners waits for the user.
 
 ## Evidence for a document
 
@@ -177,6 +187,8 @@ These words are the same in every `dror-*` run.
 - **ADR review report** — `adr-review-report-<adr>.md` in the store: the same for
   one ADR review, named the same way and for the same reason. A separate family
   from the code review's, so neither review can erase the other's findings.
+- **Skill review report** — `skill-review-report-<name>.md` in the store: the
+  same for one skill review, a third family kept separate for the same reason.
 - **Identity line** — `Ticket: <n>` or `ADR: <n>` in a report's front matter,
   and the report's identity: a name can be taken, mistyped or slugged, so only
   the line inside can be compared against the number a reader was handed
@@ -192,7 +204,8 @@ These words are the same in every `dror-*` run.
   hold, since a lens that finds nothing writes no finding. It also carries the
   run's `elapsed_s`, the only record of what a review costs in wall-clock.
 - **Repair log** — `~/.claude/dror-skills/repairs.tsv`: one line per finding a repair
-  handled, appended by `dror-code-repair` and by `dror-adr-repair`, keyed by the
+  handled, appended by `dror-code-repair`, `dror-adr-repair` and
+  `dror-skill-repair`, keyed by the
   report's finding id, carrying that run's outcome and the
   files that run edited. What
   says whether a survivor was a real defect once somebody tried to fix it — and,
@@ -207,6 +220,7 @@ These words are the same in every `dror-*` run.
 - **Run tag** — four hex characters minted per review run. Names the *run* in a
   report's front matter and in `runs.tsv`. It is not the report's file name,
   which ADR 0021 derives from the ticket — except where a caller names the path
-  instead, as `dror-code-review-repair` does with `review-report-<tag>-r<n>.md` and
-  `dror-adr-review-repair` with `adr-review-report-<n>-<tag>-r<k>.md`, one
-  file per round (ADR 0041).
+  instead, as `dror-code-review-repair` does with `review-report-<tag>-r<n>.md`,
+  `dror-adr-review-repair` with `adr-review-report-<n>-<tag>-r<k>.md` and
+  `dror-skill-review-repair` with `skill-review-report-<name>-<tag>-r<k>.md`,
+  one file per round (ADR 0041).

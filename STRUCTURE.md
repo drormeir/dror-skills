@@ -1,6 +1,6 @@
 # Structure
 
-Sixteen skills over one way of working. Every description below is the skill's
+Nineteen skills over one way of working. Every description below is the skill's
 own `description:` line, verbatim, minus its "Use when" trigger clause. This
 file owns the "Reach for it when" voice — the human's index — and nothing else:
 descriptions belong to each skill's frontmatter, and where this file and
@@ -174,6 +174,21 @@ the routing for all six lives in
 [`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md),
 the definitions in the glossary.
 
+## On the machinery itself
+
+The same find-then-fix shape once more, turned on the skills in this repo —
+every file here is read by an agent mid-run, so a skill drifts and misleads
+exactly the way an ADR does, and the pair below reviews and repairs one skill's
+directory the way the pair above treats one decision document. The kind
+routing lives in
+[`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md).
+
+| Skill | Reach for it when | Description | Writes |
+|---|---|---|---|
+| `dror-skill-review` | Before editing a skill that has sat untouched while the repo moved, or when a run of it misbehaved and you want the text checked before blaming the model. | Review one skill against the harness contract, the tree it runs in, itself, the shelf and the agent that reads it — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
+| `dror-skill-repair` | A skill review returned `text`, `hole`, `sprawl` or `echo` findings and you want the text corrected without the skill being redesigned. | Repair a skill's text from findings already made — every corrected sentence grounded in the file or command it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. | the skill's prose, and any index row, map entry or glossary line an `echo` names |
+| `dror-skill-review-repair` | Same as `dror-skill-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop skill review and repair over one skill until it converges — `dror-skill-review`, then `dror-skill-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
+
 ## Beside the chain
 
 | Skill | Reach for it when | Description |
@@ -234,13 +249,16 @@ One writer per direction, because a tick is a claim about evidence:
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
   `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
-  `dror-adr-repair`, `dror-guide`.
+  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`.
   They name no path and no tracker; whatever a repo declares reaches them
   through the facts.
 - **Convention-bound** — `dror-show-tickets` and `dror-implement-adr` assume
   GitHub issues reachable by `gh`; `dror-show-tickets`, `dror-implement-adr`,
   `dror-adr-review` and `dror-adr-review-repair` assume ADRs in a conventional
-  decision directory, resolved by the shelf's `ADR-FILE.md`. In a repo that does
+  decision directory, resolved by the shelf's `ADR-FILE.md`; `dror-skill-review`
+  assumes skills as directories holding a `SKILL.md`, resolved by the rule its
+  own file states, and `dror-skill-review-repair` inherits that from it by
+  taking a skill by name. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 The reasons behind all of it are one file per decision in

@@ -300,7 +300,7 @@ logs"), stated there once, including the six-file cap on `files_edited` and the
 rule that the same values go on every row this run appends. This run's own
 values: `outcome` is the word from this run's report — `Corrected (grounded)`,
 `Left — ungrounded`, `Not reproduced`, … — and `production` is **always `no`**,
-since this skill writes prose and nothing else; the column stays so the two pools
+since this skill writes prose and nothing else; the column stays so the pools
 share one schema.
 
 A report whose findings carry no id — one written before ids existed, or one this

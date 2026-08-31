@@ -38,9 +38,12 @@ of it:
 - an ADR review — `adr-review-report-<n>.md`, `<n>` being the ADR's number; the
   bare `adr-review-report.md` only for a run that somehow has no number, which is
   close to unreachable, since an ADR is what that skill is invoked on.
+- a skill review — `skill-review-report-<name>.md`, `<name>` being the skill's
+  own name, which that run always has, since a skill is what it is invoked on.
 
-One name per ticket and per ADR is what keeps two sessions in one checkout from
-overwriting each other's work-product — a report a repair run is about to read.
+One name per ticket, per ADR and per skill is what keeps two sessions in one
+checkout from overwriting each other's work-product — a report a repair run is
+about to read.
 
 **Take the default's own name first.** The ticket-scoped name is the name a
 ticketed run *has*, not a fallback for a collision: a run that reaches for it and
@@ -58,8 +61,9 @@ say on screen which file they went to and why.
 
 A name can be taken, mistyped or slugged, so the name is a filing convention and
 never the report's identity. The front matter carries it instead — `Ticket: <n>`,
-or `Ticket: none`; `ADR: <n>` for an ADR review — written even where the name
-already has the number, so that the two can be compared (ADR 0021).
+or `Ticket: none`; `ADR: <n>` for an ADR review; `Skill: <name>` for a skill
+review — written even where the name already has the number, so that the two
+can be compared (ADR 0021).
 
 **Whatever picked the file, check what it says it is** before working from it:
 
@@ -69,8 +73,9 @@ already has the number, so that the two can be compared (ADR 0021).
   mistake that silently repairs somebody else's findings under your number's
   name, and the file name is exactly what will not reveal it.
 - It carries **no** identity line at all — a report written before the line
-  existed. Fall back to the file **name**: a `review-report-<n>.md` or
-  `adr-review-report-<n>.md` matching your number is yours, and anything else is
+  existed. Fall back to the file **name**: a `review-report-<n>.md`,
+  `adr-review-report-<n>.md` or `skill-review-report-<name>.md` matching your
+  number or name is yours, and anything else is
   read only when the caller named it outright. Never take a bare report for a
   numbered run's on the grounds that it is the only file present; it is as likely
   to be another number's round that could not take its own name.
@@ -124,12 +129,13 @@ about a project, and one repo's runs are too few to read anything into (ADR
 - `runs.tsv` — one line per review run.
 - `repairs.tsv` — one line per finding a repair handled.
 
-**Every one of the three has two writers**, so all three column lists live here,
-once. A skill that appends to one of these files points at this section and does
-not restate the list; what it does say in its own file is what its own **values**
-are, which is the part that genuinely differs between the two writers.
+**Every one of the three has several writers**, so all three column lists live
+here, once. A skill that appends to one of these files points at this section
+and does not restate the list; what it does say in its own file is what its own
+**values** are, which is the part that genuinely differs between the writers.
 
-**`refutations.tsv`** — written by `dror-code-review` and `dror-adr-review`:
+**`refutations.tsv`** — written by `dror-code-review`, `dror-adr-review` and
+`dror-skill-review`:
 
 `date` (ISO, from `date -I`) · `repo` (the directory name) · `head` (short
 commit) · `lens` (the one that raised it; a merge's every-lens list joined by
@@ -140,7 +146,8 @@ written: yes / no) · `summary` (under 80 characters, no tabs) · `id` (the
 report's finding id, copied whole) · `report` (the path this run's report was
 written to, as named on screen) · `round` (which round of a caller's loop this
 run was, `1` upward, or `-` where the caller ran no loop) · `subject` (the
-number this run was given, or `-`) · `run_tag` (this run's tag, the same value
+ticket or ADR number this run was given — or, for a skill review, the skill's
+name — or `-`) · `run_tag` (this run's tag, the same value
 its `runs.tsv` row carries). **`id` and `report` keep their positions in
 that order, and every column added later follows them**, so a row written
 before the addition stays readable as the shorter row it is. Each writer says
@@ -158,7 +165,8 @@ split and report names are matched whole, so without this column no reader can
 tell which round-1 rows belong with which round-2 rows once two loops share a
 repo.
 
-**`runs.tsv`** — written by `dror-code-review` and `dror-adr-review`:
+**`runs.tsv`** — written by `dror-code-review`, `dror-adr-review` and
+`dror-skill-review`:
 
 `date` · `repo` · `head` · `lenses_run` (the writer's own closed lens names,
 joined by `+`) · `lenses_dropped` (the same, or `-`) · `findings` (how many
@@ -179,7 +187,8 @@ one drain that measured both showed does not predict duration. Two `date +%s`
 readings per run answer it directly. A run that did not read the clock writes
 `-` and is excluded from any mean, exactly as an unworked round is.
 
-**`repairs.tsv`** — written by `dror-code-repair` and `dror-adr-repair`:
+**`repairs.tsv`** — written by `dror-code-repair`, `dror-adr-repair` and
+`dror-skill-repair`:
 
 `date` (ISO) · `repo` (the directory name) · `id` (copied whole from the report,
 by the rule above) · `outcome` (the word from this run's own report) ·
