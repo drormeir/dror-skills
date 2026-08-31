@@ -198,38 +198,28 @@ Survivors are the report.
 
 ## The kinds
 
-Every survivor carries exactly one, and the kind is what decides whose work it
-is next:
+Every survivor carries exactly one. The six values — `text`, `hole`, `breach`,
+`conflict`, `echo`, `revisit` — and what each **means** are minted in
+[`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens agent's
+prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section by
+section. Neither is restated here.
 
-- **`text`** — the document says something about the code that is not true, or
-  is no longer true, or is unreadable enough that two readers act differently on
-  it. Repaired by `dror-adr-repair`.
-- **`hole`** — the document is missing something a decision record has to carry:
-  the alternative it was chosen over, a consequence that followed, the scope of
-  what it supersedes, the migration it implies. Repaired by `dror-adr-repair`,
-  and only where the missing sentence can be **grounded** — an alternative
-  nobody recorded is not one this skill invents.
-- **`breach`** — the code breaks a rule the ADR states, at a named `file:line`.
-  The document is fine. This is a bug report that happens to have been found by
-  reading a document, and it goes to `dror-code-repair` untouched — naming it here
-  and fixing it there is the same split as everywhere else in this chain.
-- **`conflict`** — two decisions disagree: this ADR against another, or against
-  itself. **Nobody repairs this without the user.** Which side is right is a
-  decision, and a skill that picks one has written an ADR nobody approved.
-- **`echo`** — the rule is right here and a copy of it elsewhere has drifted:
-  the conventions doc, the glossary, a docstring at the site, a README index.
-  The copy that gets read is the one that governs, so the finding names
-  **every** copy with its `file:line`, and `dror-adr-repair` synchronises all
-  of them at once. The `echoes` lens is what raises it.
-- **`revisit`** — nothing is wrong. The document is true, coherent and obeyed,
-  and what it **predicted** has not held: the measurement it stood on now reads
-  differently, the consequence it promised did not arrive, the cost it accepted
-  has outgrown the acceptance, or the reason its rejected alternative lost no
-  longer applies. It is a finding because it is the strongest reason to reopen a
-  decision and the one nobody checks — the document is not wrong about anything.
-  **Nobody repairs it either**: there is no wrong sentence to correct, and
-  whether to reopen is the user's. It carries both numbers, the predicted and
-  the measured, or it is an opinion about somebody else's decision.
+What this file adds is the part neither carries: the kind is what decides
+**whose work it is next**.
+
+- `text`, `hole` and `echo` go to `dror-adr-repair`. A `hole` only where the
+  missing sentence can be **grounded** — an alternative nobody recorded is not
+  one this skill invents; an `echo` in **every** copy the finding names, at
+  once.
+- `breach` goes to `dror-code-repair` untouched. The document is fine; this is a
+  bug report that happens to have been found by reading a document, and naming
+  it here and fixing it there is the same split as everywhere else in this
+  chain.
+- `conflict` and `revisit`: **nobody repairs either without the user.** Which
+  side of a conflict is right is a decision, and a skill that picks one has
+  written an ADR nobody approved. A `revisit` has no wrong sentence to correct
+  at all — it is the strongest reason to reopen a decision and the one nobody
+  checks — and whether to reopen is the user's.
 
 A finding a refuter could not settle says so on its line and keeps its kind.
 
@@ -365,7 +355,7 @@ Show the same numbered list, in that order, each line naming its kind. Under it,
 say in one sentence which findings are this chain's next work and whose: the
 `text`, `hole` and `echo` ones go to `dror-adr-repair`, the `breach` ones to
 `dror-code-repair`, and a `conflict` or a `revisit` waits for the user — the first
-because somebody must choose, the second because nothing is broken. Then stop and wait.
+because somebody must choose, the second because nothing is broken.
 
 Name the report file this run wrote, since a repair run has to be pointed at it
 and only this run knows which name it took, and say this run's tag once.
@@ -378,6 +368,8 @@ survivor is something to know rather than something to change; *the user's call*
 where a `conflict` or a `revisit` is the whole list and choosing is theirs. It
 binds nobody; a looping caller reads this line to decide whether to spend a
 repair at all.
+
+Then stop and wait.
 
 Done when every lens has returned, the findings have been merged, every merged
 finding has faced a refuter, this run's report file holds the survivors and the
