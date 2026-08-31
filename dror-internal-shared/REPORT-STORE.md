@@ -119,7 +119,8 @@ because the questions they answer are about the lenses and the skills rather tha
 about a project, and one repo's runs are too few to read anything into (ADR
 0009):
 
-- `refutations.tsv` — one line per merged finding.
+- `refutations.tsv` — one line per merged finding, plus `dror-code-review`'s
+  unmerged `tool` findings (ADR 0045).
 - `runs.tsv` — one line per review run.
 - `repairs.tsv` — one line per finding a repair handled.
 
@@ -128,7 +129,7 @@ once. A skill that appends to one of these files points at this section and does
 not restate the list; what it does say in its own file is what its own **values**
 are, which is the part that genuinely differs between the two writers.
 
-**`refutations.tsv`** — written by `dror-review` and `dror-adr-review`:
+**`refutations.tsv`** — written by `dror-code-review` and `dror-adr-review`:
 
 `date` (ISO, from `date -I`) · `repo` (the directory name) · `head` (short
 commit) · `lens` (the one that raised it; a merge's every-lens list joined by
@@ -157,7 +158,7 @@ split and report names are matched whole, so without this column no reader can
 tell which round-1 rows belong with which round-2 rows once two loops share a
 repo.
 
-**`runs.tsv`** — written by `dror-review` and `dror-adr-review`:
+**`runs.tsv`** — written by `dror-code-review` and `dror-adr-review`:
 
 `date` · `repo` · `head` · `lenses_run` (the writer's own closed lens names,
 joined by `+`) · `lenses_dropped` (the same, or `-`) · `findings` (how many
@@ -178,7 +179,7 @@ one drain that measured both showed does not predict duration. Two `date +%s`
 readings per run answer it directly. A run that did not read the clock writes
 `-` and is excluded from any mean, exactly as an unworked round is.
 
-**`repairs.tsv`** — written by `dror-repair` and `dror-adr-repair`:
+**`repairs.tsv`** — written by `dror-code-repair` and `dror-adr-repair`:
 
 `date` (ISO) · `repo` (the directory name) · `id` (copied whole from the report,
 by the rule above) · `outcome` (the word from this run's own report) ·

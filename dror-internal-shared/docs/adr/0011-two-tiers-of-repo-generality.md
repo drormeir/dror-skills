@@ -1,14 +1,14 @@
 # Two tiers of repo-generality, and each skill says which it is in
 
 The set used to claim both things at once: `dror-internal-project-facts` promised "works
-in any repo and any language" while `dror-prove`, `dror-repair` and
+in any repo and any language" while `dror-prove`, `dror-code-repair` and
 `dror-show-tickets` named one project's paths (`docs/adr/<NNNN>-*.md`,
 `docs/agents/issue-tracker.md`). A skill that quietly assumes a convention fails
 in a repo that does it differently, and a reader cannot tell which kind they are
 holding.
 
-So: **repo-agnostic** — `dror-internal-project-facts`, `dror-prove`, `dror-repair`,
-`dror-review`, `dror-guide` — name no tracker and no path, and take what a repo
+So: **repo-agnostic** — `dror-internal-project-facts`, `dror-prove`, `dror-code-repair`,
+`dror-code-review`, `dror-guide` — name no tracker and no path, and take what a repo
 declares from the facts. **Convention-bound** — `dror-show-tickets` — states its
 assumptions in its own text and stops when they do not hold.
 
@@ -41,7 +41,7 @@ apply. Every other skill in the set answers it, session-style ones included.
 
 Two things the rule did not anticipate, both now stated where they apply.
 Repo-agnostic means "names no tracker, no path and no runner **of its own**" —
-it has never meant free of `git`, which `dror-review`'s scope and
+it has never meant free of `git`, which `dror-code-review`'s scope and
 `dror-implement-ticket`'s step 0 both require unconditionally; a skill that
 needs git says so. And `gh issue view` appearing in an agnostic skill is a
 worked example of what the fifth fact returned, not a tracker the skill names —

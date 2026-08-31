@@ -1,7 +1,7 @@
 # A report says which ticket it is for, and the name is not the answer
 
 A review report is named after what was reviewed — `review-report-<n>.md`, bare
-`review-report.md` for a review of no ticket — and `dror-repair` was told to
+`review-report.md` for a review of no ticket — and `dror-code-repair` was told to
 find its file by that name alone, falling back to the bare one when the ticketed
 name was absent.
 
@@ -17,7 +17,7 @@ this ticket's name.
 
 So the report carries `Ticket: <n>` — or `Ticket: none` — in its front matter,
 and **that line is the report's identity**. The name is a filing convention and
-stays one. `dror-repair` compares the line against the number it was handed and
+stays one. `dror-code-repair` compares the line against the number it was handed and
 stops on a mismatch, whatever the file is called, and the bare-name fallback is
 gone: where no report answers, the run says so.
 
@@ -39,7 +39,7 @@ against the files it indexes is worse than the files answering for themselves.
 
 ## Consequences
 
-A report written before this line existed has no `Ticket:`, so `dror-repair`
+A report written before this line existed has no `Ticket:`, so `dror-code-repair`
 falls back to the file **name** for those — a `review-report-<n>.md` matching
 the number in hand is that ticket's — and never to the bare name. Old reports
 age out of the store as reviews overwrite them, and nothing migrates them.

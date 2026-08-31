@@ -8,6 +8,22 @@ Refuted means **the code is fine**, not that the sentence was clumsy. A finding
 whose scenario is misstated but whose code is genuinely broken comes back
 a survivor, with the scenario rewritten.
 
+## Prefer a run to a reading
+
+The strongest verdict either way is an execution, not an argument (ADR 0046).
+Where the failure scenario can be staged — a snippet calling the code with the
+scenario's own input, a narrow test invocation, the interpreter one-lining it —
+stage it and let the output decide: the defect appearing confirms, its absence
+under the scenario's own conditions refutes, and the pasted output is the
+evidence either way. Stage it **in a copy outside the repo** — the scratchpad —
+never in the working tree: refuters run in parallel, and a review changes no
+line of code. Reading alone settles only what no run can reach — real GUI or
+thread timing, a scenario needing state no copy can hold — and the return says
+which kind of verdict it was.
+
+The budget rule from the missing-test section holds here too: the narrowest
+invocation that could possibly show the defect, never a full suite.
+
 ## A missing-test finding is refuted differently
 
 This section travels only with a `cover` finding — the hand-off in `SKILL.md`
@@ -61,6 +77,12 @@ whole comment lines, leaving every line of code as it was.
 
 ## Return
 
-The verdict — survived, refuted or unverified — one sentence of why, the
-corrected scenario where you rewrote one, and the path and line of any claim
-comment you wrote.
+The verdict — survived, refuted or unverified — one sentence of why, whether an
+execution or a reading decided it, the corrected scenario where you rewrote
+one, and the path and line of any claim comment you wrote. Where an execution
+decided, also the **exact command that decided it**, phrased to run from the
+live repo's root: your scratchpad copy is gone by the time a repair replays it,
+so the copy's paths become the repo's own and a staged snippet is folded into
+the command itself — a heredoc, a `-c` one-liner. A run only the copy could
+phrase returns no command and says so. The report carries the command forward
+as the finding's `repro:` line, verbatim, and a repair replays it (ADR 0046).

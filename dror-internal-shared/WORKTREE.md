@@ -26,7 +26,7 @@ the ADR's own file is `0014-*.md`. Local and remote carry the same name.
 
 **This is a convention, not a choice made per run.** Three separate things join
 on it: a drain's state file records the branch it was written under and a
-resumed run compares them, `dror-review` derives every ticket's base from this
+resumed run compares them, `dror-code-review` derives every ticket's base from this
 branch's upstream, and the user finds the work by guessing the name months
 later. A branch named per-run breaks all three quietly.
 
@@ -59,7 +59,7 @@ being named. The cost is that a worktree under the checkout is walked by the
 parent's own tools, and that cost is real rather than theoretical: see the
 guards.
 
-**Pushed, with upstream set.** `dror-review` derives its base from
+**Pushed, with upstream set.** `dror-code-review` derives its base from
 `git merge-base @{upstream} HEAD` **where there is an upstream**, and falls back
 to the remote's default branch where there is none — which for this branch would
 be every ticket's work at once, so the `-u` is what picks the first of those two.

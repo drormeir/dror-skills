@@ -15,7 +15,7 @@ header can never arrive as a data row.
 
 Adding `spec` to `LENSES.md` as a seventh lens was rejected: the pool is already
 capped at five lenses per run, and what those findings actually were is the
-ticket-criteria check `dror-review` already performs.
+ticket-criteria check `dror-code-review` already performs.
 
 ## Consequences
 

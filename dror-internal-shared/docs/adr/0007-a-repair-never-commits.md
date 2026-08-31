@@ -1,6 +1,6 @@
 # A repair never commits
 
-`dror-repair` runs start to finish without stopping and hands back uncommitted
+`dror-code-repair` runs start to finish without stopping and hands back uncommitted
 changes. Committing is the user's, and it is the point at which they read what a
 run that made no stops actually did.
 

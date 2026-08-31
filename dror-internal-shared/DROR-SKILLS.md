@@ -21,9 +21,9 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, `drain-<ADR>.json`, `drain-<ADR>.log` |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
-| `dror-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
-| `dror-repair` | Fix what the review found, each one red then green | code and tests; unticks a red box |
-| `dror-review-repair` | Loop the two until it converges, up to its own cap | whatever its two steps write |
+| `dror-code-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
+| `dror-code-repair` | Fix what the review found, each one red then green | code and tests; unticks a red box |
+| `dror-code-review-repair` | Loop the two until it converges, up to its own cap | whatever its two steps write |
 
 ## Above the chain
 
@@ -44,7 +44,7 @@ kinds, and this is where each one goes:
   `dror-adr-repair`. An `echo` is a rule the ADR states correctly and a copy of
   it elsewhere has drifted, so it names every copy and is repaired in all of
   them at once — the copy that gets read is the one that governs.
-- `breach` is the code's and goes to `dror-repair`.
+- `breach` is the code's and goes to `dror-code-repair`.
 - `conflict` between two decisions is nobody's until the user says which wins.
 - `revisit` is nobody's either, for the opposite reason: nothing is wrong, and
   what the decision predicted has not held. Whether to reopen it is the user's.
@@ -63,8 +63,8 @@ skills — carries `context: fork` in its frontmatter (ADR 0036), so each runs i
 an agent of its own whether the user invoked it or another skill did: what
 reaches it is its own file, the facts its first line injects, and its
 arguments, never the conversation that invoked it, and what comes back is its
-closing summary. Beneath those, `dror-review` and `dror-adr-review` spawn a lens
-agent per lens with a refuter under each, and `dror-repair` and
+closing summary. Beneath those, `dror-code-review` and `dror-adr-review` spawn a lens
+agent per lens with a refuter under each, and `dror-code-repair` and
 `dror-adr-repair` fan out per item; every such agent is given paths and never
 pasted text (ADR 0038). Each file owns its own arrangement and lists what its
 agent must return, and a step is a step either way — see `DELEGATION.md`.
@@ -96,11 +96,11 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
 Two tiers, and each skill says which it is in (ADR 0011):
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
-  `dror-prove`, `dror-repair`, `dror-review`, `dror-review-repair`,
+  `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
   `dror-adr-repair`, `dror-guide`.
   They name no path and no tracker; whatever a repo
   declares reaches them through the facts. It does not mean free of **git**:
-  `dror-review`'s scope is the unpushed work and `dror-implement-ticket`'s
+  `dror-code-review`'s scope is the unpushed work and `dror-implement-ticket`'s
   step 0 counts commits, and both say so.
 - **Convention-bound** — `dror-implement-adr`, which inherits the binding from
   `dror-show-tickets` by using its vocabulary, `dror-show-tickets`, which assumes GitHub issues
@@ -117,7 +117,7 @@ They answer different questions, and neither replaces the other.
   is, seams, anti-patterns. It takes no ticket. **`dror-prove`** is a *procedure*
   driven by one ticket's criteria list.
 - **Matt's `/code-review`** reviews since a chosen point on two axes, Standards
-  and Spec. **`dror-review`** reviews everything unpushed through lenses and
+  and Spec. **`dror-code-review`** reviews everything unpushed through lenses and
   refuters, and leaves a report file later runs read.
 - **Matt's `/implement`** is the same orchestration over his own steps: it names
   `/tdd` and `/code-review` literally, so a plain run bypasses the
@@ -133,8 +133,8 @@ They answer different questions, and neither replaces the other.
 One writer per direction, because a tick is a claim about evidence (ADR 0004):
 
 - **`dror-prove` ticks**, and only what it saw go green.
-- **`dror-repair` unticks**, and only a box whose test it just saw go red.
-- **`dror-review` touches no box.** Its per-criterion verdicts go into its own
+- **`dror-code-repair` unticks**, and only a box whose test it just saw go red.
+- **`dror-code-review` touches no box.** Its per-criterion verdicts go into its own
   report; nothing is posted to the tracker.
 
 ## Naming

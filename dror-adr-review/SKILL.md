@@ -36,7 +36,7 @@ five **axes**, each admitting a different kind of evidence, set out in
 Only three of the ten lenses read code, so **a `file:line` is not what a finding
 owes** — it is what one axis's findings owe. They are told apart by their
 **kind**, because they are repaired by different hands: the document's fault
-goes to `dror-adr-repair`, the code's to `dror-repair`, which fixes code and
+goes to `dror-adr-repair`, the code's to `dror-code-repair`, which fixes code and
 this skill's companion never does.
 
 ## What this skill assumes
@@ -197,7 +197,7 @@ is next:
   nobody recorded is not one this skill invents.
 - **`breach`** — the code breaks a rule the ADR states, at a named `file:line`.
   The document is fine. This is a bug report that happens to have been found by
-  reading a document, and it goes to `dror-repair` untouched — naming it here
+  reading a document, and it goes to `dror-code-repair` untouched — naming it here
   and fixing it there is the same split as everywhere else in this chain.
 - **`conflict`** — two decisions disagree: this ADR against another, or against
   itself. **Nobody repairs this without the user.** Which side is right is a
@@ -281,7 +281,7 @@ own precision.
 
 The report is overwritten every run, so every **merged finding**, survivor and
 kill alike, is also appended as one line to `~/.claude/dror-skills/refutations.tsv`
-— the same log `dror-review` writes, on the reference's terms for every log. The
+— the same log `dror-code-review` writes, on the reference's terms for every log. The
 `lens` column keeps the two pools apart; nothing else has to.
 
 One tab-separated line per finding — the columns and their order are the store
@@ -294,7 +294,7 @@ schema; `subject` is **the ADR's number**, the same one the identity line
 carries; `round` is the round a looping caller named, or `-`; and `run_tag` is
 this run's tag — the caller's where one was given, the minted one otherwise.
 
-**`subject` holds an ADR number here and a ticket number in `dror-review`'s
+**`subject` holds an ADR number here and a ticket number in `dror-code-review`'s
 rows**, which is safe only because the two pools are never read against each
 other — the rule for keeping them apart is
 `dror-review-retrospective`'s, and it turns on the disjoint lens names rather
@@ -302,13 +302,13 @@ than on this column. A reader that groups by `subject` alone across both pools
 is comparing an ADR with a ticket that happens to share its number.
 
 **The `id` column is what lets a `breach` be followed.** A breach goes to
-`dror-repair`, which writes a `repairs.tsv` row only for a finding that carried
+`dror-code-repair`, which writes a `repairs.tsv` row only for a finding that carried
 an id — so an ADR review that minted none put its findings beyond every question
 the logs exist to answer, while sharing their schema. Where the header does not
 name `id`, it arrives on the header line, as any added column does.
 
 **The `lens` column is a closed vocabulary**: a section name from this skill's
-[`LENSES.md`](LENSES.md), or one from `dror-review`'s. Nothing else may be
+[`LENSES.md`](LENSES.md), or one from `dror-code-review`'s. Nothing else may be
 written there — a name outside that set silently corrupts every rate
 `dror-review-retrospective` computes. The two vocabularies are disjoint, which is
 what lets one log hold both pools and a reader tell them apart. Where the merge
@@ -323,7 +323,7 @@ dropped; that fact dies with the report unless it is written where later runs ca
 read it.
 
 So append one line to `~/.claude/dror-skills/runs.tsv`, on the same terms as the
-log above — the same file `dror-review` writes, whose rows the disjoint lens
+log above — the same file `dror-code-review` writes, whose rows the disjoint lens
 names keep readable apart. The columns and their order are the store reference's
 (`REPORT-STORE.md`, "The logs"), stated there once.
 
@@ -335,7 +335,7 @@ the difference between a `date +%s` read immediately before the lenses are
 launched and one read as this line is written, or `-` where the first reading
 was not taken.
 
-**Never `-` here.** In `dror-review`'s rows that value means *a check ran and saw
+**Never `-` here.** In `dror-code-review`'s rows that value means *a check ran and saw
 nobody*; this skill runs no check of its own, and writing `-` would put "looked
 and found none" and "never looked" under one value in one column. `unchecked` is
 the honest word, and a caller that did look — `dror-adr-review-repair` does, once
@@ -350,7 +350,7 @@ to record.
 Show the same numbered list, in that order, each line naming its kind. Under it,
 say in one sentence which findings are this chain's next work and whose: the
 `text`, `hole` and `echo` ones go to `dror-adr-repair`, the `breach` ones to
-`dror-repair`, and a `conflict` or a `revisit` waits for the user — the first
+`dror-code-repair`, and a `conflict` or a `revisit` waits for the user — the first
 because somebody must choose, the second because nothing is broken. Then stop and wait.
 
 Name the report file this run wrote, since a repair run has to be pointed at it

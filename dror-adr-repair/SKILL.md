@@ -132,7 +132,7 @@ reproduced, with the evidence quoted. Neither is an error; both are the ordinary
 outcome of checking.
 
 A `breach` item is grounded like the others and then **stops here**: confirm the
-site still violates the rule, quote it, and carry it as work for `dror-repair`.
+site still violates the rule, quote it, and carry it as work for `dror-code-repair`.
 Nothing is written for it. A `revisit` item stops here too, and for the opposite
 reason: nothing is wrong, so there is no sentence to correct — re-read the two
 numbers it carries, confirm they still read that way, and carry it to the report
@@ -249,14 +249,14 @@ the outcome carries the verdict.
   - `Left — ungrounded` — nothing in the tree settles it. Names what is missing.
   - `Not reproduced` — the tree agrees with the document. Nothing changed, and
     the evidence is quoted.
-  - `For dror-repair` — a `breach`, confirmed and handed on, with its
+  - `For dror-code-repair` — a `breach`, confirmed and handed on, with its
     `file:line`.
   - `Duplicate of N` — it and item N are one fault; N carries the repair.
   - `Deferred` — real, and left on the **user's** instruction.
 
 Never pair a finding with an outcome that contradicts it:
 
-- `breach` ends in `For dror-repair` or `Not reproduced`, never in a
+- `breach` ends in `For dror-code-repair` or `Not reproduced`, never in a
   `Corrected` — editing the document to match code that breaks its rule is how a
   rule is lost.
 - `conflict` and `revisit` end in `Left — needs a decision`, never in a
@@ -292,7 +292,7 @@ written where a later run can read it, every one of them stays on the record as 
 success.
 
 So for every finding that carried an **id** in the report, append one line to
-`~/.claude/dror-skills/repairs.tsv` — the same log `dror-repair` writes, on the
+`~/.claude/dror-skills/repairs.tsv` — the same log `dror-code-repair` writes, on the
 store reference's terms for every log:
 
 The columns and their order are the store reference's (`REPORT-STORE.md`, "The
@@ -317,7 +317,7 @@ grounds in half a sentence, and name what was edited.
   Strongest where an edit reached a document the findings never named, or where
   an `echo` was synchronised across several copies.
 - **no** — nothing was written at all: every item was `Not reproduced`,
-  `Left — ungrounded`, `Left — needs a decision`, or handed to `dror-repair`. A
+  `Left — ungrounded`, `Left — needs a decision`, or handed to `dror-code-repair`. A
   run that changed no file leaves nothing for a further pass to read.
 - **the user's call** — the document moved only in the narrow way each finding
   described, and the run has nothing further to suggest.

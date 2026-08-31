@@ -42,7 +42,7 @@ what you hand a skill: `dror-implement-ticket 42`.
 
 Everything downstream is those lines and nothing else. `dror-prove` writes one
 test per checkbox and ticks it only after seeing that test *fail* first.
-`dror-review` judges the diff against them. `dror-repair` unticks one when its
+`dror-code-review` judges the diff against them. `dror-code-repair` unticks one when its
 test goes red again. A closed ticket means every box is ticked and every tick was
 earned — which is why the criteria have to be written as things that can be
 observed, not as intentions like "handles the edge cases properly".
@@ -101,10 +101,10 @@ flowchart TD
 
         IT --> IMPL["implement<br/>the ticket's code"]
         IMPL --> PV[dror-prove]
-        PV --> RR[dror-review-repair]
+        PV --> RR[dror-code-review-repair]
 
         subgraph loop ["converges, floor to cap"]
-            RV[dror-review] -->|survivors| RP[dror-repair]
+            RV[dror-code-review] -->|survivors| RP[dror-code-repair]
             RP -->|anything edited| RV
         end
 
@@ -153,9 +153,9 @@ and by then the tickets are wrong too.
 | `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. It is forked, so it says nothing until it finishes: watch the desktop notification it fires per ticket, or `tail -f` its progress log. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one ticket at a time through `dror-implement-ticket`, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. | a worktree at `.claude/adr-wip/adr-<N>` (removed on a clean finish), a branch `adr-<N>`, a push and a close per ticket, a drain state file and a progress log |
 | `dror-implement-ticket` | One ticket, start to closed, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closed — implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
-| `dror-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding refuted before it reaches you. Reports the survivors and changes no behaviour. | a review report, its per-criterion verdicts inside |
-| `dror-repair` | Findings already exist — in a review report, or in a findings file you wrote from what a colleague or a conversation named — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
-| `dror-review-repair` | Same as `dror-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — `dror-review`, then `dror-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
+| `dror-code-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding tool-proven or refuted before it reaches you. Reports the survivors and changes no behaviour. | a review report, its per-criterion verdicts inside |
+| `dror-code-repair` | Findings already exist — in a review report, or in a findings file you wrote from what a colleague or a conversation named — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
+| `dror-code-review-repair` | Same as `dror-code-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — `dror-code-review`, then `dror-code-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
 ## Above the chain
 
@@ -203,11 +203,11 @@ next invocation. The reasons are ADR 0036.
 The forks nest, and the harness caps how deep: an agent at the cap cannot
 spawn, and a skill forked from just below it arrives without its arguments.
 The chain stays under that ceiling by one fold — a drain-run
-`dror-implement-ticket` follows `dror-review-repair`'s file in its own context
+`dror-implement-ticket` follows `dror-code-review-repair`'s file in its own context
 instead of forking it, keyed on the directory override in its arguments — so
 every fork still gets its arguments and every review keeps its parallel
 fan-out, whichever of the three entry points (`dror-implement-adr`,
-`dror-implement-ticket`, `dror-review-repair`) you invoke yourself. The
+`dror-implement-ticket`, `dror-code-review-repair`) you invoke yourself. The
 reasons, and the depth arithmetic, are ADR 0043.
 
 ## Style and tools
@@ -226,14 +226,14 @@ to you, one changes what Claude can see.
 One writer per direction, because a tick is a claim about evidence:
 
 - **`dror-prove` ticks**, and only what it saw go green.
-- **`dror-repair` unticks**, and only a box whose test it just saw go red.
-- **`dror-review` touches no box.** Its per-criterion verdicts go into its own
+- **`dror-code-repair` unticks**, and only a box whose test it just saw go red.
+- **`dror-code-review` touches no box.** Its per-criterion verdicts go into its own
   report; nothing is posted to the tracker.
 
 ## Which of them know your repo's conventions
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
-  `dror-prove`, `dror-repair`, `dror-review`, `dror-review-repair`,
+  `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
   `dror-adr-repair`, `dror-guide`.
   They name no path and no tracker; whatever a repo declares reaches them
   through the facts.

@@ -1,10 +1,10 @@
 # A loop's step rides an agent, not a fork
 
-`dror-review-repair` used to invoke `dror-review` and `dror-repair` as the
+`dror-code-review-repair` used to invoke `dror-code-review` and `dror-code-repair` as the
 `context: fork` skills they are, and unfork them only under a directory
 override (ADR 0043's fold). The fork carrier failed outside the drain too:
 on 2026-08-31, in this repo's own tree, a directly-invoked loop's `Skill
-dror-review` arrived without its arguments, and a drain-free run earlier the
+dror-code-review` arrived without its arguments, and a drain-free run earlier the
 same day dropped the same way — ADR 0043's "no level count is trusted here".
 
 ## The defect
@@ -25,15 +25,15 @@ loses its arguments, so the condition cannot be computed.
 **Detecting a bare fork and retrying** was rejected: the drop is silent by
 nature, detection is a probe per round, and a retried fork can drop again.
 
-**Demoting `dror-review` and `dror-repair` to sub-files of the loop** was
+**Demoting `dror-code-review` and `dror-code-repair` to sub-files of the loop** was
 rejected: the carrier does not care where a file lives, so the move buys
 nothing — and it costs the direct runs both skills' descriptions promise,
-including the owed-at-cap hand-back, which is literally `/dror-review` typed
+including the owed-at-cap hand-back, which is literally `/dror-code-review` typed
 by the user.
 
 ## The decision
 
-`dror-review-repair` drives step 1 and step 3 as **spawned agents given the
+`dror-code-review-repair` drives step 1 and step 3 as **spawned agents given the
 step files, always** — override or none — and never as `Skill` invocations.
 The carrier's mechanics live once on the shelf, in
 [`STEP-AGENT.md`](../../STEP-AGENT.md): the absolute file path, the dead
@@ -47,7 +47,7 @@ The depth arithmetic is unchanged — loop at 1, step agents at 2, lenses and
 refuters as leaves at 3 — so both fan-outs survive in manual and drain runs
 alike, and the two invocation paths are now one carrier instead of a forked
 path that works and a manual one that fails unpredictably. A direct
-`/dror-review` or `/dror-repair` typed by the user stays a `Skill` fork: it
+`/dror-code-review` or `/dror-code-repair` typed by the user stays a `Skill` fork: it
 is invoked from the session, not from inside a fork, and every session on
 record delivered that shape intact. Two fork-from-fork shapes remain and are
 deliberately deferred until this one has run: `dror-adr-review-repair` still

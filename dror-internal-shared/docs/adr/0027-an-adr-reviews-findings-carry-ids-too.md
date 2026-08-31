@@ -1,12 +1,12 @@
 # An ADR review's findings carry ids too
 
-`dror-adr-review` appends to the same `refutations.tsv` as `dror-review`, on
+`dror-adr-review` appends to the same `refutations.tsv` as `dror-code-review`, on
 purpose (ADR 0009) — the `lens` column keeps the two pools apart and nothing else
 has to. It wrote nine columns where the code review writes ten: its findings
 carried no **finding id**, and its rows landed with the `id` field absent.
 
 That put every ADR finding beyond the question the logs exist to answer. A
-`breach` goes to `dror-repair`, which writes a `repairs.tsv` row only for a
+`breach` goes to `dror-code-repair`, which writes a `repairs.tsv` row only for a
 finding that carried an id (ADR 0022), so nothing could say what became of one. A
 `text` or `hole` went to `dror-adr-repair`, which recorded no outcome at all.
 Both pools shared a schema while only one of them was joinable.
@@ -24,7 +24,7 @@ joining column is beyond the questions the logs answer, and a missing
 nothing writes no finding, so without a run row an ADR lens chosen twice and one
 chosen thirty times are indistinguishable. `dror-adr-review` therefore writes its
 run line too, with `concurrent` as **`unchecked`** — it runs no check of its own,
-and `-` already means *a check ran and saw nobody* in `dror-review`'s rows. One
+and `-` already means *a check ran and saw nobody* in `dror-code-review`'s rows. One
 value for both would put "looked and found none" and "never looked" under one
 column, which is the confound ADR 0024 added the column to remove. A caller that
 does check passes what it saw, and that is written instead.
@@ -53,7 +53,7 @@ they stand, on ADR 0022's terms.
 
 `dror-adr-review` now mints a tag, which it did not before, and accepts one from
 a caller — which is what lets `dror-adr-review-repair` keep one tag across all of
-its rounds, exactly as `dror-review-repair` does.
+its rounds, exactly as `dror-code-review-repair` does.
 
 `runs.tsv` now holds rows from two kinds of review. They stay readable apart
 because the two lens vocabularies are **disjoint** — no name appears in both

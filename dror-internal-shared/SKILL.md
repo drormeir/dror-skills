@@ -10,7 +10,7 @@ This directory is a shelf. It holds what more than one `dror-*` skill reads, so
 that sharpening a rule sharpens every run that obeys it.
 
 - [`WRITING-TESTS.md`](WRITING-TESTS.md) — how a test is written and how it is
-  proved to bite. Read whole by `dror-prove` and `dror-repair`.
+  proved to bite. Read whole by `dror-prove` and `dror-code-repair`.
 - [`REPORT-STORE.md`](REPORT-STORE.md) — which name a report takes, the identity
   line that makes the name checkable, the finding id, and the columns and
   discipline of all three logs. Read whole by the reviews that write a report,

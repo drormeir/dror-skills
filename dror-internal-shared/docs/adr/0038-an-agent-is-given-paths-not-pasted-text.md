@@ -9,7 +9,7 @@ else: the finding, the criteria list, the lens's name.
 
 ## The defect
 
-`dror-review` handed each lens the facts and its lens text "verbatim", each
+`dror-code-review` handed each lens the facts and its lens text "verbatim", each
 refuter the facts, `REFUTING.md`'s sections and diff hunks "sliced from the
 scratch file by you"; `dror-adr-review` handed every lens and every refuter the
 ADR's full text. The controller composed those prompts, so every pasted byte was
@@ -35,7 +35,7 @@ done later without undoing this.
 
 ## Consequences
 
-**The diff slice is a command.** `dror-review` cuts each refuter's hunks with an
+**The diff slice is a command.** `dror-code-review` cuts each refuter's hunks with an
 `awk` over the scratch capture, appended to a per-finding slice file; the hunks
 never pass through the controller.
 

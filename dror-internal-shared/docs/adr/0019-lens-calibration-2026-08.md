@@ -10,7 +10,7 @@ before it is refreshed. The lens spotted the write and never looked for the read
 
 **`clone` no longer owns documents.** Six of its fifteen kills were docstring,
 ADR or design-doc omissions, which are `collateral`'s bullet; `docs` came out of
-`clone`'s site list, and `dror-review` now keeps `collateral` among the five
+`clone`'s site list, and `dror-code-review` now keeps `collateral` among the five
 whenever `clone` runs.
 
 **`REFUTING.md` says the two defaults are not comparable.** `tests`' 18% is an

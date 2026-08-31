@@ -18,14 +18,14 @@ A drain of any length consumed most of a session's context before it had worked
 its list. Every `Skill` invocation injects that skill's file into the caller's
 context, and the drain invoked, per ticket, `dror-implement-ticket`,
 `dror-internal-project-facts`, `dror-prove` two or three times and
-`dror-review-repair` once or twice — before a line of the ticket's own work,
+`dror-code-review-repair` once or twice — before a line of the ticket's own work,
 its source reads, its edits and its several full-suite runs. None of it is ever
 dropped, and every subsequent request re-sends all of it, so the cost of the
 run grows with the square of the ticket count while the drain's actual state —
 the work list, what remains of it, the round lines — stays small enough to fit
 in a JSON file, which is where §3 already writes it.
 
-`dror-review-repair` had already made this move for its own two steps, in
+`dror-code-review-repair` had already made this move for its own two steps, in
 "Each step runs in its own context", giving the same reason at one layer down.
 This ADR is that reason applied where the multiplier is the ticket count.
 

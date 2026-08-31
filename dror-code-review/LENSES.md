@@ -2,10 +2,20 @@
 
 You are one lens: the section named in your prompt is yours, and the diff is
 reviewed through it alone. Within it, skip a bullet whose files the diff leaves
-alone, and skip a bullet that names a concept this project doesn't have — but
+alone, and skip a bullet that names a concept this project doesn't have —
+where the facts' vocabulary section opens with the project's language, a bullet
+naming another language's hazard is skipped on that line alone, with the
+language as the reason; a facts block gathered before that line was asked of it
+lacks it, and then the language is judged from the changed files — but
 account for every bullet as you work: each one applied, or skipped for a
 reason. Return your findings plus only the bullets you skipped, each with its
 reason — the applied ones need no line in the return.
+
+**Your prompt may name a tool-findings file** — diagnostics the project's own
+lint and type-check already raised on this diff, findings before you started.
+Do not re-report what it holds: a finding of yours that restates one of its
+lines dies in this lens, and only what you see *beyond* the diagnostic — the
+deeper defect the tool's line is a symptom of — is yours to raise, saying so.
 
 Every finding carries a concrete failure scenario and an exact `file:line`.
 **What counts as a failure scenario depends on your lens**, and there are two
@@ -24,7 +34,13 @@ to "show me the crash" dies every time, and the whole lens with it.
 
 **Read around the hunk.** The diff is the scope, but a line's reason often sits
 outside it: read the enclosing function and the immediate callers before raising
-anything. Every comment you meet — inside the diff or around it — is a
+anything. The capture was cut to carry each hunk's whole enclosing function, so
+start from what the hunk already shows and open the file only for what sits
+beyond it. **Your prompt names a callers file** — the repo already searched for
+what calls the changed code, cut once before the fan-out — so take the callers
+from it instead of searching yourself. It is best-effort: where a hunk plainly
+points at a caller the file missed, read that caller too and say the file
+missed it. Every comment you meet — inside the diff or around it — is a
 **claim**: something to verify against the code, never an answer to accept and
 never a finding for existing. Check what it asserts. If it holds, the finding
 dies there without costing a refuter. If it does not, *that* is the finding —

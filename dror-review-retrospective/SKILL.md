@@ -10,7 +10,7 @@ This skill **reads history**. It says what the lenses are getting wrong across
 runs and what to change about them, and it stops there: no lens section is
 edited until the user says which.
 
-**Both pools are in scope** — `dror-review`'s lenses and `dror-adr-review`'s —
+**Both pools are in scope** — `dror-code-review`'s lenses and `dror-adr-review`'s —
 because both write the one log. What they are never allowed is to be read
 against each other: their rates answer different questions, and the rule for
 keeping them apart is in "The log" below.
@@ -20,8 +20,9 @@ one finding wrong. What this reads is the accumulation.
 
 ## The log
 
-`~/.claude/dror-skills/refutations.tsv`, one line per merged finding, appended by
-every `dror-review` and every `dror-adr-review` run and never rewritten.
+`~/.claude/dror-skills/refutations.tsv`, one line per merged finding — plus
+the unmerged `tool` rows (ADR 0045) — appended by
+every `dror-code-review` and every `dror-adr-review` run and never rewritten.
 Tab-separated; the columns are whatever its own header row names — the shelf's
 `REPORT-STORE.md` owns the schema and this skill assumes none of it, so the log
 stays self-describing if the schema grows. The columns
@@ -57,10 +58,14 @@ path that no longer resolves is a miss and never an error, and a row with no
 
 `lens` is the lens that raised it, or several joined by `+` where the merge
 folded them together. It is a **closed vocabulary** — a section name from
-`dror-review/LENSES.md` or from `dror-adr-review/LENSES.md`, or the reserved
-`criterion` — so a name outside that set is a
+`dror-code-review/LENSES.md` or from `dror-adr-review/LENSES.md`, or the reserved
+`criterion` or `tool` — so a name outside that set is a
 defective row from an older run, not a lens to report on: count it out, and say
 how many rows were dropped and under what names.
+
+A `tool` row (ADR 0045) faced no refuter — its verdict is `survived` by
+construction — so it is counted out of every precision rate, and a refuted
+`tool` row is a defective row, not a signal.
 
 The two pools answer different questions and their rates are **not comparable**
 (ADR 0020): a code lens's finding is about a diff, an ADR lens's is about a
@@ -75,7 +80,8 @@ to do with each other, so ranking `coherence` against `claims` measures the axis
 and not the lens. Group the ADR pool by axis before comparing anything within
 it, and say which axis a rate belongs to whenever you print one. The log written before this rule
 carries five rows under `spec`. `verdict` is `survived`, `refuted` or `unverified`. Every
-merged finding faces a refuter, so a line is never here unjudged. `claim` says
+merged finding faces a refuter, so the only line here that never faced one is a
+`tool` row. `claim` says
 whether a claim comment was written where the refutation turned on an invisible
 invariant.
 
@@ -139,7 +145,7 @@ single band once hazards were set aside, which is a different answer entirely
 from the one the pooled rates gave. A lens ranked on a pooled rate is ranked on
 its mix.
 
-**One standing trial to report on.** `dror-review/LENSES.md` requires a hazard to
+**One standing trial to report on.** `dror-code-review/LENSES.md` requires a hazard to
 name the live caller that reaches it, a gate added on this log's evidence and
 explicitly unproven: it buys precision with recall, and no file here records
 recall. So each run of this skill says what became of hazards since — the count
@@ -206,11 +212,11 @@ Report the three as counts per round index, never as a rate against anything
 else, and say what they rest on.
 
 **This is the question that decides what the round-1 floor is.**
-`dror-review-repair` takes round 2 unconditionally where round 1 repaired
+`dror-code-review-repair` takes round 2 unconditionally where round 1 repaired
 anything, and its grounds are two runs whose round-2 findings landed in files
 round 1 never opened — bucket three. If bucket three dominates across many
 tickets, the floor is compensating for a review that does not cover its diff,
-and the answer is in `dror-review`'s lens fan-out — each lens given the whole
+and the answer is in `dror-code-review`'s lens fan-out — each lens given the whole
 diff, none accountable for any particular file, and a cap (that file's, under
 "Run the lenses") keeping a wider diff from adding any. If bucket two dominates,
 the floor is convergence exactly as it says, and narrowing anything would spend
@@ -264,19 +270,19 @@ Four things can be the target, and the question decides which:
 - A lens raising false positives is a section of that lens's own `LENSES.md` —
   name the sentence or bullet. **Which file that is follows from the lens's
   pool**, the same disjoint naming that kept the two apart in every count above:
-  a code lens is `dror-review/LENSES.md`, an ADR lens is
+  a code lens is `dror-code-review/LENSES.md`, an ADR lens is
   `dror-adr-review/LENSES.md`. A proposal aimed at the wrong pool's file edits a
   lens that never raised the finding.
 - Refuters killing real bugs, or letting weak findings through, is that pool's
-  `REFUTING.md` — `dror-review/REFUTING.md` or `dror-adr-review/REFUTING.md`,
+  `REFUTING.md` — `dror-code-review/REFUTING.md` or `dror-adr-review/REFUTING.md`,
   chosen the same way.
 - A file that keeps needing claims is neither: the change belongs in **that
   project's code**, as a comment, and no skill edit will help. This one is a
   code-pool answer only; an ADR review writes no claim comments.
 - **The round questions target neither a lens nor a refuter.** A bucket-three
-  answer is about how `dror-review` distributes its diff across lenses — its
+  answer is about how `dror-code-review` distributes its diff across lenses — its
   "Run the lenses" section and the cap that keeps a wider diff from adding any —
-  and a bucket-two-plus-cost answer is about `dror-review-repair`'s round-1 floor
+  and a bucket-two-plus-cost answer is about `dror-code-review-repair`'s round-1 floor
   and its cap. Name the file and quote the sentence as for any other target. This
   is the one proposal here that changes how much gets reviewed rather than how a
   finding is worded, so it is also the one where **the recall sentence below is
@@ -284,7 +290,7 @@ Four things can be the target, and the question decides which:
   bucket counts were measuring.
 
 **Name these by their path relative to this skill's own directory** —
-`../dror-review/LENSES.md` — and open them there to quote from. An absolute
+`../dror-code-review/LENSES.md` — and open them there to quote from. An absolute
 path under the author's checkout is wrong for every installed copy, and the
 quotation this section requires is a read that then fails.
 

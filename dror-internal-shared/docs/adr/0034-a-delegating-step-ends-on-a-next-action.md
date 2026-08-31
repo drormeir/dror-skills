@@ -20,18 +20,18 @@ same judgement in different words — so the next move was a judgement about who
 contract governed rather than a tool call.
 
 The same shape was then found in three more places: the review step of
-`dror-review-repair` and of `dror-adr-review-repair`, both ending on "It finds
+`dror-code-review-repair` and of `dror-adr-review-repair`, both ending on "It finds
 and stops" — a reading rule that contains the word *stops*, sitting where
-`dror-review`'s own "STOPS" lands — and the delegating steps of
+`dror-code-review`'s own "STOPS" lands — and the delegating steps of
 `dror-implement-ticket`, which carried the turn-boundary sentence for
 `dror-internal-project-facts` alone and nothing for `dror-prove` or
-`dror-review-repair`, at any of the four steps that invoke them. One shape, in every skill that delegates, is a rule's worth
+`dror-code-review-repair`, at any of the four steps that invoke them. One shape, in every skill that delegates, is a rule's worth
 of evidence.
 
 ## Considered options
 
 **Softening the sub-skills' contracts** — having `dror-show-tickets` or
-`dror-review` end more gently — was rejected, and this is the load-bearing
+`dror-code-review` end more gently — was rejected, and this is the load-bearing
 rejection. Every one of these skills is invoked directly by the user; the
 contract is what makes a direct run end where the user wants it. Trading a caller
 that overruns for a direct review that will not stop swaps a wasted turn for an

@@ -79,7 +79,10 @@ Read whatever the repo uses to state its own rules: `CLAUDE.md`, `AGENTS.md`,
 `CONTEXT.md`, `README`, `CONTRIBUTING`, ADRs under `docs/`. From them:
 
 - **Domain vocabulary and invariants** — the units, frames, identifiers and
-  states this codebase is careful about.
+  states this codebase is careful about. Open it with the implementation
+  language or languages, one line: the review's lenses skip their
+  language-specific bullets by it, and unlike the invariants it is read from
+  the tree, never guessed.
 - **Verification commands** — the lint, type-check, format and test commands,
   from the conventions doc, `package.json` scripts, `Makefile`,
   `pyproject.toml`, `Cargo.toml`, or the CI workflow.

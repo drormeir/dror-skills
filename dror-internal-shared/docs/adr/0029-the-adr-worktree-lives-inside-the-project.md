@@ -65,7 +65,7 @@ halfway through the first ticket and blamed on the ticket.
 
 The branch name is a convention now rather than a per-run choice: `adr-<N>`, the
 number unpadded, local and remote alike. Three things join on it — the drain's
-state file records the branch and a resumed run compares them, `dror-review`
+state file records the branch and a resumed run compares them, `dror-code-review`
 derives every ticket's base from the branch's upstream, and a person finds the
 work by guessing the name months later.
 

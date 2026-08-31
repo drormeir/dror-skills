@@ -1,12 +1,12 @@
 ---
-name: dror-repair
+name: dror-code-repair
 description: Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. Use when asked to fix the findings in a review report, or in a findings file the user names.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
-# dror-repair
+# dror-code-repair
 
 Fix every bug already named, and pin each one with a test. Runs start to finish
 without stopping.
@@ -90,7 +90,7 @@ Two words are this skill's own:
 
 A ticket number may be passed to this run. If one is, read it the way the
 **issue convention** fact says this repo tracks work, and number its acceptance
-criteria 1..N, the same numbering `dror-prove` and `dror-review` use. A repo whose
+criteria 1..N, the same numbering `dror-prove` and `dror-code-review` use. A repo whose
 convention came back unstated carries on without the ticket and says so; it is
 focus, not scope, so nothing on the list depends on it.
 
@@ -131,6 +131,13 @@ document, a defect that only appears in real GUI timing — these are
 **untestable**: record the reason, and carry them to step 2 with everything
 else. Every other bug gets a test.
 
+**A finding carrying a `repro:` line starts there.** The review's refuter
+confirmed it by running that command (ADR 0046), so run it first, before
+writing anything — replay is cheaper than rediscovery, and its output is the
+failure scenario live. A repro that no longer fails is evidence the tree moved
+since the review: say so, and carry the item on as any other. Either way the
+test is still written — a repro command is a proof, not a regression net.
+
 For a bug a test can catch, place the test by the reference's three routes —
 enrich an existing test, enrich a test added in the work under review, or create
 one file covering several bugs. Run that test alone and paste its failing
@@ -164,7 +171,8 @@ items that will edit one file are one group and one agent; grouping by file
 rather than by item is what keeps two agents from writing the same file at once,
 which no lock and no retry recovers from.
 
-Each agent is told: the finding with its `file:line` and failure scenario, the
+Each agent is told: the finding with its `file:line` and failure scenario —
+and its `repro:` line where it carries one, which the agent replays first — the
 path of the store's `facts.md` (its test layout, its command that runs one
 test), the file it owns, and the path of `dror-internal-shared/WRITING-TESTS.md`
 to read whole — paths, never contents, since text written into a prompt is paid

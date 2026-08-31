@@ -7,7 +7,7 @@ itself, and step 4 goes straight on to step 6's count.
 It owns what happens between the loop's word and the commit — whether a further
 loop runs, what it is capped at, what the prove after it must tick, and what the
 commit and the push are allowed to do while the word still stands. It does not
-own the loop, which is `dror-review-repair`'s, nor the boxes, which are
+own the loop, which is `dror-code-review-repair`'s, nor the boxes, which are
 `dror-prove`'s, nor the commit and push themselves, which stay in `SKILL.md` at
 steps 6 and 7 and are read every run.
 
@@ -33,7 +33,7 @@ that touched production code — are exactly what a further round is for.
 
 ## owed, on grounds a round can move
 
-Settle it now, before the commit, by running `dror-review-repair` **capped at
+Settle it now, before the commit, by running `dror-code-review-repair` **capped at
 two rounds**, telling it **this is a chain run, so it notifies nothing** — the
 same way step 3 ran it: invoked as a skill, or folded into this context under
 a directory override (ADR 0043). Not a freehand review-then-repair either way:
@@ -70,7 +70,7 @@ them is not converging, and hiding that behind another round buries it. Report
 the word, its grounds and the hand-back command the loop returned — a caller that
 stops on this hands that command to the user, and cannot compose it afterwards.
 
-Then commit at step 6, and **do not push**: that command is `/dror-review` over
+Then commit at step 6, and **do not push**: that command is `/dror-code-review` over
 the unpushed work, with no base of its own, so step 7's push is the one act that
 would spend it — `@{upstream}` would be `HEAD`, and the review it names would
 read an empty diff and call that convergence. The work is real whatever the

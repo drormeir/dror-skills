@@ -2,7 +2,9 @@
 
 A working chain for Claude Code, built on one idea: **a finding is refuted before
 it reaches you**. Lenses propose cheaply, refuters kill what they can, and only
-the survivors are reported.
+the survivors are reported. The one exception carries stronger proof, not
+weaker: a diagnostic the repo's own lint or type-check raised skips the
+refuter, because the tool's output already is the proof.
 
 ## Install
 
@@ -27,13 +29,13 @@ against, what a review judges, and what a closed ticket means.
 | `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order |
 | `dror-prove` | Does every criterion have a test that bites? |
-| `dror-review` | What is wrong with the unpushed work? |
-| `dror-repair` | Fix what the review found, each one red then green |
-| `dror-review-repair` | Loop the two until it converges |
+| `dror-code-review` | What is wrong with the unpushed work? |
+| `dror-code-repair` | Fix what the review found, each one red then green |
+| `dror-code-review-repair` | Loop the two until it converges |
 
 Above the chain, `dror-adr-review` and `dror-adr-repair` ask whether the decision
 deserved the trust the chain gives it, and `dror-adr-review-repair` loops the two
-over one ADR the way `dror-review-repair` loops the pair below.
+over one ADR the way `dror-code-review-repair` loops the pair below.
 
 **Reach for them before you write tickets against an ADR**, not after. Everything
 downstream takes the decision on trust — the tickets are cut from it, the tests
@@ -52,7 +54,8 @@ reads the refutation log across runs and says which lens is producing false
 positives.
 
 `dror-internal-project-facts` and `dror-internal-shared` are named for what they
-are: the first is invoked by every skill in the chain as its first step, the
+are: the first opens every skill in the chain — its stamp script injects the
+cached facts, and the skill itself runs only on a miss — the
 second is a shelf of reference material — the test-writing rules, the report
 store's rules, the ADR worktree's rules, the glossary, the map and the decision
 records behind the design.

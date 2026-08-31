@@ -51,7 +51,7 @@ it was wrong.
 ## Consequences
 
 Every finding carries one, survivors and kills alike, and a report without them
-cannot be joined to anything: `dror-repair` writes no `repairs.tsv` row it
+cannot be joined to anything: `dror-code-repair` writes no `repairs.tsv` row it
 cannot key, and the log rows answer only the questions that need no id. The
 skills say so plainly rather than describing the id as a nicety.
 

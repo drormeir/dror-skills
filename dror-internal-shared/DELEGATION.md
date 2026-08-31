@@ -20,7 +20,7 @@ Why it is a shared document rather than a paragraph in each caller is ADR 0034.
 ## The failure this prevents
 
 A sub-skill ends on a reply contract of its own — `dror-show-tickets` "nothing
-else — no plan, no next steps", `dror-review` "STOPS", `dror-prove` and
+else — no plan, no next steps", `dror-code-review` "STOPS", `dror-prove` and
 `dror-implement-ticket` their summaries. Those contracts are correct: **invoked
 on their own, those skills are right to end the turn there.**
 
@@ -38,7 +38,7 @@ and three things make a given step likelier to be where it happens:
   a rule, while the caller's counter-instruction is phrased as advice and sits
   hundreds of lines earlier in context.
 - **A hand-back command.** The sub-skill returns something addressed to the user
-  — the `/dror-review` a loop returns on **owed** — which reads as a hand-off
+  — the `/dror-code-review` a loop returns on **owed** — which reads as a hand-off
   even where it is only a line for the caller's summary.
 
 A step showing any of the three is named as such where it appears, by those
@@ -47,7 +47,7 @@ words, so the caller knows the place is a trap before it is standing in it.
 **Both ways of invoking are covered, and one is worse.** Since ADR 0036 every
 chain skill is forked by its own frontmatter, so the second way below is the
 ordinary one and the first survives in skills that fork nothing and in
-`dror-implement-ticket`'s folded loop, which follows `dror-review-repair`'s
+`dror-implement-ticket`'s folded loop, which follows `dror-code-review-repair`'s
 file in its own context under a directory override to stay beneath the
 spawn-depth cap (ADR 0043). Where the
 sub-skill runs **in the caller's own context** — a `Skill` invocation — its contract is the

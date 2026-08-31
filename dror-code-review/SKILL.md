@@ -1,12 +1,12 @@
 ---
-name: dror-review
-description: Correctness review of the unpushed work - commits not yet on the remote plus the working tree - every finding refuted before it reaches you. Reports the survivors and changes no behaviour. Use when the user asks what is wrong with the work before pushing it, or wants findings without the fixing.
+name: dror-code-review
+description: Correctness review of the unpushed work - commits not yet on the remote plus the working tree - every finding tool-proven or refuted before it reaches you. Reports the survivors and changes no behaviour. Use when the user asks what is wrong with the work before pushing it, or wants findings without the fixing.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
-# dror-review
+# dror-code-review
 
 This skill **finds**. It produces a bug report and STOPS, changing no behaviour:
 the only source it writes is a comment where a refutation proved one was
@@ -55,7 +55,7 @@ check, in the same turn** — the sections below, in their order, from there.
 
 A ticket number may be passed to this run. If one is, read it the way the
 **issue convention** fact says this repo tracks work, and number its acceptance
-criteria 1..N, the same numbering `dror-prove` and `dror-repair` use. A repo whose
+criteria 1..N, the same numbering `dror-prove` and `dror-code-repair` use. A repo whose
 convention came back unstated reviews without the ticket and says so. Carry that list into
 every lens prompt beside the facts path: it is what the diff was written to
 satisfy, and a lens that knows it stops reporting a deliberate choice as a
@@ -69,7 +69,7 @@ bug in what was written nor a gap in cover.
 
 **Nothing is written to the tracker here — no box, and no comment.** Ticking
 belongs to `dror-prove`, which holds the criterion-to-test mapping, and unticking
-to `dror-repair`, which watches a test go red. This run's per-criterion verdicts
+to `dror-code-repair`, which watches a test go red. This run's per-criterion verdicts
 — one line per criterion, `met` / `unmet` / `not touched by this diff` — go in
 the **report**, in a section of their own, so the report carries the judgement
 and the boxes carry the evidence. The ticket is read and never written.
@@ -156,8 +156,11 @@ ref at all falls back to `HEAD`, which is the working tree alone. Say which of
 the three bases was used, because they answer different questions and the user
 should not have to guess which they got.
 
-**Capture the diff once.** Write `git diff <base>` plus every untracked source
-file to a single scratch file, and list the changed paths. Where the caller
+**Capture the diff once.** Write `git diff -W <base>` plus every untracked
+source file to a single scratch file, and list the changed paths. `-W` extends
+each hunk to its whole enclosing function, so the context every lens is told to
+read around a hunk is paid for once here instead of fetched again per lens —
+and the refuter slices, cut from this same capture, carry it for free. Where the caller
 narrowed the scope, apply that narrowing here — keep the named hunks in the
 scratch file, and let the changed-paths list carry only what was kept. Every
 agent below reads that path. The diff is the review scope; pre-existing code
@@ -173,10 +176,45 @@ An empty diff ends the run: report that there is nothing unpushed to review,
 write no report, and stop. Reviewing something the user did not ask for is
 worse than reviewing nothing.
 
+**Run the project's own tools before any lens** (ADR 0045). The facts'
+verification commands name the lint and type-check this repo already trusts;
+run those two over the changed files — not the test suite, which is the
+repair's evidence and a load a shared machine pays for. A diagnostic on a line
+this diff added or changed is a **finding that skips the refuter**: the tool's
+pasted output is its own proof (ADR 0006) and is the finding's failure
+scenario. A diagnostic elsewhere in a changed file predates the diff — name it
+in one line as pre-existing and raise no finding. Write the diagnostics that
+counted to one file in the scratch directory; its path goes to every lens
+below, which is told not to re-report what it holds. These findings enter the
+report as confirmed bugs under the reserved lens name `tool`, and the pass is
+not a lens: it appears in neither `lenses_run` nor `lenses_dropped`. A facts
+block whose verification commands are unstated skips the pass, and the report
+says so.
+
+**Cut the caller boundary once, by command.** Every lens is capped at the
+changed files plus their direct callers, and a lens made to find those callers
+itself does the same search once per lens, on the cheap model. So before the
+fan-out, for each changed file, search the repo for the file's stem and for the
+top-level names its hunks touch —
+
+```
+grep -rn --exclude-dir=.git -e '<stem>' -e '<name>' <repo> \
+  >> <scratch dir>/callers.txt
+```
+
+— excluding whatever else the facts' declared scope rules out. Remove a
+`callers.txt` already sitting there first: a loop's rounds share the scratch
+directory, and the append would otherwise stack a stale round under this one.
+The matches go straight to the file and never through this context. Every lens is given its
+path and reads its boundary from it instead of searching. It is a cache and it
+is best-effort: a caller it misses may still be read when a hunk plainly points
+there, and a lens says when it did.
+
 **Run the lenses.** [`LENSES.md`](LENSES.md) is a **pool**, not a running order.
 Choose from it the ones this diff raises and run each as one agent, all launched
 in parallel, each given the scratch path, the changed-paths list, the path of
-the store's `facts.md`, and the path of `LENSES.md` with the name of its lens —
+the store's `facts.md`, the paths of the tool-findings file and the callers file
+from the two steps above, and the path of `LENSES.md` with the name of its lens —
 it reads that file itself, and is told that the preamble and the section headed
 with its name bind it while the other sections are other agents'.
 
@@ -224,7 +262,8 @@ changed-paths list, so it still knows the run's scope; and the scratch path,
 named as a fallback to read only when its one finding genuinely needs the wider
 diff — that is the refuter's budget to spend, on one finding. It is also given
 the path of [`REFUTING.md`](REFUTING.md), told that its general sections — the
-default-to-refuted opening, the claim section and the return section — bind it,
+default-to-refuted opening, the prefer-a-run section, the claim section and the
+return section — bind it,
 and that the missing-test section binds only a `cover` finding (the `tests`
 lens's kind); no other kind reads it.
 
@@ -303,7 +342,10 @@ sections never mint the same id twice.
 **A finding is about fifteen lines** (ADR 0017): the `file:line`, the failure
 scenario, the kind, and the one or two sentences of reasoning that make the
 scenario believable — and not the refuter's route, which a repair redoes against
-the tree as it stands.
+the tree as it stands. One line of a route survives that rule (ADR 0046): where
+the refuter's verdict came from an execution, the finding carries `repro:` and
+the exact command, verbatim, for the repair to replay. A `tool` finding's
+`repro:` is the tool command itself.
 
 **Then record the kills.** A last section, `## Refuted`, holding every finding
 that did *not* survive: its id, its `file:line`, the lens that raised it, what
@@ -317,7 +359,8 @@ these.
 ## Append to the log
 
 The report is overwritten every run, and one run's kills are too few to read
-anything into. So every **merged finding**, survivor and kill alike, is also
+anything into. So every **merged finding**, survivor and kill alike — and every
+`tool` finding, which reaches the report without passing through the merge — is
 appended as one line to `~/.claude/dror-skills/refutations.tsv`, on the
 reference's terms for every log: create it with its header where it is absent,
 append only, never block the run.
@@ -352,8 +395,10 @@ which is where a retrospective's freshest evidence sits, and a dead path is a
 miss and never an error.
 
 **The `lens` column is a closed vocabulary**: a section name from `LENSES.md`,
-or the reserved `criterion` for an `unmet criterion` finding, which no lens
-raises. Nothing else may be written there — a name outside that set is a bug in
+the reserved `criterion` for an `unmet criterion` finding, which no lens
+raises, or the reserved `tool` for a mechanical-pass finding (ADR 0045) — its
+row writes `survived` for `verdict` and `no` for `claim`, since it faced no
+refuter. Nothing else may be written there — a name outside that set is a bug in
 this run, not a new lens, and it silently corrupts every rate
 `dror-review-retrospective` computes. Where the merge joined several, join their names
 with `+` from the same closed set.
@@ -369,7 +414,7 @@ can read it.
 So append one line to `~/.claude/dror-skills/runs.tsv`, on the same terms as the
 log above — the columns and their order are the store reference's
 (`REPORT-STORE.md`, "The logs"), stated there once. A **separate file**,
-deliberately: the refutation log's contract is one line per merged finding, and a
+deliberately: the refutation log's contract is one line per finding, and a
 run-level row inside it would be counted as a finding by everything that reads
 it.
 
@@ -420,12 +465,13 @@ decide whether to spend a repair at all.
 
 Then stop and wait.
 
-Done when every lens has returned, the findings have been merged, every merged
+Done when the tool pass has run or been skipped as unstated, every lens has
+returned, the findings have been merged, every merged
 finding has faced a refuter, the claims the refutations called for are written,
 the repair-or-not line is on screen,
 this run's report
 file holds the survivors, the refuted and — where a ticket was named — the
-per-criterion verdicts, every merged finding has a line in
+per-criterion verdicts, every merged and every `tool` finding has a line in
 `~/.claude/dror-skills/refutations.tsv`, the run has its line in
 `~/.claude/dror-skills/runs.tsv`, and that same list is on screen — with no line
 of code changed.

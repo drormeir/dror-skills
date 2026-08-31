@@ -1,6 +1,6 @@
 # A round is a recorded unit
 
-`dror-review-repair` gives every round a report of its own,
+`dror-code-review-repair` gives every round a report of its own,
 `review-report-<tag>-r<n>.md`, and passes the round's number into the review it
 invokes. `refutations.tsv` and `runs.tsv` gain `round` and `subject`;
 `runs.tsv` gains `elapsed_s` and `refutations.tsv` gains the `run_tag` it never
@@ -9,7 +9,7 @@ run. Nothing about the loop's judgement changes.
 
 ## The question that could not be asked
 
-`dror-review-repair` carries a **round-1 floor**: where round 1 repaired
+`dror-code-review-repair` carries a **round-1 floor**: where round 1 repaired
 anything, round 2 runs whatever the weighing would otherwise have said. Its
 grounds are two measured runs — at `8681800` round 1 returned 4 findings and
 round 2 returned 15 "in two files round 1 never opened and the repair never
@@ -20,7 +20,7 @@ Read as written, those two runs say something the floor's own name does not.
 Findings in files **round 1 never opened** are not a review of what the repair
 changed, which is what step 4 says a further round is for. They are a first pass
 that did not cover its diff. If that is the general case, the floor is
-compensating for `dror-review`'s lens fan-out — at most five lenses, each given
+compensating for `dror-code-review`'s lens fan-out — at most five lenses, each given
 the whole diff, none accountable for any particular file — and the second full
 pass is doing work the first one was supposed to do. If it is not the general
 case, the floor is exactly what it claims and the rounds are earned.
@@ -39,7 +39,7 @@ parts — for good reason, since three id shapes are in the logs by age and a
 positional reader would silently read a tag as a time.
 
 Every round of a loop wrote to the one tagged path, so the file held only the
-last round. `dror-review-repair` said this was deliberate and gave a reason that
+last round. `dror-code-review-repair` said this was deliberate and gave a reason that
 was true when written: the trail is not read, step 4 weighs what the repair
 returned, and `repairs.tsv` keeps each outcome keyed by its id. What none of
 those hold is *which files a round looked at*.

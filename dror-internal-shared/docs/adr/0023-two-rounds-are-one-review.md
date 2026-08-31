@@ -1,6 +1,6 @@
 # Two rounds are one review
 
-`dror-review-repair` takes a **second round whenever the first one repaired
+`dror-code-review-repair` takes a **second round whenever the first one repaired
 anything**, whatever that repair touched, and weighs the round on its merits only
 from round 3 on.
 
@@ -36,7 +36,7 @@ The floor is on the loop, not on the caller: `dror-implement-ticket`'s cap of
 three becomes two-to-three, and a caller that names a cap of one still gets one —
 the floor never overrides a cap, it is reported as unmet.
 
-`dror-repair`'s closing word splits. `no` now means *nothing was edited*, and a
+`dror-code-repair`'s closing word splits. `no` now means *nothing was edited*, and a
 tests-only repair returns **`tests alone`** — true about its own edits, and no
 longer collapsible into "stop". The two files said the same wrong thing in their
 own words, so both were changed; leaving one would have had the repair recommend

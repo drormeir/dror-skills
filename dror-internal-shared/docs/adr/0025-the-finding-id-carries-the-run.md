@@ -36,7 +36,7 @@ in, and the rejection's premise is gone regardless: ADR 0024 has every review
 mint a tag whether or not the id uses one, so the tag costs nothing extra here.
 
 **Dropping the minute now that a tag exists** was rejected. The tag is per *run*,
-not per round — `dror-review-repair` deliberately reuses one tag across every
+not per round — `dror-code-review-repair` deliberately reuses one tag across every
 round so its rounds share one report file — so `<head>-<tag>-<n>` would collide
 across rounds exactly as `<head>-<n>` did.
 
@@ -53,7 +53,7 @@ when it was written.
 That makes one rule binding on every consumer: **match an id whole, never split
 it into parts.** A join that split on `-` and read position 2 as the minute would
 read a tag as a time on the new shape, and produce a wrong answer rather than an
-error. `dror-repair` copies the string verbatim; `dror-review-retrospective` joins on
+error. `dror-code-repair` copies the string verbatim; `dror-review-retrospective` joins on
 the whole field and, where an id still appears twice, **reports the collision and
 drops the pair** rather than counting one of them — attributing a repair's answer
 to the wrong finding is worse than a smaller denominator.

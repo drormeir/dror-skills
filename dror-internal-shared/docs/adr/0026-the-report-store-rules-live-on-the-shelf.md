@@ -6,8 +6,8 @@ which name the file takes, the identity line that makes the name checkable
 discipline every log obeys (ADR 0009). Its readers are defined by **role, not by
 a list**: a run that writes a report, one that reads one, one that names the path
 both ends use, and one that joins the logs by finding id. At the moment this was
-decided that was five skills — `dror-review`, `dror-adr-review`, `dror-repair`,
-`dror-adr-repair` and `dror-review-repair` — and **the roster has grown since**
+decided that was five skills — `dror-code-review`, `dror-adr-review`, `dror-code-repair`,
+`dror-adr-repair` and `dror-code-review-repair` — and **the roster has grown since**
 and will again; the shelf's own `SKILL.md` says which files each document is read
 whole by, and that is the current answer. The role test is what binds.
 
@@ -22,7 +22,7 @@ procedure, so a document there belongs to none of its callers.
 
 ## Considered options
 
-**Leaving the rules with `dror-review` and having the others point at it** was
+**Leaving the rules with `dror-code-review` and having the others point at it** was
 rejected for ADR 0015's reason — a skill reaching into another skill's file
 breaks the moment either is moved or packaged, and the reading skills are not
 callers of the review.

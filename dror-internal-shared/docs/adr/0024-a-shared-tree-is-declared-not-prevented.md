@@ -4,7 +4,7 @@ Two `dror-*` runs in one checkout review the same unpushed work and repair it at
 the same time. Each run **looks for the other and says what it found**; nothing
 locks, nothing blocks, and nothing narrows its own scope on the strength of it.
 
-The tag `dror-review-repair` mints keeps two runs' *reports* apart and was never
+The tag `dror-code-review-repair` mints keeps two runs' *reports* apart and was never
 more than that. The tree itself has no such protection, and the evidence that it
 matters is in the log: `~/.claude/dror-skills/refutations.tsv` holds five finding
 ids minted twice at commit `22a7d02` inside one minute, one set about drag-and-
@@ -44,7 +44,7 @@ matter records `Concurrent: none seen` rather than `Concurrent: none`.
 
 ## Consequences
 
-`dror-review` mints a run tag whether or not a caller gave it one, and writes it
+`dror-code-review` mints a run tag whether or not a caller gave it one, and writes it
 with the concurrency finding into the report's front matter and into two new
 `runs.tsv` columns, `run_tag` and `concurrent`. The tag does **not** change the
 report's name, which ADR 0021 still derives from the ticket. Older `runs.tsv`
@@ -52,12 +52,12 @@ rows keep six fields under eight columns, on the same terms as the `id` column
 before them: a row cannot be corrected afterwards, because the only moment anyone
 knows who else was in the tree is while they are.
 
-`dror-repair` gains a third reading of a failing test — neither the fix nor a
+`dror-code-repair` gains a third reading of a failing test — neither the fix nor a
 test that pinned the old behaviour, but another run's edit arriving mid-run. It
 is ruled out first where a neighbour was declared, reported as a
 `pre-existing failure`, and **not** repaired.
 
 Keeping two runs genuinely apart stays the caller's job and has one instrument:
-**disjoint scopes**, which `dror-review` already takes. This decision does not
+**disjoint scopes**, which `dror-code-review` already takes. This decision does not
 automate that choice, because a run that quietly reviewed less on a guess would
 leave changed files unlooked-at with nobody told.

@@ -34,7 +34,7 @@ on, at the one moment a ticket run has nothing to fix.
 **Dropping step 1's suite**, on the reading that step 2 always adds tests and
 the post-loop rule then owes another run over nearly the same tree, was
 rejected: step 1's run is the only one whose author still fixes what it finds —
-`dror-repair` leaves a failure no fix touched as `pre-existing failure`, and
+`dror-code-repair` leaves a failure no fix touched as `pre-existing failure`, and
 step 4's prove ends the run on a red. And the post-loop run fires only when no
 repair round ran a suite, which is the rare case.
 
@@ -42,7 +42,7 @@ repair round ran a suite, which is the rare case.
 was rejected: a round's review reads the diff and not test results, so a
 regression one round's fix caused in another call site of a shared helper would
 surface only at the last full run, with no step left that repairs; and it
-edits `dror-repair`'s own closing guarantee for a direct user, which DELEGATION.md
+edits `dror-code-repair`'s own closing guarantee for a direct user, which DELEGATION.md
 forbids for a caller's convenience.
 
 **Collapsing the end-of-ticket runs into one** was rejected on value: each

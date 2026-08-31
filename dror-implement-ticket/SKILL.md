@@ -8,12 +8,12 @@ allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/fact
 
 # dror-implement-ticket
 
-One ticket, one run: **implement**, then `dror-prove`, then `dror-review-repair`
+One ticket, one run: **implement**, then `dror-prove`, then `dror-code-review-repair`
 — which loops review and repair on its own until it converges — and then
 `dror-prove` once more over whatever is still unticked when the loop returns.
 
 **The loop is delegated, and it is delegated whole.** This file does not spell
-out rounds, judge one, or count them: `dror-review-repair` owns that, and this
+out rounds, judge one, or count them: `dror-code-review-repair` owns that, and this
 skill gives it a ticket, a cap and the promise that a prove follows. The
 re-prove runs once, at the end, over every box that is still open.
 
@@ -104,7 +104,7 @@ the tree before this run starts is reported and repaired under this ticket's
 name. Committing does not remove it — an unpushed commit is in scope exactly as
 a modified file is. And a test that is red before this run writes a line is the
 same work arriving through the suite instead of through `git status`: nothing
-in the chain may fix it — `dror-repair` names it `pre-existing failure` and
+in the chain may fix it — `dror-code-repair` names it `pre-existing failure` and
 leaves it, by rule — and the gate criterion can never tick over it, so every
 round is spent and the ticket ends open on a red that was known before step 1.
 
@@ -114,7 +114,7 @@ Before anything is written, ask three questions and report all three:
 - `git rev-list --count <base>..HEAD` — is the branch ahead of what step 3 will
   review from?
 
-**`<base>` is `dror-review`'s base, found `dror-review`'s way**, because a
+**`<base>` is `dror-code-review`'s base, found `dror-code-review`'s way**, because a
 disagreement here reports work the review will not see, or stops a run over work
 that is already pushed. So: `git rev-parse --abbrev-ref
 --symbolic-full-name @{upstream}` and count from `git merge-base @{upstream}
@@ -168,7 +168,7 @@ and passing it at all is not optional.
 
 Read the ticket the way the **issue convention** fact says this repo tracks work,
 and number its acceptance criteria 1..N. That numbering is the chain's: `dror-prove`,
-`dror-review` and `dror-repair` all count the boxes in the ticket's own order,
+`dror-code-review` and `dror-code-repair` all count the boxes in the ticket's own order,
 and a run that renumbers them makes three later reports unreadable against the
 ticket.
 
@@ -230,12 +230,12 @@ the run on an ambiguous criterion.
 **Its closing summary is a step's output, not this run's reply.** A ticket list
 with fresh ticks is **a deliverable's shape** (DELEGATION.md), so this step's
 named next action: **immediately after that summary, and in the same turn, invoke
-`dror-review-repair` as step 3 says.** The boxes are proven, the ticket is
+`dror-code-review-repair` as step 3 says.** The boxes are proven, the ticket is
 not finished, and nothing but step 3 will find what the implementation got wrong.
 
 ## 3. Loop review and repair
 
-Invoke the `dror-review-repair` skill. It runs `dror-review` and `dror-repair` as
+Invoke the `dror-code-review-repair` skill. It runs `dror-code-review` and `dror-code-repair` as
 rounds until the work converges, judges each round itself, and stops on its own
 cap — none of which is this file's business any more.
 
@@ -243,9 +243,9 @@ cap — none of which is this file's business any more.
 drain run's arguments carry §0a's sentence — "All commands run in `<path>` …"
 — and one fork below this run is the harness's spawn-depth cap, which delivers
 a fork invoked from there with no arguments at all (ADR 0043): a forked loop
-would fork `dror-review` at the cap, and that review would review the
+would fork `dror-code-review` at the cap, and that review would review the
 session's checkout in good faith and never learn it. So where the sentence is
-in this run's arguments, read `../dror-review-repair/SKILL.md` — beside this
+in this run's arguments, read `../dror-code-review-repair/SKILL.md` — beside this
 skill's own base directory — and follow it here, whole: it still owns the
 rounds, the tag, the floor and the judgement, and its steps run exactly as it
 says — as spawned agents given the step files, by the shelf's
@@ -318,7 +318,7 @@ summary. Never a chain that ends with code no full suite has seen.
 
 **The loop's summary is a step's result, not this run's reply**, and this is the
 hardest of the three to hold: where the loop ends **owed** it hands back a
-`/dror-review` command, **a hand-back command** in DELEGATION.md's words. It is
+`/dror-code-review` command, **a hand-back command** in DELEGATION.md's words. It is
 not one here; the command travels into this run's summary unchanged and the
 ticket has still to be proven, committed, pushed and closed. So this step's named
 next action: **immediately after the loop returns, and in the same turn, run the
@@ -379,7 +379,7 @@ no `- [ ]` left — skips this step. Otherwise invoke
 > the split first.
 
 **That last paragraph is not a courtesy, it is the only route an `unmet
-criterion` has.** `dror-review` mints the kind, and `dror-repair` will not take
+criterion` has.** `dror-code-review` mints the kind, and `dror-code-repair` will not take
 it — its list is bugs and gaps in cover, and it does not invent an
 implementation nobody found missing. So the finding arrives here or nowhere, and
 `dror-prove` writes code only where the run it is in says code is its job. Say
@@ -471,7 +471,7 @@ visible to anyone who is not at this machine, and it is what leaves the next
 ticket's step 0 a clean, pushed tree rather than one that stops it.
 
 **It is also what closes the review window**, which is why nothing above may be
-left owing: `dror-review` takes its scope from `git merge-base @{upstream} HEAD`,
+left owing: `dror-code-review` takes its scope from `git merge-base @{upstream} HEAD`,
 so once this push lands, `@{upstream}` is `HEAD` and this ticket's diff is no
 longer reviewable as unpushed work by anything. Step 5 exists to be finished
 before this line, not after it.
@@ -488,7 +488,7 @@ by hand is the case this rule is for.
 
 **Where the branch has no upstream**, set one to the remote of the same name
 (`git push -u origin <branch>`) — a branch that tracks nothing makes every later
-`dror-review` fall back to the remote's default branch and take the whole
+`dror-code-review` fall back to the remote's default branch and take the whole
 accumulated diff as one ticket's. Where there is no usable remote at all, say so
 and stop at the commit.
 
@@ -537,7 +537,7 @@ can tell which layer said what.
 
 Then one line for what the run wrote **outside the tree**: the boxes
 `dror-prove` ticked and the loop's repairs unticked. Those are the only marks
-this chain leaves on the ticket — `dror-review` writes its per-criterion verdicts
+this chain leaves on the ticket — `dror-code-review` writes its per-criterion verdicts
 into its own report and posts nothing. The three logs under
 `~/.claude/dror-skills/` carry a line per round for a later retrospective. Then
 the commit: its short sha, its subject, and the branch it was pushed to — or, on

@@ -16,7 +16,7 @@ then it stops and asks (§3a).
 It owns no implementation. It is `dror-show-tickets` for the map and
 `dror-implement-ticket` for the work, plus the isolation, the loop and the
 bookkeeping between them — the same relationship `dror-implement-ticket` has to
-`dror-prove` / `dror-review` / `dror-repair`.
+`dror-prove` / `dror-code-review` / `dror-code-repair`.
 
 The ADR number is this skill's one argument. Without it, say so and stop.
 
@@ -34,7 +34,7 @@ as this run's result for the caller to put.
 **A step and a spawn are not alternatives**, which is what §0a's warning and the
 paragraph above are each half of. `dror-show-tickets` at §2 is a step run in this
 context; the ticket run at §3 step 4 is a step run in an agent of its own; the
-lens and refuter agents `dror-review` spawns far beneath both are neither this
+lens and refuter agents `dror-code-review` spawns far beneath both are neither this
 skill's steps nor its business. What makes something a step is that this run is
 not finished when it returns — DELEGATION.md says so for both ways of invoking,
 and names the spawned one as the case where the sub-skill's closing sentences
@@ -116,16 +116,16 @@ prompt's commands run in, named in its first sentence:
 changed working directory is **not inherited by a spawned agent**, and a skill
 forked by its frontmatter is a spawned agent in exactly this sense: it starts in
 the session's primary working directory — the user's checkout — whatever `cd`
-ran here. `dror-review` spawns a lens agent per lens and a refuter under each,
+ran here. `dror-code-review` spawns a lens agent per lens and a refuter under each,
 so a step merely *expected* to be in the worktree runs its `git status` and
 `git merge-base` against the user's tree, reports their uncommitted work as this
-ticket's, and lets `dror-repair` edit it under this ticket's number. Silently,
+ticket's, and lets `dror-code-repair` edit it under this ticket's number. Silently,
 and by default rather than by accident — which is what §0 built the second
 checkout to prevent.
 
 Downstream, the sentence is more than prose: `dror-implement-ticket` reads it
 as the directory override that folds its review-repair loop into its own
-context, and `dror-review` and `dror-repair` take it as an argument of their
+context, and `dror-code-review` and `dror-code-repair` take it as an argument of their
 own — which is what keeps every fork of the chain under the harness's
 spawn-depth cap and its arguments delivered (ADR 0043). The forwarding clause
 above is how it travels. Everything else obeys it as prose: say it in the
@@ -348,7 +348,7 @@ and every source file it reads, every suite it runs and every instruction file i
 loads would otherwise land here and stay, ticket after ticket, until a drain of
 any length runs out of window in the middle of the list it exists to work. The
 drain does not need any of that. It needs a handful of facts per ticket, all of
-which fit in a returned summary. `dror-review-repair` makes the same arrangement
+which fit in a returned summary. `dror-code-review-repair` makes the same arrangement
 for its own two steps and gives the same reason; this is that reason one layer up,
 where the multiplier is the ticket count. What it costs, and the three cheaper
 things that were tried against it first, are ADR 0035.
@@ -501,7 +501,7 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
 
    - **Read step 6's word before pushing.** A commit the ticket run left
      unpushed on a verdict of **owed** is unpushed on purpose: the hand-back
-     command it returned is `/dror-review` over the unpushed work, and a push
+     command it returned is `/dror-code-review` over the unpushed work, and a push
      here would leave that command an empty diff to read. Leave it, and let
      step 6 stop the drain with the command and the push both in the user's
      hands.
@@ -532,7 +532,7 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
      branch reaches the default one, silently, long after anyone is reading, and
      with none of the three checked. Write `#N` or `for #N`.
 
-   **What the push settles, and why nothing after it reviews.** `dror-review`
+   **What the push settles, and why nothing after it reviews.** `dror-code-review`
    takes its scope from `git merge-base @{upstream} HEAD`, so once the ticket is
    pushed its diff is `@{upstream}..HEAD` and empty: no round run from here can
    see it. That is why every round this ticket gets is spent inside the ticket
@@ -542,14 +542,14 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    **owed** commit above, which the ticket run kept inside the window on
    purpose.
 6. **Record the ticket's verdict.** `dror-implement-ticket` ends on one word —
-   **owed**, **optional** or **no** — for whether another `dror-review` /
-   `dror-repair` round is wanted. Write the word and its grounds into the state
+   **owed**, **optional** or **no** — for whether another `dror-code-review` /
+   `dror-code-repair` round is wanted. Write the word and its grounds into the state
    file with the round, and take it as given: it is that run's judgement of its
    own diff, made while that diff was still reviewable.
 
    **This step runs no round of its own.** On **optional** or **no** it cannot:
    the ticket run pushed at its step 7, so `@{upstream}` is `HEAD` and
-   `dror-review`'s scope — the unpushed work — is empty; a round invoked here
+   `dror-code-review`'s scope — the unpushed work — is empty; a round invoked here
    would review nothing and report that as convergence. On **owed** the commit
    is unpushed and the diff is there to read, and the drain declines by rule:
    the ticket run has already spent its loop's cap and its settling cap on top of
@@ -564,7 +564,7 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
      rounds does not get another one built on top of it. Name the ticket, say
      what its last round found, carry its hand-back command verbatim, and go to
      §3a. The work is committed and, by the ticket run's own step 7,
-     **unpushed** — which is what keeps that command live: `dror-review` reads
+     **unpushed** — which is what keeps that command live: `dror-code-review` reads
      the unpushed work, and a push would empty it. Step 5 above leaves it that
      way, and §3a hands the user the command and the push together.
 

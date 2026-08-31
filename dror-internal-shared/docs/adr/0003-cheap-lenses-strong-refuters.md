@@ -1,6 +1,6 @@
 # Lenses run on the cheap model, refuters on the strong one
 
-`dror-review` passes `model: "sonnet"` to every lens agent and leaves the
+`dror-code-review` passes `model: "sonnet"` to every lens agent and leaves the
 refuters on the session's own model. The two halves of a review are not alike
 work: a lens reads widely and *proposes*, and a weak proposal costs one refuter;
 a refuter *decides*, and a wrong decision either ships a false positive or buries

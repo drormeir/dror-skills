@@ -3,8 +3,8 @@
 A ticked acceptance criterion is a claim about evidence, so exactly one skill may
 move a box in each direction: `dror-prove` ticks — and only what it saw go green
 — because it holds the criterion-to-test mapping, and a green suite says a
-criterion is met only to whoever knows which test covers it. `dror-repair`
-unticks, and only a box whose test it just saw go red. `dror-review` touches no
+criterion is met only to whoever knows which test covers it. `dror-code-repair`
+unticks, and only a box whose test it just saw go red. `dror-code-review` touches no
 box at all.
 
 ## Consequences

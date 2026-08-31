@@ -14,9 +14,9 @@ expensive is not on its own enough to earn the flag:
 
 - `dror-implement-ticket` used to set it and no longer does: it is what
   `dror-implement-adr` runs per ticket.
-- `dror-review`, `dror-repair` and `dror-prove` may not set it either, whatever
+- `dror-code-review`, `dror-code-repair` and `dror-prove` may not set it either, whatever
   they cost: `dror-implement-ticket` invokes all three, in that order, up to
-  three times each. `dror-review` is the expensive one and the temptation, and
+  three times each. `dror-code-review` is the expensive one and the temptation, and
   the flag on it would break the loop rather than make it cheaper.
 - `dror-internal-project-facts` may not set it for the same reason, and it is the case
   that makes the rule obvious: every skill in the chain invokes it first.
@@ -32,12 +32,12 @@ A skill with `disable-model-invocation` does not appear in the model's skill
 list, so nothing can reach it by inference — which is why the flag cannot be
 used to make a chained skill cheaper, and why the roster above is short.
 
-It is therefore **not** what keeps `dror-review` from starting `dror-repair`:
+It is therefore **not** what keeps `dror-code-review` from starting `dror-code-repair`:
 both are model-invocable and each could name the other. What keeps them apart is
 that the review's own file names no other skill (ADR 0001), and that is where
 the two-runs shape is enforced.
 
-For `dror-repair` the read-out is the reverse of a cost: a typed skill command
+For `dror-code-repair` the read-out is the reverse of a cost: a typed skill command
 is expanded into the transcript while a model-invoked one shows a single line,
 so a user who wants the expansion types it. That is a preference about
 transcripts, not a reason for the flag.

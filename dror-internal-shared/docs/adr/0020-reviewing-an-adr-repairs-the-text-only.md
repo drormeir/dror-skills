@@ -15,7 +15,7 @@ and the kinds are the whole design:
 - `text` and `hole` — the document. `dror-adr-repair` writes prose and nothing
   else. It touches no source file, so a document repair can never change
   behaviour to make a sentence true.
-- `breach` — the code. It goes to `dror-repair`, which already fixes bugs red
+- `breach` — the code. It goes to `dror-code-repair`, which already fixes bugs red
   to green, rather than being fixed by the run that found it.
 - `conflict` — neither. Two decisions disagree and picking a winner is deciding,
   which is the user's. A skill that resolved one would have written an ADR
@@ -51,7 +51,7 @@ once settled the other way.
 
 ## Grounded replaces red-green
 
-`dror-repair`'s whole rigour is watching a test fail and then pass. A sentence
+`dror-code-repair`'s whole rigour is watching a test fail and then pass. A sentence
 has no such evidence, and the failure mode of a document repair is a correction
 that reads well and is false. So the corresponding rule is **grounded**: every
 sentence written is read out of the tree in that run and quoted with its
@@ -70,7 +70,7 @@ unchanged here: the user loses the moment at which they accept or subtract from
 the findings, and here they would lose it over prose that is about to be
 rewritten in their name.
 
-**Extending `dror-review` with an ADR mode** was rejected because its scope is
+**Extending `dror-code-review` with an ADR mode** was rejected because its scope is
 the unpushed diff. An ADR is reviewed against the tree as a whole and against
 its neighbours, an empty diff is the ordinary case, and every one of its lenses
 would have needed a second reading.
@@ -81,7 +81,7 @@ quotation.
 
 ## Consequences
 
-The two skills share the refutation log with `dror-review` —
+The two skills share the refutation log with `dror-code-review` —
 `~/.claude/dror-skills/refutations.tsv`, one schema, the `lens` column keeping the
 pools apart — so the closed vocabulary of ADR 0014 now admits the section names
 of `dror-adr-review/LENSES.md` as well. Rates stay separate because the names

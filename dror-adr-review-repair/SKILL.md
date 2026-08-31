@@ -11,7 +11,7 @@ One run, one loop: `dror-adr-review` → `dror-adr-repair`, judged at the end of
 each round, and round again while a round is still owed and the cap allows. **Up
 to three rounds.** It is the optional pass **before** an ADR is implemented —
 sharpen the decision, then drain its tickets — and never a step inside a drain. Nothing else — no code is read for anything but evidence, no
-test is written, no `dror-repair`.
+test is written, no `dror-code-repair`.
 
 This file adds the order, the document the run starts from and the judgement of
 when to stop, and nothing else. Both steps are invoked as themselves and each
@@ -55,7 +55,7 @@ and each leaves it by a different door:
 
 - A **`breach`** says the code violates the ADR's rule and the document is fine.
   `dror-adr-repair` grounds it and hands it on; nothing in this loop edits code.
-  Carry every breach to the summary as work for `/dror-repair`, with its
+  Carry every breach to the summary as work for `/dror-code-repair`, with its
   `file:line`.
 - A **`conflict`** is two decisions disagreeing, and somebody must choose. It
   goes to the user with both passages quoted.
@@ -157,7 +157,7 @@ review would derive.
 
 **The tag is the run's and the suffix is the round's**, so the loop leaves one
 file per round rather than one file — the same arrangement as
-`dror-review-repair`'s, and ADR 0041's decision ("each round keeps its report")
+`dror-code-review-repair`'s, and ADR 0041's decision ("each round keeps its report")
 is why: an earlier round's grounds are the only evidence of what that round had
 in front of it, and a single overwritten path destroys them as they are made.
 
@@ -229,7 +229,7 @@ Say so and skip to the summary. The report's `## Refuted` section is not the lis
 
 **A review whose survivors are all `breach`, `conflict` or `revisit` ends it the
 same way.** There is no sentence for `dror-adr-repair` to write, so a repair
-round would produce a report of `For dror-repair` and `Left — needs a decision`
+round would produce a report of `For dror-code-repair` and `Left — needs a decision`
 rows and change nothing. Carry them out by the doors above and stop.
 
 Otherwise take the review's own verdict on whether a repair should follow. It
@@ -288,7 +288,7 @@ Weigh what happened, in this order:
   one, unrepaired, is not converging — it is a repair that could not ground them,
   and the answer is **no** with the question named.
 
-**There is no round-1 floor here, and that is deliberate.** `dror-review-repair`
+**There is no round-1 floor here, and that is deliberate.** `dror-code-review-repair`
 takes a second round whatever the first repaired, because a single review pass
 was measured missing most of a code diff (ADR 0023). That measurement is about a
 diff spread over files a pass has to choose between; an ADR is **one document a
@@ -352,7 +352,7 @@ at the cap carries the command as well.
 Then **what leaves this run for somebody else**, which is the part no round
 repairs and the part a reader will otherwise lose:
 
-- the **breaches**, each with its `file:line`, as work for `/dror-repair`;
+- the **breaches**, each with its `file:line`, as work for `/dror-code-repair`;
 - the **conflicts** and **revisits**, each as the question the user has to
   answer, with the passages or the two numbers the review carried;
 - the **ungrounded** items, each with what could not be settled.

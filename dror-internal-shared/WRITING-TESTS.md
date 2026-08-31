@@ -1,7 +1,7 @@
 # Writing a test that proves something
 
 The shared rules for every `dror-*` skill that writes a test — `dror-prove` from a
-ticket's criteria, `dror-repair` from a bug or a gap in cover. It lives here, in
+ticket's criteria, `dror-code-repair` from a bug or a gap in cover. It lives here, in
 `dror-internal-shared/`, owned by the shelf and shared by both callers: one copy,
 so sharpening a rule sharpens both runs (ADR 0015). Read this file whole before writing a
 test; do not restate it in the calling skill.

@@ -1,6 +1,6 @@
 # The report's shape follows the entrypoint
 
-`dror-prove` and `dror-repair` check `CLAUDE_CODE_ENTRYPOINT` before reporting:
+`dror-prove` and `dror-code-repair` check `CLAUDE_CODE_ENTRYPOINT` before reporting:
 `claude-vscode` gets a table, anything else gets one line per item carrying the
 same fields in the same order. A Markdown table renders in the IDE extension and
 reads badly in a terminal.

@@ -2,10 +2,10 @@
 
 `dror-adr-review-repair` loops `dror-adr-review` → `dror-adr-repair` over one
 decision document, judged at the end of each round, exactly as
-`dror-review-repair` loops the pair below it. Two numbers differ, and both
+`dror-code-review-repair` loops the pair below it. Two numbers differ, and both
 differences are the point of this document.
 
-**No round-1 floor.** `dror-review-repair` takes a second round whenever the
+**No round-1 floor.** `dror-code-review-repair` takes a second round whenever the
 first repaired anything, because a single review pass was *measured* missing most
 of a code diff — three commits where round 2 returned findings in files round 1
 never opened (ADR 0023). That gap is about a diff spread across files a pass has
@@ -34,7 +34,7 @@ sentence — so a round that returned only those repaired nothing and the next
 round would return them again. They leave the loop by their own doors, named in
 the summary.
 
-**Having the loop invoke `dror-repair` on the breaches** was rejected as the
+**Having the loop invoke `dror-code-repair` on the breaches** was rejected as the
 wrong run: it would put code edits, a test suite and a working tree inside a loop
 whose subject is one document, and ADR 0020's split — an ADR repair changes text
 only — is what keeps a document repair from quietly changing behaviour.
@@ -48,7 +48,7 @@ other's findings. It needs `dror-adr-review` to accept a caller's tag, which
 ADR 0027 added.
 
 `dror-adr-repair` gained the closing line the loop's step 4 weighs — whether
-another review is owed — mirroring `dror-repair`'s. A skill that neither reviews
+another review is owed — mirroring `dror-code-repair`'s. A skill that neither reviews
 nor loops still has to say what it left behind, because the caller cannot see it.
 
 Two runs over one document are still not isolated. The tag keeps their reports

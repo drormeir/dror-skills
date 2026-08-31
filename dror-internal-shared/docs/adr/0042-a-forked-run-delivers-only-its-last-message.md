@@ -85,7 +85,7 @@ cosmetic channel must not stop a drain.
 **Reporting belongs to whoever the user invoked**, which is the rule that keeps
 this from multiplying. `dror-implement-ticket` stays quiet under a caller and
 run directly, and the drain reports because the drain is what was typed.
-`dror-review-repair` is the one skill that is both — a chain step and a command
+`dror-code-review-repair` is the one skill that is both — a chain step and a command
 people run by hand — so it notifies per round by default and is silenced by a
 caller's declaration, trusted the same way its "a prove follows" declaration
 already is. A skill cannot see who invoked it, so this can only ever be the

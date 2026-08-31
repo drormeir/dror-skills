@@ -1,13 +1,13 @@
 ---
-name: dror-review-repair
-description: Loop review and repair over the unpushed work until it converges - dror-review, then dror-repair on what survived, round after round while a round is still owed. Use when the user asks to review and fix in one run, or to keep reviewing until nothing is left.
+name: dror-code-review-repair
+description: Loop review and repair over the unpushed work until it converges - dror-code-review, then dror-code-repair on what survived, round after round while a round is still owed. Use when the user asks to review and fix in one run, or to keep reviewing until nothing is left.
 context: fork
 background: false
 ---
 
-# dror-review-repair
+# dror-code-review-repair
 
-One run, one loop: `dror-review` → `dror-repair`, judged at the end of each
+One run, one loop: `dror-code-review` → `dror-code-repair`, judged at the end of each
 round, and round again while a round is still owed and the cap allows. **At
 least two rounds wherever the first one repaired anything, and up to seven.**
 Nothing else — no implementation, no criteria tests, no `dror-prove`.
@@ -22,7 +22,7 @@ says so.
 **This run has a context of its own, and so does each of its steps.** The
 frontmatter forks this file (ADR 0036), so what reaches it is this file and its
 arguments — the focus, the scope, the cap, the declaration that a prove follows
-— never the conversation that invoked it. `dror-review` and `dror-repair` run
+— never the conversation that invoked it. `dror-code-review` and `dror-code-repair` run
 apart from it too — as spawned agents, per the passage below — which is what
 "Each step runs in its own context" below rests on.
 
@@ -87,7 +87,7 @@ stops reporting a deliberate choice as a defect, and a repair that knows what a
 fix must not break.
 
 **Narrowing the scope is a separate argument**, and only where the user asks for
-it: `dror-review` takes a scope in plain text — paths, globs, named functions, a
+it: `dror-code-review` takes a scope in plain text — paths, globs, named functions, a
 `file:line` range — defaulting to every unpushed file. Where this run was given
 one, pass it unchanged into **every** round's review, exactly as given; a scope
 that drifts between rounds means round 3 reports what round 1 was told to ignore.
@@ -97,8 +97,8 @@ review nothing else.
 
 ## No box moves, unless a prove follows
 
-Handed a **ticket number** of its own, `dror-repair` clears the `- [x]` of any
-criterion whose test it watched go red, and `dror-review` mints `unmet criterion`
+Handed a **ticket number** of its own, `dror-code-repair` clears the `- [x]` of any
+criterion whose test it watched go red, and `dror-code-review` mints `unmet criterion`
 findings against the criteria list. Both are right in a ticket run, where
 `dror-prove` is there to tick a box back and to implement what nobody did.
 
@@ -120,7 +120,7 @@ uncommitted; what to commit is the user's call.
 
 ## 0. Know what is already in the tree
 
-`dror-review` reviews **everything unpushed**, not a diff this run produced, so
+`dror-code-review` reviews **everything unpushed**, not a diff this run produced, so
 work that was in the tree before the run started is reported and repaired by it.
 That is usually exactly what was wanted here — unlike a ticket run, this skill
 was asked for a pass over the tree as it stands — so it is a **report, not a
@@ -139,7 +139,7 @@ Ask both, and say what they answer:
 - `git status --porcelain` — uncommitted or untracked work.
 - `git rev-list --count <base>..HEAD` — commits ahead of the review's base.
 
-**`<base>` is `dror-review`'s base, found `dror-review`'s way**, or this run
+**`<base>` is `dror-code-review`'s base, found `dror-code-review`'s way**, or this run
 names a scope the review will not use: `git rev-parse --abbrev-ref
 --symbolic-full-name @{upstream}` and count from `git merge-base @{upstream}
 HEAD` where there is one; with **no** upstream, `git merge-base origin/HEAD HEAD`,
@@ -149,7 +149,7 @@ unpushed by definition — say that rather than a number. Name which of the thre
 you used; step 1 will name it again and the two must agree.
 
 **Both empty ends the run before it starts.** Nothing unpushed is nothing to
-review, and `dror-review` would stop on the empty diff one step later anyway.
+review, and `dror-code-review` would stop on the empty diff one step later anyway.
 Say so and stop.
 
 ## Rounds
@@ -173,7 +173,7 @@ of review and repair read far more than a single context should hold, and a loop
 that runs out of window mid-round loses the judgement it exists to make.
 
 **This costs nothing, because the handoff between the two is already a file.**
-`dror-review` writes its report and stops; `dror-repair` reads that report. The
+`dror-code-review` writes its report and stops; `dror-code-repair` reads that report. The
 only things that have to survive a step are the report's path and a short
 summary, so an agent boundary between them drops nothing a later round needs.
 
@@ -263,7 +263,7 @@ apart and nothing else.
 
 So **look for the other run and say what you find**, before round 1 and once
 only: list `<repo>/.claude/dror-skills/` and read the front matter of every
-`review-report*.md` that is not this run's, exactly as `dror-review`'s own
+`review-report*.md` that is not this run's, exactly as `dror-code-review`'s own
 concurrency check does. **Not this run's** now means every file carrying this
 run's tag, whatever its round suffix — before round 1 there are none of them,
 and the check runs once, so this costs the check nothing; what it prevents is a
@@ -282,7 +282,7 @@ and which nothing but the caller can decide.
 
 ### 1. Review
 
-Spawn the review agent — `dror-review`'s file, by the shelf's carrier — with
+Spawn the review agent — `dror-code-review`'s file, by the shelf's carrier — with
 the focus paragraph where this run has one and no ticket number:
 
 > Review the unpushed work. Report the survivors and change no behaviour. Write
@@ -308,7 +308,7 @@ It finds and stops, which is what keeps the repair a separate step: the report i
 written before anything is changed. **That stop is the review's, not this run's**
 — `../dror-internal-shared/DELEGATION.md`, the shelf beside this skill, owns what
 that means and why this step ends the way it does, at authoring time. A written
-report is **a deliverable's shape**, and `dror-review`'s closing
+report is **a deliverable's shape**, and `dror-code-review`'s closing
 "STOPS" is **a prohibition against guidance** — the two shapes a run ends on by
 mistake, in DELEGATION.md's words. So this step's named next action: **immediately after the review returns, and in the same turn, list
 `<repo>/.claude/dror-skills/` and confirm the file it named is there** — or,
@@ -318,7 +318,7 @@ and it is the "path step 1 confirmed it wrote" that step 3 passes on.
 
 **Confirm the path; do not read the report.** Step 2 judges from the review's own
 returned verdict and survivor list, and the loop's context holds only what the
-rule above allows it. The report is written for `dror-repair` to read, in a fresh
+rule above allows it. The report is written for `dror-code-repair` to read, in a fresh
 agent, from the tree as it stands. Nor is this listing the concurrency check —
 that one reads other runs' front matter and runs once, before round 1; this one
 confirms one path and runs every round.
@@ -331,7 +331,7 @@ Say so, skip to the summary, and do not invent work to do. The report's
 `## Refuted` section is not the list — those findings were raised and disproved.
 
 **A review that wrote no report at all ends it the same way**, and that is not an
-error: `dror-review` writes none when the diff it captured is empty, which a
+error: `dror-code-review` writes none when the diff it captured is empty, which a
 narrow scope can produce even on a busy tree. Say which of the two happened.
 
 Otherwise take the review's own verdict on whether a repair should follow. It
@@ -341,7 +341,7 @@ review's "nothing here needs an edit" is inventing work under this loop's name.
 
 ### 3. Repair
 
-Spawn the repair agent — `dror-repair`'s file, by the shelf's carrier:
+Spawn the repair agent — `dror-code-repair`'s file, by the shelf's carrier:
 
 > Repair the findings in `<the report file step 1 named>`: every confirmed bug
 > and every gap in cover, each red before its fix and green after. For context,
@@ -367,7 +367,7 @@ files it edited; compare them against the scope, and where one falls outside, sa
 so in that round's line and again in the summary. It is not an error and nothing
 stops for it.
 
-`dror-repair` runs the project's full suite, lint and type-check as its own gate,
+`dror-code-repair` runs the project's full suite, lint and type-check as its own gate,
 and the suite is owed to the **last code change** — so a round whose repair
 changed nothing at all owes no rerun, and every other round's evidence is that
 repair's own run. Name the run that counted.
@@ -455,8 +455,8 @@ At the cap the word is reported and the loop ends whatever it says — an **owed
 at round 7 names the files nothing has reviewed and hands the user the command as
 it would be typed:
 
-> `/dror-review`, writing its report to
-> `<repo>/.claude/dror-skills/review-report-<tag>-r<n+1>.md`, then `/dror-repair`
+> `/dror-code-review`, writing its report to
+> `<repo>/.claude/dror-skills/review-report-<tag>-r<n+1>.md`, then `/dror-code-repair`
 > on what it finds in that file.
 
 Where this run holds a directory override, the sentence goes into that command

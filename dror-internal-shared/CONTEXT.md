@@ -29,14 +29,14 @@ condensed pointer, and that file owns the term.
   ticket the same way, so a test name, a review verdict and a report row all
   name the same criterion.
 - **Unpushed work** — the commits a branch is ahead of its base by, plus staged,
-  unstaged and untracked source. What `dror-review` reviews.
+  unstaged and untracked source. What `dror-code-review` reviews.
 - **Base** — the commit a diff is taken against.
 
 ## Findings
 
 - **Finding** — one defect, hazard or gap named by a review, after merging.
 - **Bug** — production code is wrong. A finding already named in the
-  conversation; `dror-repair` discovers none of its own.
+  conversation; `dror-code-repair` discovers none of its own.
 - **Latent hazard** — code correct today that this diff made fragile, naming the
   future change that would break it **and the live caller that reaches it now**.
   Where every path in is clamped, guarded upstream or has no caller, it is not a
@@ -46,13 +46,21 @@ condensed pointer, and that file owns the term.
   test alone is the deliverable.
 - **Unmet criterion** — a criterion the diff claims and misses. Neither a bug
   nor a gap in cover.
+- **Tool finding** — a lint or type-check diagnostic on a line the diff added
+  or changed, raised by `dror-code-review`'s mechanical pass before the lenses run.
+  It skips the refuter — the tool's output is its own proof — and carries the
+  reserved lens name `tool` (ADR 0045).
 - **Lens** — one review perspective, defined by a section of
-  `dror-review/LENSES.md` or of `dror-adr-review/LENSES.md`, run as one agent
+  `dror-code-review/LENSES.md` or of `dror-adr-review/LENSES.md`, run as one agent
   that proposes findings.
 - **Refuter** — the agent handed one merged finding whose job is to kill it.
 - **Claim** — a comment written into source recording an invariant that is
   invisible at the site. Written by a refuter, verified rather than trusted by a
   later lens.
+- **Repro line** — `repro:` in a report finding, carrying verbatim the one
+  command whose execution decided the refuter's verdict. The only piece of a
+  refuter's route the report keeps; a repair replays it before writing anything
+  (ADR 0046).
 
 ## Findings about an ADR
 
@@ -64,7 +72,7 @@ names a different hand as the one that fixes it.
 - **Hole** — something a decision record must carry is missing: the alternative,
   a consequence, the scope, the migration. Filled only where it can be grounded.
 - **Breach** — the code breaks a rule the ADR states, at a named `file:line`.
-  The document is right; `dror-repair` fixes the code.
+  The document is right; `dror-code-repair` fixes the code.
 - **Conflict** — two decisions disagree, in one document or across two. Nobody
   repairs it without the user, because picking a side is deciding.
 - **Revisit** — nothing is wrong, and what the decision predicted has not held:
@@ -138,14 +146,14 @@ holds the rules that go with them.
   completed ticket (ADR 0031).
 - **Directory override** — `dror-implement-adr` §0a's sentence, "All commands
   run in `<path>` …", carried verbatim into every prompt a drain hands down.
-  Prose to every agent that obeys it; an argument to `dror-review` and
-  `dror-repair`, and the signal on which `dror-implement-ticket` folds its
+  Prose to every agent that obeys it; an argument to `dror-code-review` and
+  `dror-code-repair`, and the signal on which `dror-implement-ticket` folds its
   review-repair loop into its own context, keeping the chain's forks under
   the harness's spawn-depth cap — which strips an agent at the cap of its
   spawn tool and silently drops a forked skill's arguments (ADR 0043). The
   duties an obeying fork honours are `DIRECTORY-OVERRIDE.md`'s, on the shelf.
 - **Step agent** — a spawned agent given another dror skill's file to follow,
-  the carrier `dror-review-repair` and the drain's fold use in place of a
+  the carrier `dror-code-review-repair` and the drain's fold use in place of a
   `Skill` fork, which can arrive without its arguments when made from inside
   a fork (ADR 0044). How one is spawned and what its brief opens with are
   `STEP-AGENT.md`'s, on the shelf.
@@ -184,7 +192,7 @@ These words are the same in every `dror-*` run.
   hold, since a lens that finds nothing writes no finding. It also carries the
   run's `elapsed_s`, the only record of what a review costs in wall-clock.
 - **Repair log** — `~/.claude/dror-skills/repairs.tsv`: one line per finding a repair
-  handled, appended by `dror-repair` and by `dror-adr-repair`, keyed by the
+  handled, appended by `dror-code-repair` and by `dror-adr-repair`, keyed by the
   report's finding id, carrying that run's outcome and the
   files that run edited. What
   says whether a survivor was a real defect once somebody tried to fix it — and,
@@ -199,6 +207,6 @@ These words are the same in every `dror-*` run.
 - **Run tag** — four hex characters minted per review run. Names the *run* in a
   report's front matter and in `runs.tsv`. It is not the report's file name,
   which ADR 0021 derives from the ticket — except where a caller names the path
-  instead, as `dror-review-repair` does with `review-report-<tag>-r<n>.md` and
+  instead, as `dror-code-review-repair` does with `review-report-<tag>-r<n>.md` and
   `dror-adr-review-repair` with `adr-review-report-<n>-<tag>-r<k>.md`, one
   file per round (ADR 0041).

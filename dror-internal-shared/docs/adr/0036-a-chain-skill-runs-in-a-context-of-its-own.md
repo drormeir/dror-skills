@@ -1,8 +1,8 @@
 # A chain skill runs in a context of its own
 
 Every skill in the chain and above it — `dror-implement-ticket`,
-`dror-implement-adr`, `dror-review-repair`, `dror-adr-review-repair`,
-`dror-prove`, `dror-review`, `dror-repair`, `dror-adr-review`, `dror-adr-repair`
+`dror-implement-adr`, `dror-code-review-repair`, `dror-adr-review-repair`,
+`dror-prove`, `dror-code-review`, `dror-code-repair`, `dror-adr-review`, `dror-adr-repair`
 — carries `context: fork` and `background: false` in its frontmatter. Invoking
 one, by hand or from another skill, runs it in an agent of its own: what
 reaches it is its own file, the facts its first line injects (ADR 0037) and its
@@ -50,10 +50,10 @@ costs a re-invocation where a direct run used to continue. `dror-prove` and
 `dror-implement-ticket` no longer "ask for" a missing ticket number; they say so
 and stop.
 
-**Nothing said in a conversation reaches a run.** `dror-repair` used to take
+**Nothing said in a conversation reaches a run.** `dror-code-repair` used to take
 "bugs this conversation named"; it now takes a report path or a findings file
 path, and a bug named aloud is written down before the skill is invoked.
-`dror-review-repair`'s focus and scope, and every other thing a caller used to
+`dror-code-review-repair`'s focus and scope, and every other thing a caller used to
 rely on being in context, travel as arguments.
 
 **The loops and the drain no longer spawn.** Their steps are plain invocations;
