@@ -100,9 +100,12 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
   declares in `<repo>/.claude/dror-skills/facts.md`, and every chain skill's file
   opens with its stamp script, which injects the cached facts on a hit; the
   skill itself is invoked only on a miss. See ADR 0010, ADR 0013 and ADR 0037.
-- **`dror-review-retrospective`** reads the refutation log across runs and says which
-  lens is producing false positives and what wording to change. It proposes and
-  stops.
+- **`dror-review-retrospective`** reads the review logs across runs and says what
+  the lenses are getting wrong and what the rounds are worth — which lens is
+  producing false positives and what wording to change, what a later round
+  caught that an earlier one had in scope, and what a round costs; a proposal
+  can target a loop's round floor or cap, not only lens wording. It proposes
+  and stops.
 - **`dror-guide`** governs the style of step-by-step answers. It works at the
   level of the session, on whatever is being discussed.
 

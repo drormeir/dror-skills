@@ -10,8 +10,9 @@ This skill **reads history**. It says what the lenses are getting wrong across
 runs and what to change about them, and it stops there: no lens section is
 edited until the user says which.
 
-**Both pools are in scope** — `dror-code-review`'s lenses and `dror-adr-review`'s —
-because both write the one log. What they are never allowed is to be read
+**All three pools are in scope** — `dror-code-review`'s lenses,
+`dror-adr-review`'s and `dror-skill-review`'s — because all three write the one
+log. What they are never allowed is to be read
 against each other: their rates answer different questions, and the rule for
 keeping them apart is in "The log" below.
 
@@ -20,9 +21,10 @@ one finding wrong. What this reads is the accumulation.
 
 ## The log
 
-`~/.claude/dror-skills/refutations.tsv`, one line per merged finding — plus
-the unmerged `tool` rows (ADR 0045) — appended by
-every `dror-code-review` and every `dror-adr-review` run and never rewritten.
+`~/.claude/dror-skills/refutations.tsv`, one line per merged finding, appended
+by every `dror-code-review`, `dror-adr-review` and `dror-skill-review` run and
+never rewritten — plus the unmerged `tool` rows `dror-code-review` alone
+writes (ADR 0045).
 Tab-separated; the columns are whatever its own header row names — the shelf's
 `REPORT-STORE.md` owns the schema and this skill assumes none of it, so the log
 stays self-describing if the schema grows. The columns
@@ -37,8 +39,9 @@ written before anyone recorded which round it came from. The two questions below
 that need `round` are answered over the rows that carry it, with the count of
 rows they had to leave out stated beside the answer.
 
-**`summary` is what a finding claimed, never why it died.** Under eighty
-characters there is no room for the refuter's ground, so the question below
+**`summary` is what a finding claimed, never why it died.** Under the length
+cap the shelf's `REPORT-STORE.md` sets on that column ("The logs") there is no
+room for the refuter's ground, so the question below
 about a recurring assumption reads only the beliefs the claim itself names, and
 the ones a summary leaves implicit are invisible to it. Say so when answering
 that question: an assumption you could not see is not an assumption that was not
@@ -47,7 +50,8 @@ there.
 **Where a row carries `report`, the ground may still be on disk.** That column
 holds the path the run wrote its report to, and its `## Refuted` section gives a
 paragraph per kill — the id joins them. Reports are **overwritten by the next
-run of the same ticket or ADR**, so this reaches the current report for each and
+run of the same thing** (`../dror-internal-shared/REPORT-STORE.md`, "The
+store"), so this reaches the current report for each and
 nothing older: it is a pointer, never a history, and most rows will point at a
 file that has moved on. A loop's rounds are the exception since ADR 0041 — each
 keeps its own `-r<n>` file, so a run's rounds resolve together or not at all,
@@ -75,9 +79,10 @@ document's `hole` is refuted on grounds no code finding faces.
 Report them apart, and never rank a lens of one against a lens of another.
 
 **Inside the ADR pool the same split runs again, along its five axes** (ADR
-0033). Only `claims`, `breach` and `outcome` are judged against the code; the
-rest are judged against the document itself, against other documents, against
-the ticket set, or against the reader. Those refute on grounds that have nothing
+0033). Which lens sits on which axis is `../dror-adr-review/LENSES.md`'s
+preamble's to say — the text that binds its lens agents — and only its code
+axis is judged against the code; the rest are judged against the document
+itself, against other documents, against the ticket set, or against the reader. Those refute on grounds that have nothing
 to do with each other, so ranking `coherence` against `claims` measures the axis
 and not the lens. Group the ADR pool by axis before comparing anything within
 it, and say which axis a rate belongs to whenever you print one. The log written before this rule
@@ -231,10 +236,13 @@ catch, and can never see a miss nobody caught, so a small bucket three is not
 evidence of good recall. It needs `round` and `run_tag` on both rounds' rows and
 `files_edited` on the repair's, and it is unreadable where two concurrent runs
 were pooled into one apparent sequence — ADR 0024's `concurrent` column is what
-says which runs those were, and **`unchecked` there is missing, not empty**, the
-word a review that runs no neighbour check of its own writes (ADR 0027). Where
-any of those is absent, say the question cannot be answered for those rows
-rather than approximating the repair's reach from the previous round's findings,
+says which runs those were, and **`unchecked` there is missing, not empty** —
+what each of its values means is the store reference's to say
+(`../dror-internal-shared/REPORT-STORE.md`, "The logs"). Where
+any of those is absent, say the question cannot be answered for those rows —
+with the count of rows left out for carrying no `round`, the count "The log"
+above promises beside the answer — rather than approximating the repair's
+reach from the previous round's findings,
 which overstates it and would fold bucket three into bucket two — the one
 confusion this question exists to prevent.
 
@@ -248,7 +256,9 @@ Report it beside the buckets above and never instead of them. A round that is
 cheap and finds bucket-three defects is a round to keep whatever it costs; an
 expensive round that finds only bucket one is the case for a lower cap. Rows
 with `-` took no reading and are excluded from the mean rather than counted as
-zero, and the count excluded is stated.
+zero, and the count excluded is stated — and the rows left out for carrying no
+`round` are counted and stated separately, since no clock reading and no round
+index are different exclusions.
 
 **Where the code keeps needing claims.** Group the `claim = yes` lines by
 `path`. A file that repeatedly makes reviewers reach the wrong conclusion is a
