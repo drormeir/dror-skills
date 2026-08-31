@@ -92,7 +92,9 @@ when it returns (ADR 0038). Then find, in this order:
   so it goes in the report.
 - **What the code has done since.** `git log --oneline <commit>..HEAD` over the
   paths the ADR names. This is the review's best lead: the drift is where the
-  code moved after the decision was written down.
+  code moved after the decision was written down. Redirect it into a scratch
+  file — the code-axis lenses are given its path below, so the lead is spent
+  once and read by everyone it steers.
 - **Its neighbours.** The other files in the directory the ADR resolved in — not
   a fixed path, and not the whole repo — by title alone; the
   `neighbours` lens reads the ones that touch the same subject, and nothing else
@@ -101,7 +103,10 @@ when it returns (ADR 0038). Then find, in this order:
   all, found the way `dror-show-tickets` step 2 finds them. One `gh` call here,
   once, its output redirected into a scratch file whose path the `tickets` lens
   is given — a lens that shelled out for them itself would pay for the same
-  listing again, and bodies written into its prompt would be paid for here. A repo with no reachable
+  listing again, and bodies written into its prompt would be paid for here. The
+  lens's prompt names the spec and child **numbers**: the listing holds the
+  whole tracker, and which rows are the set is this read's finding to hand on,
+  not the lens's to re-derive. A repo with no reachable
   tracker, or an ADR with no ticket set, drops the lens and says so in the
   report; an **inferred** set is passed with that word attached, so the lens
   weighs it accordingly.
@@ -110,6 +115,11 @@ An ADR that is a stub — a title and no decision — ends the run with that one
 sentence. There is nothing to refute, and a lens pool run over it would invent
 six findings that all say the same thing.
 
+An ADR whose own status line marks it superseded or deprecated ends the run
+almost as fast: say so, name the superseding document where the line names one,
+and stop. Its drift from the tree is the record working, and the live decision
+is the one a review sharpens.
+
 ## Run the lenses
 
 [`LENSES.md`](LENSES.md) is a **pool**, not a running order. Choose the ones
@@ -117,7 +127,11 @@ this ADR raises and run each as one agent, all launched in parallel, each given
 the ADR's path, the path of the store's `facts.md`, the paths the ADR names,
 and the path of `LENSES.md` with the name of its lens — it reads that file
 itself, and is told that the preamble and the section headed with its name bind
-it while the other sections are other agents'. Paths, never contents.
+it while the other sections are other agents'. Paths, never contents. A
+code-axis lens — `claims`, `breach`, `outcome` — is also given the path of the
+drift log the read above saved: where the tree moved since the decision is
+where its findings live, and a lens that starts there reads less to find them.
+An empty log is a prior, not a verdict; the lens still works its bullets.
 
 Choosing is this skill's job, not the user's. Skip a lens whose concerns the
 document never raises — an ADR that states no rule anything could break needs no
@@ -147,7 +161,7 @@ own. Spend the tokens where the judgement is.
 **Cap what a lens reads, on its own axis.** A code-axis lens gets the ADR, the
 files it names and their direct callers. A lens on any other axis gets the ADR
 plus the thing it is judged against and nothing more — the sibling ADRs and the
-copies for `neighbours` and `echoes`, the issue bodies already in its prompt for
+copies for `neighbours` and `echoes`, the named rows of the listing it was handed for
 `tickets`, and for the three that read the document against itself, the document
 alone. A lens that cannot reach a verdict inside its own boundary says so and
 returns the question rather than widening — reading a subsystem to settle one

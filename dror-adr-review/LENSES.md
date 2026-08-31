@@ -202,9 +202,10 @@ the thing reads the ticket's acceptance criteria, not the decision behind them,
 so a criterion that no longer matches the ADR is a rule that is about to be
 broken by somebody following instructions correctly.
 
-You are given the ticket set in your prompt — the spec issue and its children,
-with each body. Do not go looking for more; the set was found before you were
-spawned.
+Your prompt names the set — the spec issue's number and its children's — and
+hands the path of a listing holding every issue's body and state; read your
+bodies from it. Read only the numbers named: the listing is the whole tracker,
+and the set was found before you were spawned. Do not shell out for more.
 
 - A **criterion that contradicts a rule the ADR states now** — a different
   threshold, owner, path, default or order. Quote both.
@@ -217,6 +218,14 @@ spawned.
   from was amended away, or another ADR took the question over.
 - A criterion the ADR's decision makes **impossible or already true**. Both mean
   the ticket was written against an older reading.
+
+**A criterion's checkbox is part of the body, and it sets what a finding
+means** — not whether the work is done, which stays another skill's table, but
+which way the damage runs: an unticked criterion against the ADR is work about
+to be built wrong, the finding this lens exists for; a ticked one records work
+built against an older reading, and the finding says so. A criterion sitting
+under a `## Needs your call` section is already the user's question — raise it
+only where its disagreement with the ADR is not the one that put it there.
 
 **Direction decides the kind, and you must say which way it runs.** The ADR was
 amended after the ticket was written ⇒ `text` is wrong here: the document is
