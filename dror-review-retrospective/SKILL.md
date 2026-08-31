@@ -134,7 +134,7 @@ Read the whole file. It is one line per finding and stays small for years.
 
 ## What to look for
 
-Seven questions, in this order. Each is answered from the log, with the counts
+Eight questions, in this order. Each is answered from the log, with the counts
 that support it.
 
 **Which lens is imprecise.** Refuted over total, per lens. A lens is not
@@ -218,6 +218,16 @@ is a miss the earlier round could have caught.
 Report the three as counts per round index, never as a rate against anything
 else, and say what they rest on.
 
+**It needs a `path` that varies, so it is a code-pool question.**
+`dror-skill-review` writes the reviewed skill's own `SKILL.md` into `path` on
+every row it appends, whatever file the evidence sat in — its own file says so —
+so a skill loop's rounds all carry one path and the three buckets collapse into
+bucket one by construction. Say the question cannot be answered for those rows,
+with their count, exactly as for a row missing `round`. Never read the collapse
+as a run that returned to known ground: that is the log's key saying nothing,
+not a measurement. An ADR loop's rows carry the ADR's own path and collapse the
+same way.
+
 **This is the question that decides what the round-1 floor is.**
 `dror-code-review-repair` takes round 2 unconditionally where round 1 repaired
 anything, and its grounds are two runs whose round-2 findings landed in files
@@ -245,6 +255,39 @@ above promises beside the answer — rather than approximating the repair's
 reach from the previous round's findings,
 which overstates it and would fold bucket three into bucket two — the one
 confusion this question exists to prevent.
+
+**Whether a round re-raised what an earlier round had already killed.** The
+recall question above asks what a later round caught; this one asks what it
+paid to learn nothing. Group by `run_tag`, order by `round`, and read each
+round's **refuted** summaries against every earlier round's in the same run: a
+claim killed in round 1 and raised again in round 2 cost a second refuter to
+reach the same verdict. Report the recurrences per run, the claims themselves,
+and which loop it was.
+
+**A repeat is only waste where the sentence did not move.** A refuted finding
+leaves its subject untouched by definition — nothing was repaired, so the second
+refuter judged the same text — and that is what separates this from the
+`assumption recurs` question above, which reads one wrong belief across
+*different* subjects and is a lens defect. Here the subject is one document and
+the belief has already been answered on it. Check the earlier round's
+`files_edited` in `repairs.tsv` before calling any of it waste: a round that
+edited the file the claim is about was judging different text, however alike the
+two summaries read.
+
+Matching is a **reading, not a join**: `summary` is short free text and no
+key at all, so one claim reworded across two rounds may not match on any string,
+and two claims may match that are not one. Say how the pairing was made and how
+thin it is. This log's first four skill-pool runs hold one instance — a claim
+raised and killed in rounds 1, 2 and 3 of one run, the third summary saying so
+itself — which is n=1 and enough to ask the question, not to answer it.
+
+What a recurring answer would argue for is narrow and worth stating so a later
+reader does not over-reach: handing a round's refuters the earlier rounds'
+`## Refuted` list, and **never its lenses**. A lens told a claim was killed is
+being asked to trust the very thing it is there to check, which is why the loops
+withhold the previous report at all; a refuter's default is already to kill, so
+the same list only reaches a verdict it was headed for. A proposal that gives it
+to the lenses is a different proposal and this question does not support it.
 
 **What a round costs.** From `runs.tsv`'s `elapsed_s`, the mean seconds a review
 run takes, split by round index and by how many lenses it ran. This is the other
@@ -300,7 +343,10 @@ Four things can be the target, and the question decides which:
   is the one proposal here that changes how much gets reviewed rather than how a
   finding is worded, so it is also the one where **the recall sentence below is
   not a formality**: a cap lowered on cost alone spends exactly the recall the
-  bucket counts were measuring.
+  bucket counts were measuring. A **repeat-kill** answer targets the loop of the
+  finding's own pool — `dror-code-review-repair`, `dror-adr-review-repair` or
+  `dror-skill-review-repair`, chosen by the same disjoint rule as the lens files
+  above — and inside it the section saying what each round's steps are given.
 
 **Name these by their path relative to this skill's own directory** —
 `../dror-code-review/LENSES.md` — and open them there to quote from. An absolute
