@@ -77,8 +77,10 @@ What this skill owes it is the number: the worktree is `adr-<N>` on branch
 `adr-<N>`, both from the ADR this run was given.
 
 **Its preflight is a step of this one, not a hand-off.** Run it before the first
-ticket and report its four lines; a failure stops the run here, which is the
-whole point of asking at a moment when there is nothing to blame the answer on.
+ticket and append its four lines to the progress log; a failure stops the run
+here, which is the whole point of asking at a moment when there is nothing to
+blame the answer on. In §Present the preflight is one word — green, or the
+line that failed — never the four lines again.
 Everything past §0a assumes an environment that was proved rather than built.
 
 **Then the baseline: the project's full suite, once, in the worktree, before the
@@ -862,34 +864,46 @@ local or remote: it is what the merge above reads from.
 
 ## Present
 
-The worktree path and the branch, **the progress log's path**, whether the
-worktree was removed or which of
-§4's conditions kept it, then the work list as it was built and one line
-per ticket on it: its
-number, whether it finished, stalled or was **skipped** at step 2 and why, how many criteria are proven of how
-many, its round verdict — the word the ticket run returned, as it
-gave it, with the report tag where its step 5 ran a settling loop — and **how long it took**,
-which is the one column that says where the ADR's cost actually went. A drain is many tickets
-and the per-round lines belong to the ticket's own summary, so they stay there;
-what travels up is the word, and re-wording it is how a reader loses track of
-which layer said what. Then the tickets still blocked, marking any that
-are **blocked behind a stall** — a different answer from blocked, and usually
-the most useful line in the report — and any that are **waiting on the user's
-call**, which is not blocked either and is the one row a reader can clear
-themselves. Then **the run's total** — elapsed since it started, marked as this
-run's where the state file shows earlier sessions — and, where tickets are still
-left, the last ETA with the one sentence §3's step 7 keeps off the per-round
-lines: it assumes every remaining ticket is worked, so it is an upper bound.
-Then **the spec issue's own line** — can close, or the children it
-still awaits — since it is the row that says whether the ADR itself is finished
-and the only one no ticket line covers. Then the one sentence that matters: what
-is left to do on this ADR, and stop.
+**The summary is read at a glance or not at all.** Its shape is fixed — the
+stop if there was one, the clearing steps, one table, then single lines, then
+one closing sentence — and nothing appears in prose that a table cell or a
+line already carries. The progress log and the state file hold the narrative;
+a fact that fits none of the slots below is written there and pointed at,
+never told here.
 
-A run that ended at §3a says so **first**, above the table of tickets: which
-ticket stopped it, what the question is, and that the rest of the ADR is
-untouched and waiting. A summary that opens with the tickets that went well and
-buries the question at the bottom is how a run that needed an answer gets read as
-a run that finished.
+A run that ended at §3a opens with the stop, in three lines: which ticket, the
+question, and that the rest of the ADR is untouched and waiting. Where the
+stop has clearing steps — an owed hand-back's command, the push — they come
+next as a bare numbered list of commands, verbatim, nothing between them. No
+paragraph defends the stop, rehearses what was not done, or explains the
+override that was not offered — the stop's three lines are its whole case. A
+summary that opens with the tickets that went well and buries the question at
+the bottom is how a run that needed an answer gets read as a run that
+finished.
+
+Then the table, one row per work-list ticket: number, title, whether it
+finished, stalled or was skipped (the why in a word or two), criteria proven
+of how many, the round verdict — the word the ticket run returned, as it gave
+it, with the report tag where its step 5 ran a settling loop — and how long it
+took. The per-round detail belongs to the ticket's own summary and stays
+there; what travels up is the word, and re-wording it is how a reader loses
+track of which layer said what.
+
+Then single lines, one each and only where it applies:
+
+- Tickets off the list: blocked and behind what, **blocked behind a stall**,
+  or **waiting on the user's call** — the last is the one row the reader can
+  clear themselves.
+- The spec issue: can close, or the children it still awaits.
+- Worktree path and branch, and removed or the one §4 condition that kept it.
+- The progress log's path.
+- Elapsed — this run's, marked so where the state file shows earlier
+  sessions — and the last ETA, marked as an upper bound.
+- A question a ticket left homeless, or a defect seen in the machinery
+  itself: one line naming it and pointing at where the detail was written —
+  the log, the state file, a report — never the detail here.
+
+Then the one sentence that matters: what is left to do on this ADR, and stop.
 
 Done when the work list is empty, or §3a stopped the run and its question is on
 screen; and every
