@@ -239,9 +239,9 @@ across runs, and as close to the table's own as the graph permits.
 criteria of its own, and `dror-show-tickets` answers its status from the child
 set — `Awaiting` every open child, and `Can close` once none are left. So there
 is nothing on it for `dror-implement-ticket` to implement, and its dependencies
-are the whole list by construction. Leave it out of the sort, and report it at
-the end: **can close** where the drain closed every child, and otherwise which
-children it is still waiting on.
+are the whole list by construction. Leave it out of the sort. It is not left for
+the user either: §4 closes it where the drain closed every child, on conditions
+read fresh from the tracker.
 
 **A spec row reading `No tickets yet` ends the run here**, before any worktree
 work. It says the decision was published and nothing was ever cut from it, so
@@ -831,7 +831,63 @@ session's interrupted ticket, not this run's stall and not pre-existing dirt —
 and whether it commits as partial or resumes one step from done is `RESUME.md`'s
 distinction, made there at the start of the run, not here.
 
-## 4. Merge nothing; remove the worktree only from a clean finish
+## 4. Finish the branch, close the spec, merge nothing
+
+Everything in this section is a **clean finish's** work — the work list emptied
+with no round `stopped`. A run that ended at §3a did its own bookkeeping there
+and never arrives here: it leaves the spec open, and it leaves an **owed**
+commit unpushed on purpose.
+
+### The branch is committed and pushed, and this is where that is proved
+
+Each round already committed and pushed its ticket (§3 step 5), so from inside
+the worktree `git status --porcelain` is empty and `git rev-list --count
+@{upstream}..HEAD` is `0` by construction. Ask both anyway, because a drain that
+ends leaving work on disk is exactly the failure nothing else in this run would
+notice.
+
+**Anything either question turns up is finished here, not reported.** Stage by
+path — the store, `<worktree>/.claude/dror-skills/`, stays out, as at step 5 —
+run the project's full suite over the tree before committing and name the run,
+commit under the ADR's number with no closing keyword (step 5's rule, and here
+the keyword would close the spec itself), and push to `origin/adr-<N>`. A red
+suite is a §3a stop rather than a push: the branch would otherwise end on code
+nothing has run, and no later ticket is coming to find it.
+
+### Close the spec issue
+
+The spec issue closes here, and only on conditions read fresh from the tracker
+rather than from this run's memory of what it did:
+
+- Every round in the state file reads `finished` or `skipped`, and none
+  `stopped`.
+- **Every child of the spec is `CLOSED`** — `gh issue view <N> --json state` per
+  ticket of §2's table, asked now. Not the closes step 7 recorded: a ticket left
+  open on its gate, one the graph set aside as not workable here, one skipped
+  behind a stall and one `Needs your call` all reach this point as an open child,
+  and each of them means the ADR still has work in it.
+- The branch is pushed, by the check above.
+
+All of them hold, close it, naming the branch and that every ticket cut from the
+ADR is closed:
+
+```
+gh issue close <spec> --comment "Every ticket closed on branch adr-<N>."
+```
+
+Any of them failing **leaves the spec open**, with the children it is still
+waiting on named in §Present — the same line, saying the other thing.
+
+**Why this is the drain's to do and not the user's.** Closing the spec claims
+no more than its children do: `dror-show-tickets` reads its status from the
+child set and nothing else, so a spec whose children are all closed is a spec
+the tracker already calls `Can close`, and leaving it open makes a finished ADR
+indistinguishable from a running one on the board. What is *not* claimed is that
+the decision is fully delivered — an ADR may want tickets nobody wrote, and that
+gap is invisible to the tracker either way. Reopening is one command; the
+condition above is the check that matters.
+
+## 4a. Merge nothing; remove the worktree only from a clean finish
 
 The run ends with the branch pushed. Merging into the default branch is the
 user's call, and so is when — several rounds of review and repair on the branch
@@ -909,8 +965,8 @@ Then single lines, one each and only where it applies:
 - Tickets off the list: blocked and behind what, **blocked behind a stall**,
   or **waiting on the user's call** — the last is the one row the reader can
   clear themselves.
-- The spec issue: can close, or the children it still awaits.
-- Worktree path and branch, and removed or the one §4 condition that kept it.
+- The spec issue: closed, or the children it still awaits.
+- Worktree path and branch, and removed or the one §4a condition that kept it.
 - The progress log's path.
 - Elapsed — this run's, marked so where the state file shows earlier
   sessions — and the last ETA, marked as an upper bound.
@@ -926,6 +982,8 @@ delegated prompt named the worktree as the directory its
 commands run in, every commit this skill pushed was made over a tree a full
 suite had seen — except a stall's partial commit, which §3a names as partial —
 every attempted ticket has a commit and a pushed state, the
-state file matches what happened, nothing is merged, the worktree is removed
-where every one of §4's conditions held and otherwise named as standing with
+state file matches what happened, the branch is clean and level with its
+upstream, the spec issue is closed where §4's conditions held and otherwise
+named with the children it awaits, nothing is merged, the worktree is removed
+where every one of §4a's conditions held and otherwise named as standing with
 the condition that kept it, and that summary is on screen.

@@ -199,7 +199,7 @@ each reviewed against the wrong base.
 
 Nothing here merges the branch: that is a gesture with consequences outside
 this work, and it is the user's. The worktree is removed by exactly one caller,
-`dror-implement-adr`'s §4, and only from a clean finish — every ticket closed and
+`dror-implement-adr`'s §4a, and only from a clean finish — every ticket closed and
 pushed, the tree clean, nothing shared pointing into it. Any other end of a run
 leaves it standing, and so does any other skill.
 
