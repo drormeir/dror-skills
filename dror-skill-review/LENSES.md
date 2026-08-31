@@ -113,6 +113,12 @@ skill and another owner both changed and now disagree with each other
   read, the next invocation. The shape is the shelf's `DELEGATION.md`; quote
   the step and say what a run does at that boundary: it stops with the
   caller's work undone. Kind `hole`.
+- A **closing contract that no longer stops a direct run** — a stop, a "wait",
+  a "nothing else" that has been softened, or that now carries an exemption for
+  a caller invoking this skill as a step. The shelf's `DELEGATION.md` puts that
+  fix in the caller and never in the sub-skill, and every one of these skills is
+  also typed by a user on its own. Quote the closing sentence and say what that
+  user gets instead — findings asked for and a tree edited. Kind `text`.
 - A **word used before or without definition** — a term of art the skill
   coins mid-procedure and never fixes, or uses in two senses. Kind `hole`.
 - **Two passages that disagree**: a cap stated twice with two values, a step

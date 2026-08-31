@@ -33,7 +33,11 @@ several axes and each is killed differently, so read the finding first:
   implementation, and a paraphrase that is coarser than the mechanism and
   still true is refuted.
 - from `sequence`, it says one passage is a stale copy of another — killed by
-  reading both in full and finding they agree, or govern different cases.
+  reading both in full and finding they agree, or govern different cases — or
+  that the closing contract no longer stops a direct run, killed by reading
+  that section and finding the stop still binds a user who invoked the skill on
+  its own. An exemption stated in some caller's own file is that caller's and
+  no fault of this skill.
 - from `execution`, it claims the executing agent **acts wrongly**, so "the
   sentence is true" refutes nothing. What kills one is that the wrong move is
   not available: the actor or moment is named somewhere the reader cannot
