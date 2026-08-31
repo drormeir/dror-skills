@@ -128,6 +128,12 @@ skill and another owner both changed and now disagree with each other
   step omits. Quote both, and say what the spawned agent does with what it
   actually receives. Kind `hole` where an input is missing, `text` where the
   step and the brief simply disagree.
+- **Work the procedure never bounds** — a step that spawns one agent per item
+  of a set the skill does not bound, or hands an agent a tree to read with no
+  boundary on it, where the skill elsewhere bounds such a step. Quote the step
+  and the bounded one beside it, and say what a run costs on a large input.
+  Where the skill's own text says the bound is deliberate — an argued decision
+  not to cap — that is the answer and there is no finding. Kind `hole`.
 - A **word used before or without definition** — a term of art the skill
   coins mid-procedure and never fixes, or uses in two senses. Kind `hole`.
 - **Two passages that disagree**: a cap stated twice with two values, a step
