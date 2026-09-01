@@ -35,8 +35,8 @@ condensed pointer, and that file owns the term.
 ## Findings
 
 - **Finding** — one defect, hazard or gap named by a review, after merging.
-- **Bug** — production code is wrong. A finding already named in the
-  conversation; `dror-code-repair` discovers none of its own.
+- **Bug** — production code is wrong. A finding already written down, in a
+  review report or a findings file; `dror-code-repair` discovers none of its own.
 - **Latent hazard** — code correct today that this diff made fragile, naming the
   future change that would break it **and the live caller that reaches it now**.
   Where every path in is clamped, guarded upstream or has no caller, it is not a
@@ -74,35 +74,22 @@ condensed pointer, and that file owns the term.
 
 ## Findings about an ADR
 
-The kinds `dror-adr-review` returns. They are separate words because each
-names a different hand as the one that fixes it.
-
-- **Text** — the document says something about the code that is not true, or
-  says something true that a reader acts wrongly on. `dror-adr-repair` fixes it.
-- **Hole** — something a decision record must carry is missing: the alternative,
-  a consequence, the scope, the migration. Filled only where it can be grounded.
-- **Breach** — the code breaks a rule the ADR states, at a named `file:line`.
-  The document is right; `dror-code-repair` fixes the code.
-- **Conflict** — two decisions disagree, in one document or across two. Nobody
-  repairs it without the user, because picking a side is deciding.
-- **Revisit** — nothing is wrong, and what the decision predicted has not held:
-  the measurement it stood on now reads differently, or the reason its rejected
-  alternative lost no longer applies. Carries both numbers, the predicted and
-  the measured. Nobody repairs it either — reopening a decision is the user's.
-- **Echo** — a copy of an ADR's rule living where the rule is actually read: the
-  conventions doc, the glossary, a docstring at the site, a README index. The
-  copy that gets read is the one that governs, so a correct ADR beside a stale
-  copy is a rule not in force. An `echo` finding names every copy and is
-  repaired in all of them at once.
+The kinds `dror-adr-review` returns — `text`, `hole`, `breach`, `conflict`,
+`revisit`, `echo` — minted and defined in its own `LENSES.md` preamble, the
+text pasted into every lens agent's prompt; this entry is the condensed
+pointer, and that file owns them. They are separate words because each names a
+different hand as the one that fixes it, and
+[`DROR-SKILLS.md`](DROR-SKILLS.md) owns which hand that is.
 
 ## Findings about a skill
 
 The kinds `dror-skill-review` returns, minted and defined in its own
 `LENSES.md` — this entry is the condensed pointer, and that file owns them.
 Four are repaired by `dror-skill-repair`: `text`, `hole` and `echo` carry the
-meanings above with the skill as the document, and **`sprawl`** — this pool's
-own word — is a rule, tunable or vocabulary living in more places than its
-owner, drifted or not, collapsed to a pointer rather than corrected. A
+meanings the entry above points at, with the skill as the document, and
+**`sprawl`** — this pool's own word — is a rule, tunable or vocabulary living
+in more places than its owner, drifted or not, collapsed to a pointer rather
+than corrected. A
 `conflict` between two owners waits for the user.
 
 ## Evidence for a document
@@ -135,9 +122,12 @@ holds the rules that go with them.
   is missing is the evidence, not the test.
 - **untestable** — no reasonable test can catch it at all. No test is written,
   and the reason is recorded.
-- **covered** — a bug that went red and then green.
 - **enrich** — extend a test that already exists so it also covers a new item,
   rather than adding a file.
+
+One more word is one skill's own rather than shared: **covered** — a bug that
+went red and then green — is minted and defined in `dror-code-repair/SKILL.md`,
+and that file owns it.
 
 ## The ADR worktree
 
@@ -149,6 +139,11 @@ holds the rules that go with them.
   (ADR 0029).
 - **ADR branch** — `adr-<N>`, the branch that worktree is on, with `<N>` the ADR's
   number unpadded. Local and remote carry the same name.
+- **ADR lock** — `<repo>/.claude/adr-wip/adr-<N>.lock`, holding the pid of the
+  session draining that ADR. Claimed before the worktree is created or adopted,
+  released on every ending. A second session on the same ADR loses it and stops.
+- **Stale lock** — an ADR lock whose pid no agent process wears any more: the
+  mark of a killed session. It is reported and never taken over on its own.
 - **Guard** — one condition a project must satisfy before a worktree may sit
   inside it: `.claude/` gitignored, pytest's `norecursedirs` naming it, mypy's
   `exclude` covering it. A guard that does not hold stops the run.
@@ -230,8 +225,9 @@ These words are the same in every `dror-*` run.
   the report carries no lens and a `file:line` moves. Two older shapes are in the
   logs — `<head>-<hhmm>-<n>` and `<head>-<n>` — so an id is matched **whole** and
   never split into parts (ADR 0025).
-- **Run tag** — four hex characters minted per review run. Names the *run* in a
-  report's front matter and in `runs.tsv`. It is not the report's file name,
+- **Run tag** — a clock reading minted once per review run, by the recipe
+  `REPORT-STORE.md` owns. Names the *run* in a report's front matter and in
+  `runs.tsv`. It is not the report's file name,
   which ADR 0021 derives from the ticket — except where a caller names the path
   instead, as `dror-code-review-repair` does with `review-report-<tag>-r<n>.md`,
   `dror-adr-review-repair` with `adr-review-report-<n>-<tag>-r<k>.md` and

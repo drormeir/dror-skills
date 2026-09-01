@@ -18,7 +18,7 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | Skill | Question it answers | Writes |
 |---|---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? | nothing |
-| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, the spec issue's close on a clean finish, `drain-<ADR>.json`, `drain-<ADR>.log` |
+| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | `adr-<N>.lock` (released on every ending), a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, the spec issue's close on a clean finish, `drain-<ADR>.json`, `drain-<ADR>.log` |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
 | `dror-code-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
@@ -50,7 +50,8 @@ kinds, and this is where each one goes:
   what the decision predicted has not held. Whether to reopen it is the user's.
 
 Neither skill writes code, and neither may rewrite what was decided — see
-ADR 0020. The glossary defines the six; `dror-adr-review` mints them.
+ADR 0020. `dror-adr-review/LENSES.md` defines the six and its lenses mint them;
+this paragraph owns only where each one goes.
 
 ## On the machinery itself
 
@@ -87,8 +88,8 @@ an agent of its own whether the user invoked it or another skill did: what
 reaches it is its own file, the facts its first line injects, and its
 arguments, never the conversation that invoked it, and what comes back is its
 closing summary. Beneath those, `dror-code-review` and `dror-adr-review` spawn a lens
-agent per lens with a refuter under each, and `dror-code-repair` and
-`dror-adr-repair` fan out per item; every such agent is given paths and never
+agent per lens with a refuter under each, `dror-code-repair` fans out per test
+file and `dror-adr-repair` per item; every such agent is given paths and never
 pasted text (ADR 0038). Each file owns its own arrangement and lists what its
 agent must return, and a step is a step either way — see `DELEGATION.md`.
 
