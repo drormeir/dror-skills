@@ -30,6 +30,58 @@ resumed run compares them, `dror-code-review` derives every ticket's base from t
 branch's upstream, and the user finds the work by guessing the name months
 later. A branch named per-run breaks all three quietly.
 
+## The lock: one ADR, one session
+
+**Take the lock before creating or adopting anything.** The re-entry rule below
+adopts a worktree that is already there, and it cannot tell a worktree left by a
+finished session from one a live session is working in. Two sessions on one ADR
+therefore share a checkout, a branch, a state file and a progress log, and none
+of the four notices. The state file is the worst of them: it is rewritten whole
+each round, so the second session's write drops the first's rounds, and the
+`picked` entry that makes a dead session's ticket recoverable is exactly what is
+lost.
+
+The lock is **`<repo>/.claude/adr-wip/adr-<N>.lock`**, beside the worktree
+directory and not inside it, so it is answerable before the directory exists and
+outlives its removal. Claim it with
+[`claim-path.sh`](claim-path.sh) in `exclusive` mode:
+
+```
+bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh exclusive \
+  <the user's checkout>/.claude/adr-wip/adr-<N>.lock $PPID
+```
+
+`$PPID` is the agent process, which is what makes a dead holder recognisable
+later; the script says why that pid and not another. **Exit 0 is the only
+answer that may proceed.**
+
+**A live holder ends the run before anything is touched** — no worktree adopted,
+no ticket picked, no file written. Say which ADR, the pid and the time from the
+`HELD:` line, and that the other session is the one to stop or wait for. This is
+not an offer to override: the second drain would commit into the first's tree.
+
+**A stale holder is the ordinary end of a killed session**, and the script says
+`stale` when no agent process wears that pid any more. Say so, name the lock's
+path and the one command that clears it, and stop. Taking it over is the user's
+call, because a pid can be stale while the branch it left behind is mid-ticket,
+and only they know whether that session is really gone.
+
+```
+rm <the user's checkout>/.claude/adr-wip/adr-<N>.lock
+```
+
+**Release it wherever the run ends**, and that is the same command — a clean
+finish, a stop for the user, a failed guard, a failed preflight. There is no
+release mode and no unlock script, because a release and a takeover are the same
+one line. **A run that ends without releasing locks the ADR against its own
+next session**, which is why the stop that keeps a worktree standing must name
+the lock path with it.
+
+The two races this does not close: two sessions clearing one stale lock can both
+take it, and a machine that dies between the claim and the first ticket leaves a
+lock with nothing behind it. Both are narrower than what the lock closes, and
+both are one `rm` to recover.
+
 ## Creating one
 
 From the user's checkout:
@@ -171,7 +223,9 @@ run that prints no preflight line is indistinguishable from one that skipped it.
 ## Re-entry
 
 **A worktree that is already there is resumed, not recreated**: check for the
-directory and the branch first, and adopt them. Report the path either way —
+directory and the branch first, and adopt them. The lock above is taken before
+this check, never after it — adopting first and locking second is two sessions
+in one tree for however long the check takes. Report the path either way —
 every later step, and every command in it, runs in that directory. Then run the
 preflight above, which is the only thing that knows whether an adopted
 environment still works.
@@ -208,6 +262,10 @@ is not: a plain delete leaves the registration behind, and `git worktree list`
 goes on advertising a path that is not there — which is exactly what the re-entry
 check above reads. `--force` is ordinarily needed, because the ignored `.venv`
 symlink and `.claude/` count as untracked to that command.
+
+**The lock does not die with the directory.** It sits beside it rather than in
+it, so `git worktree remove` leaves it exactly where it was; releasing it is the
+separate `rm` above, and it is owed on every ending, not only this one.
 
 **What dies with the directory is the store beside it** — the drain's state file
 and its progress log, `facts.md`, the reports. All of it is re-derivable, and

@@ -66,15 +66,22 @@ DELEGATION.md already rejects. Nothing here stops on a count of rounds either;
 what is written down is only that stopping is cheap, so that a user watching a
 long drain knows they may.
 
-## 0. Prepare the branch and the worktree
+## 0. Take the lock, then prepare the branch and the worktree
 
 `../dror-internal-shared/WORKTREE.md` — the shelf beside this skill — holds the
-naming, placement, guards, environment and re-entry rules for an ADR worktree, in
-one copy. Read it whole before creating or adopting anything, and take this run's
-path and branch from it. It is not restated here.
+lock, the naming, placement, guards, environment and re-entry rules for an ADR
+worktree, in one copy. Read it whole before creating or adopting anything, and
+take this run's path and branch from it. It is not restated here.
 
 What this skill owes it is the number: the worktree is `adr-<N>` on branch
 `adr-<N>`, both from the ADR this run was given.
+
+**Its lock is the first command of this section, before §2's table and before
+any worktree question.** A drain that loses it says so and stops — no worktree,
+no ticket, no state file, and nothing of §Present except that one stop. A drain
+that takes it owes the release on **every** way this run can end, §3a's stop and
+§4a's clean finish alike; the shelf owns both the claim and the release, and this
+skill's endings only have to reach for them.
 
 **Its preflight is a step of this one, not a hand-off.** Run it before the first
 ticket and append its four lines to the progress log; a failure stops the run
@@ -831,6 +838,12 @@ session's interrupted ticket, not this run's stall and not pre-existing dirt —
 and whether it commits as partial or resumes one step from done is `RESUME.md`'s
 distinction, made there at the start of the run, not here.
 
+**Release the lock, last, after the state file is written.** A stop leaves the
+worktree standing on purpose, and the lock is what would stop the user's own
+resumption of it — the whole point of stopping is that they come back. The
+command is the shelf's, in one copy; §Present names the lock as released beside
+the worktree it names as standing.
+
 ## 4. Finish the branch, close the spec, merge nothing
 
 Everything in this section is a **clean finish's** work — the work list emptied
@@ -933,6 +946,11 @@ copy. Confirm with `git worktree list`, which must no
 longer name the path, and say so. **The branch `adr-<N>` is never deleted**,
 local or remote: it is what the merge above reads from.
 
+**Release the lock last, and release it whether or not the worktree went.** It
+sits beside the directory rather than in it, so nothing above removes it, and a
+condition that kept the worktree standing is not a reason to keep the ADR locked
+— the next session is what clears that condition. The command is the shelf's.
+
 ## Present
 
 **The summary is read at a glance or not at all.** Its shape is fixed — the
@@ -941,6 +959,11 @@ one closing sentence — and nothing appears in prose that a table cell or a
 line already carries. The progress log and the state file hold the narrative;
 a fact that fits none of the slots below is written there and pointed at,
 never told here.
+
+**A run that lost §0's lock has no summary at all** — no table, no lines, none
+of the shape below. It is the shelf's stop, said once: which ADR, who holds it,
+and what the user does about it. Everything the shape below reports on is work
+this run deliberately did not do.
 
 A run that ended at §3a opens with the stop, in three lines: which ticket, the
 question, and that the rest of the ADR is untouched and waiting. Where the
@@ -967,6 +990,7 @@ Then single lines, one each and only where it applies:
   clear themselves.
 - The spec issue: closed, or the children it still awaits.
 - Worktree path and branch, and removed or the one §4a condition that kept it.
+- The lock: released. Where it was not, the path, so the user can clear it.
 - The progress log's path.
 - Elapsed — this run's, marked so where the state file shows earlier
   sessions — and the last ETA, marked as an upper bound.
@@ -986,4 +1010,8 @@ state file matches what happened, the branch is clean and level with its
 upstream, the spec issue is closed where §4's conditions held and otherwise
 named with the children it awaits, nothing is merged, the worktree is removed
 where every one of §4a's conditions held and otherwise named as standing with
-the condition that kept it, and that summary is on screen.
+the condition that kept it, the lock this run took is released, and that summary
+is on screen.
+
+Done also when §0's lock was another session's: that stop is on screen, and this
+run took nothing, wrote nothing and released nothing.
