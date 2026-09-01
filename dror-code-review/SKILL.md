@@ -56,7 +56,9 @@ check, in the same turn** — the sections below, in their order, from there.
 A ticket number may be passed to this run. If one is, read it the way the
 **issue convention** fact says this repo tracks work, and number its acceptance
 criteria 1..N, the same numbering `dror-prove` and `dror-code-repair` use. A repo whose
-convention came back unstated reviews without the ticket and says so. Carry that list into
+convention came back unstated reviews without the ticket and says so; so does a run
+whose number does not resolve — a fetch that exits non-zero and hands back no body
+is the same state arriving another way. Carry that list into
 every lens prompt beside the facts path: it is what the diff was written to
 satisfy, and a lens that knows it stops reporting a deliberate choice as a
 defect.
