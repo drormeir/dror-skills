@@ -17,8 +17,9 @@ and the reports (ADR 0002). It is **disposable** — everything in it is
 re-derivable, deleting it costs one re-run, and a file that cannot be read is a
 miss and never an error.
 
-Create the directory when it is not there. Reports are overwritten by the next
-run of the same thing, so nothing in the store is a history; the logs below are.
+Create the directory when it is not there. Nothing in the store is a history — a
+report is replaced or set aside by the next run of the same thing; the logs
+below are the history.
 
 ## Which name a report takes
 
@@ -56,6 +57,22 @@ write.** A file there for another ticket or another ADR is another run's, and a
 bare `review-report.md` holding another ticket's report is the same situation
 wearing the default name — keep your own findings, take a name of your own, and
 say on screen which file they went to and why.
+
+**A caller-named path is claimed before anything is written to it**: run
+[`claim-report-path.sh`](claim-report-path.sh), the script beside this file,
+with the path as its one argument, and write the report to the path it prints. It creates the file empty and prints either the path asked for
+or the same name with a `-<k>` before the extension, and of two writers reaching
+for one path exactly one wins, decided by the kernel rather than by a clock
+reading or a look-then-write. Where it printed a path other than the one asked
+for, that is another writer already there — say so on screen with the path it
+gave, and tell the caller that name, since the caller is what a repair reads the
+path from. The script owns how far the `-<k>` names run; this file does not
+restate it.
+
+**A default name is not claimed.** It is the name of the *thing* reviewed rather
+than of one run, so replacing the last run's report of the same ticket, ADR or
+skill is what it is for — claiming it would leave a run that meant to replace a
+report writing beside it instead.
 
 ## The identity line
 
