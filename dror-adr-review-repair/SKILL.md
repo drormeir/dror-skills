@@ -240,13 +240,14 @@ carries what the count cannot, and a run that repairs against the review's
 
 Invoke the `dror-adr-repair` skill:
 
-> Repair the findings in `<the report file step 1 named>`: every `text` and every
-> `hole`, each corrected sentence grounded in the tree as it stands. Change no
-> decision. For context, why this document is being checked now: `<the focus
-> paragraph>`. The other reports in that directory belong to other runs — do not
-> read or touch them. `<Where the concurrency check saw a neighbour: another run
-> is editing this same document — …, last seen at … — so a sentence changing
-> under you may be theirs.>`
+> Repair the findings in `<the report file step 1 named>`: every `text`, every
+> `hole` and every `echo`, each corrected sentence grounded in the tree as it
+> stands, each echo synchronised in every copy it names. Change no decision. For
+> context, why this document is being checked now: `<the focus paragraph>`. The
+> other reports in that directory belong to other runs — do not read or touch
+> them. `<Where the concurrency check saw a neighbour: another run is editing
+> this same document — …, last seen at … — so a sentence changing under you may
+> be theirs.>`
 
 **Name this round's tagged file, never the store's default and never an earlier
 round's.** The default `adr-review-report-<n>.md` may be another run's entirely,

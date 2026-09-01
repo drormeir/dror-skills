@@ -1,6 +1,6 @@
 ---
 name: dror-skill-repair
-description: Repair a skill's text from findings already made - every corrected sentence grounded in the file or command it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. Use when asked to fix a skill review's findings, or to bring a named skill back in line with the repo it runs in.
+description: Repair a skill's text from findings already made - every corrected sentence grounded in the file, command or directory it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. Use when asked to fix a skill review's findings, or to bring a named skill back in line with the repo it runs in.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
@@ -100,12 +100,13 @@ runs fanned out, so the first call after the facts is the fan-out itself.
 
 A code repair proves itself by watching a test go **red** and then **green**.
 There is no such thing for a sentence, and pretending otherwise is how a
-plausible correction ships. So this skill's evidence is `dror-adr-repair`'s
-two words, unchanged in meaning:
+plausible correction ships. So this skill has its own two words, and its own
+answer to what settles a sentence about a skill — a skill is a directory, so
+what that directory holds is evidence here:
 
 - **grounded** — the corrected sentence was read out of the tree as it stands
   now, and the run can quote the `file:line`, the command output or the
-  listing that says it. Every sentence this run writes is grounded.
+  directory listing that says it. Every sentence this run writes is grounded.
 - **ungrounded** — nothing in the tree settles it. The sentence is **not
   written**. What the run produces instead is the question, put to the user.
 
@@ -118,8 +119,9 @@ every rename this run performs is proved by a grep that comes back empty.
 ## Step 1 — Ground
 
 For every item, go to the tree and settle what the sentence should say.
-Produce, per item: the quoted sentence, the `file:line` or command output that
-settles it, and the corrected **fact** — still not the prose. For a `sprawl`
+Produce, per item: the quoted sentence, the `file:line`, command output or
+directory listing that settles it, and the corrected **fact** — still not the
+prose. For a `sprawl`
 item, the fact is **which file owns the rule**, read from its header or the
 repo's conventions; for an `echo`, the surviving copy list, each re-read.
 

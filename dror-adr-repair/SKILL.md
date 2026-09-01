@@ -104,15 +104,16 @@ plausible correction ships. So this skill's evidence is different in kind, and
 it has its own two words:
 
 - **grounded** — the corrected sentence was read out of the tree as it stands
-  now, and the run can quote the `file:line`, the command output or the file
-  listing that says it. Every sentence this run writes is grounded.
+  now, and the run can quote the `file:line` or command output that says it.
+  Every sentence this run writes is grounded.
 - **ungrounded** — nothing in the tree settles it. The sentence is **not
   written**. What the run produces instead is the question, put to the user.
 
 The report's own evidence is not enough on its own. It was gathered by a refuter
-in an earlier run against a tree that may have moved, and it was written down in
-fifteen lines. Step 1 re-reads it. That re-reading is the whole of this skill's
-rigour: a document repair has no suite to catch it.
+in an earlier run against a tree that may have moved, and it was compressed to
+the finding length `../dror-adr-review/SKILL.md` sets. Step 1 re-reads it. That
+re-reading is the whole of this skill's rigour: a document repair has no suite
+to catch it.
 
 ## Step 1 — Ground
 
@@ -213,7 +214,8 @@ Where the project declares a docs check of its own — a link checker, a
 formatter, a spell pass — run it and paste its output.
 
 The editing ends here, with the changes uncommitted. Committing is the user's.
-The run goes on to the report below.
+Three things are still owed before the run ends: the report below, the
+`repairs.tsv` append after it, and the review-owed line last.
 
 ## Report
 
