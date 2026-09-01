@@ -3,7 +3,7 @@ name: dror-adr-review
 description: Review one ADR document against itself, its tickets and the code it governs - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names an ADR and asks whether it is still true, still coherent, or still obeyed - most often as a preliminary pass, sharpening the decision before its tickets are implemented.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
 ---
 
 # dror-adr-review
@@ -33,7 +33,7 @@ five **axes**, each admitting a different kind of evidence, set out in
 - **Against the reader** — a sentence that is true and gets acted on wrongly,
   which nothing downstream ever catches.
 
-Only three of the ten lenses read code, so **a `file:line` is not what a finding
+Only the code axis's lenses read code, so **a `file:line` is not what a finding
 owes** — it is what one axis's findings owe. They are told apart by their
 **kind**, because they are repaired by different hands: the document's fault
 goes to `dror-adr-repair`, the code's to `dror-code-repair`, which fixes code and
@@ -132,6 +132,9 @@ code-axis lens — `claims`, `breach`, `outcome` — is also given the path of t
 drift log the read above saved: where the tree moved since the decision is
 where its findings live, and a lens that starts there reads less to find them.
 An empty log is a prior, not a verdict; the lens still works its bullets.
+`neighbours` is given the paths of the sibling documents the read above picked
+— the files in the ADR's own directory whose titles touch its subject. Which
+files those are is the read's finding to hand on, not the lens's to re-derive.
 
 Choosing is this skill's job, not the user's. Skip a lens whose concerns the
 document never raises — an ADR that states no rule anything could break needs no
@@ -166,6 +169,19 @@ copies for `neighbours` and `echoes`, the named rows of the listing it was hande
 alone. A lens that cannot reach a verdict inside its own boundary says so and
 returns the question rather than widening — reading a subsystem to settle one
 sentence is the refuter's budget to spend, on one finding.
+
+**Check that every lens returned, before merging.** Merge below opens on the
+*returned* findings, and nothing above counts them against what was launched —
+so a lens whose result never arrives leaves no trace of itself, and its area
+reads exactly like one that came back clean. Before merging, list the agents
+this batch launched and confirm each of them returned. A lens that launched and
+whose output did not arrive is an area nobody looked at: say so in the report
+like any other that was not run, and say there that this run's findings are
+that lens short. Keep its name for the run log below, which has a column for
+exactly this and for neither of the other two states.
+`refutations.tsv` is no help here — this run writes it after
+the refuters, below, so at the moment output goes missing it holds nothing of
+this run's.
 
 ## Merge
 
@@ -233,8 +249,9 @@ it. It is not restated here.
 Number the survivors: `conflict` first — it is the kind that blocks
 somebody — then `breach` in the order of the damage a violation does, then
 `text`, then `hole`, then `echo`, then `revisit` last, which is the only kind that asks for
-nothing to be fixed. Save them under the name the reference gives, overwriting
-the previous one. It is a separate file from the code review's on purpose: a code
+nothing to be fixed. Save them under the name the reference gives — claimed
+first where that name came from a caller, as the reference says, and written to
+whatever path the claim printed. It is a separate file from the code review's on purpose: a code
 review and an ADR review are started for different reasons and neither should be
 able to erase the other's findings.
 
@@ -248,8 +265,8 @@ from.
 
 **Mint a run tag** by the store's recipe — unless the caller gave one, in which
 case that is the tag. It does not change the report's name, which the reference
-derives from the ADR; it identifies the *run*, so two reviews of one ADR at one
-commit inside one minute cannot mint one id twice.
+derives from the ADR; it identifies the *run*. What the tag separates, and what
+it does not, the reference says under its finding-id rule.
 
 Then one section per finding, numbered as on screen, each with:
 
@@ -331,8 +348,10 @@ log above — the same file `dror-code-review` writes, whose rows the disjoint l
 names keep readable apart. The columns and their order are the store reference's
 (`REPORT-STORE.md`, "The logs"), stated there once.
 
-This run's own values: `lenses_run` and `lenses_dropped` carry the closed names
-from this skill's [`LENSES.md`](LENSES.md); `concurrent` is **`unchecked`**, or
+This run's own values: `lenses_run`, `lenses_dropped` and `lenses_lost` carry
+the closed names from this skill's [`LENSES.md`](LENSES.md), and `lenses_lost`
+is `-` where the check above found every launched lens returned — never
+`unchecked`, since this skill runs that check; `concurrent` is **`unchecked`**, or
 the tags a caller told this run it saw, joined by `+`; `round` and `subject` are
 the same values the finding log's section above gives them; and `elapsed_s` is
 the difference between a `date +%s` read immediately before the lenses are
@@ -371,13 +390,23 @@ where a `conflict` or a `revisit` is the whole list and choosing is theirs. It
 binds nobody; a looping caller reads this line to decide whether to spend a
 repair at all.
 
+**None of the three says the decision is a good one.** No lens in the pool asks
+that: `decision` asks whether one was taken sharply and what it was chosen
+over, `outcome` only whether the decision's own prediction held, and a
+measurement is what keeps that from becoming an opinion about somebody else's
+decision, which is the one thing this pool must never produce. So a clean
+report means the decision is stated well and obeyed, never that it is the right
+decision — say so in the same breath as the line, since the reader who acts on
+it has no other way to tell the two apart.
+
 Then stop and wait.
 
-Done when every lens has returned, the findings have been merged, every merged
+Done when every lens this batch launched has returned or is named in the report
+as one whose output did not arrive, the findings have been merged, every merged
 finding has faced a refuter, this run's report file holds the survivors and the
 refuted with an id each, every merged finding has a line in
 `~/.claude/dror-skills/refutations.tsv`, the run has its line in
-`~/.claude/dror-skills/runs.tsv`, the repair-or-not line is on screen, that
-same list is on screen with the next-work sentence under it, and the report
-file's name and this run's tag have been said — with no line of the ADR and no
-line of code changed.
+`~/.claude/dror-skills/runs.tsv`, the repair-or-not line and its exclusion are
+on screen, that same list is on screen with the next-work sentence under it,
+and the report file's name and this run's tag have been said — with no line of
+the ADR and no line of code changed.

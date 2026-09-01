@@ -198,7 +198,8 @@ finding refuted before it reaches you — and a loop over the two, as below.
 Findings divide by **kind** — six of them — because different hands fix them:
 the routing for all six lives in
 [`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md),
-the definitions in the glossary.
+the definitions in [`dror-adr-review/LENSES.md`](dror-adr-review/LENSES.md)'s
+preamble.
 
 ## On the machinery itself
 

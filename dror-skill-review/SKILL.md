@@ -3,7 +3,7 @@ name: dror-skill-review
 description: Review one skill against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
 ---
 
 # dror-skill-review
@@ -133,13 +133,19 @@ returns (ADR 0038). Then find, in this order:
   glossary — note their paths for the `mirrors` lens. A repo with no such index
   drops that lens and says so in the report.
 
-A skill that is a stub — frontmatter and no procedure — ends the run with that
-one sentence. There is nothing to refute.
+A skill that is a stub — frontmatter and no procedure — ends the run here, on
+the line **`EMPTY SKILL: <name> is frontmatter and no procedure`** and nothing
+else. There is nothing to refute, so no lens runs, no report is written and no
+log line is owed.
+
+**That line is the only reason this skill ends without a report**, so it is
+what a caller reads to tell an empty skill from a run that broke. A run that
+stops anywhere else has failed, and its silence must not be read as this.
 
 ## The mechanical pass
 
 Before any lens is launched, run
-`bash ../dror-internal-shared/skill-rules-check.sh <the resolved directory>`.
+`bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh <the resolved directory>`.
 It decides every one of Anthropic's published rules that a tool can decide, and
 prints one `BREACH:` line per rule broken, or `CLEAN`. It takes the directory as
 an argument, which is why it runs here and not as an injection at the top.
@@ -154,8 +160,8 @@ Redirect the output into a scratch file and give **every** lens its path, with
 the instruction not to re-report what it holds. `LENSES.md`'s preamble says the
 same thing from the lens's side; this is the input that makes it enforceable.
 
-The pass is **not a lens**. It appears in neither `lenses_run` nor
-`lenses_dropped`, and dropping a lens never drops it.
+The pass is **not a lens**. It appears in none of `lenses_run`,
+`lenses_dropped` or `lenses_lost`, and dropping a lens never drops it.
 
 ## Run the lenses
 
@@ -209,6 +215,18 @@ plus any ADR a spawn step's parameters rest on. A lens that cannot
 reach a verdict inside its boundary says so and returns the question rather
 than widening — reading a subsystem to settle one sentence is the refuter's
 budget to spend, on one finding.
+
+**Check that every lens returned, before merging.** Merge below opens on the
+*returned* findings, and nothing above counts them against what was launched —
+so a lens whose result never arrives leaves no trace of itself, and its area
+reads exactly like one that came back clean. Before merging, list the agents
+this batch launched and confirm each of them returned. A lens that launched and
+whose output did not arrive is an area nobody looked at: say so in the report
+like any other that was not run, and say there that this run's findings are
+that lens short. Keep its name for the run log below, which has a column for
+exactly this and for neither of the other two states. `refutations.tsv` is no
+help here — this run writes it after the refuters, below, so at the moment
+output goes missing it holds nothing of this run's.
 
 ## Merge
 
@@ -271,8 +289,9 @@ it. It is not restated here.
 
 Number the survivors: `conflict` first — it is the kind that blocks somebody —
 then `text` in the order of the damage a run acting on it does, then `hole`,
-then `sprawl`, then `echo`. Save them under the name the reference gives,
-overwriting the previous one. It is a separate file family from the code
+then `sprawl`, then `echo`. Save them under the name the reference gives —
+claimed first where that name came from a caller, as the reference says, and
+written to whatever path the claim printed. It is a separate file family from the code
 review's and the ADR review's on purpose: no run should be able to erase
 another kind of run's findings.
 
@@ -348,8 +367,10 @@ one line to `~/.claude/dror-skills/runs.tsv`, on the same terms — the columns
 and their order are the store reference's (`REPORT-STORE.md`, "The logs"),
 stated there once.
 
-This run's own values: `lenses_run` and `lenses_dropped` carry the closed
-names from this skill's [`LENSES.md`](LENSES.md); `concurrent` is
+This run's own values: `lenses_run`, `lenses_dropped` and `lenses_lost` carry
+the closed names from this skill's [`LENSES.md`](LENSES.md), and `lenses_lost`
+is `-` where the check above found every launched lens returned — never
+`unchecked`, since this skill runs that check; `concurrent` is
 **`unchecked`**, or the tags a caller told this run it saw, joined by `+` —
 this skill runs no neighbour check of its own, and `unchecked` is the honest
 word for that, never `-`, which in `dror-code-review`'s rows means *looked and
@@ -358,10 +379,10 @@ section above gives them; and `elapsed_s` is the difference between a
 `date +%s` read immediately before the lenses are launched and one read as
 this line is written, or `-` where the first reading was not taken.
 
-One line per review that ran lenses, whether it found anything or not. A stub
-skill ends the run before this section is reached and writes no line — there is
-no `lenses_run` value for a run that chose none, and the log exists to give a
-lens its denominator.
+One line per review that ran lenses, whether it found anything or not. An
+`EMPTY SKILL:` run ends before this section is reached and writes no line —
+there is no `lenses_run` value for a run that chose none, and the log exists to
+give a lens its denominator.
 
 ## Present
 
@@ -386,7 +407,8 @@ looping caller reads this line to decide whether to spend a repair at all.
 
 Then stop and wait.
 
-Done when every lens has returned, the findings have been merged, every merged
+Done when every lens this batch launched has returned or is named in the report
+as one whose output did not arrive, the findings have been merged, every merged
 finding has faced a refuter, this run's report file holds the survivors and
 the refuted with an id each, every merged finding has a line in
 `~/.claude/dror-skills/refutations.tsv`, the run has its line in

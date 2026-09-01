@@ -47,8 +47,7 @@ Every finding carries:
   (the document is missing something it must carry), `breach` (the code breaks a
   rule the document states), `conflict` (two decisions disagree), `echo` (a copy
   of the rule elsewhere has drifted — only the `echoes` lens mints this one),
-  `revisit` (nothing is wrong and the decision has been overtaken by what it
-  predicted);
+  `revisit` (nothing is wrong and what the decision predicted has not held);
 - **what would make it true**: the corrected fact and the evidence for it. Not
   the replacement prose — writing that is the repair's job.
 

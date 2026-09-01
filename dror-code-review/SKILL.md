@@ -3,7 +3,7 @@ name: dror-code-review
 description: Correctness review of the unpushed work - commits not yet on the remote plus the working tree - every finding tool-proven or refuted before it reaches you. Reports the survivors and changes no behaviour. Use when the user asks what is wrong with the work before pushing it, or wants findings without the fixing.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
 ---
 
 # dror-code-review
@@ -189,7 +189,7 @@ in one line as pre-existing and raise no finding. Write the diagnostics that
 counted to one file in the scratch directory; its path goes to every lens
 below, which is told not to re-report what it holds. These findings enter the
 report as confirmed bugs under the reserved lens name `tool`, and the pass is
-not a lens: it appears in neither `lenses_run` nor `lenses_dropped`. A facts
+not a lens: it appears in none of the three lens columns. A facts
 block whose verification commands are unstated skips the pass, and the report
 says so.
 
@@ -248,6 +248,16 @@ and returns the question rather than widening — reading a subsystem to settle
 one finding is the refuter's budget to spend, on one finding, not every lens's
 on all of them.
 
+**Check that every lens returned, before merging.** Merge opens on the
+*returned* findings, and nothing above counts them against what was launched —
+so a lens whose result never arrives leaves no trace of itself, and its area
+reads exactly like one that came back clean. List the agents this batch
+launched and confirm each of them returned. A lens that launched and whose
+output did not arrive is an area nobody looked at: say so in the report like any
+other that was not run, say there that this run's findings are that lens short,
+and keep its name for the run log below, which has a column for exactly this and
+for neither of the other two states.
+
 **Merge.** Two lenses looking at adjacent concerns report one defect twice.
 Group the returned findings by `file:line` and failure scenario before anything
 is refuted: findings that name the same defect become one, keeping the clearest
@@ -299,8 +309,9 @@ it. It is not restated here.
 
 Number the survivors: confirmed bugs first in severity order — the damage the
 failure scenario does, a crash or corrupted data above a cosmetic fault — latent
-hazards below. Save them under the name the reference gives, overwriting the
-previous one. It is the run's record, and later work in this repo reads it
+hazards below. Save them under the name the reference gives — claimed first
+where that name came from a caller, as the reference says, and written to
+whatever path the claim printed. It is the run's record, and later work in this repo reads it
 instead of deriving the same findings again.
 
 Front matter first: **the ticket this report is for** — `Ticket: <n>`, or
@@ -364,8 +375,7 @@ The report is overwritten every run, and one run's kills are too few to read
 anything into. So every **merged finding**, survivor and kill alike — and every
 `tool` finding, which reaches the report without passing through the merge — is
 appended as one line to `~/.claude/dror-skills/refutations.tsv`, on the
-reference's terms for every log: create it with its header where it is absent,
-append only, never block the run.
+reference's terms for every log.
 
 Survivors go in as well as kills, because a lens's kill count says nothing on
 its own: what matters is the *share* of its findings that died, and that needs
@@ -420,8 +430,10 @@ deliberately: the refutation log's contract is one line per finding, and a
 run-level row inside it would be counted as a finding by everything that reads
 it.
 
-This run's own values: `lenses_run` and `lenses_dropped` carry the closed names
-from [`LENSES.md`](LENSES.md), `concurrent` carries the tags or names the
+This run's own values: `lenses_run`, `lenses_dropped` and `lenses_lost` carry
+the closed names from [`LENSES.md`](LENSES.md), and `lenses_lost` is `-` where
+the check above found every launched lens returned — never `unchecked`, since
+this skill runs that check; `concurrent` carries the tags or names the
 check above saw, joined by `+`, or **`-` for none seen** — never `unchecked`,
 which is what a review that runs no check of its own writes there — and `round`
 and `subject` are the same values the finding log's section above gives them.

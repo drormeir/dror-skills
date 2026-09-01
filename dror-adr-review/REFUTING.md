@@ -10,7 +10,7 @@ whose wording is off but whose defect is real comes back a survivor, restated.
 
 **Kill it on its own axis.** The lens that raised this had one comparison target
 — the code, the document against itself, another document, the ticket set, or
-the reader who acts on it — and only three of the pool's ten read code at all.
+the reader who acts on it — and only the first of those five is the code.
 So "the tree says what the document says" refutes a `claims` finding and refutes
 **nothing** raised by `coherence`, `decision`, `reach`, `tickets` or
 `misreading`: those were never claims about the code, and the code cannot speak
