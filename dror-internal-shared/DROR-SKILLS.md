@@ -4,7 +4,7 @@ The agent-facing map. It owns the tier lists, the checkbox rules and the
 finding-kind routing; the glossary owns the terms, and each skill's own file its
 procedure.
 
-Sixteen skills over one way of working: an **ADR** states a decision, a **spec
+Seventeen skills over one way of working: an **ADR** states a decision, a **spec
 issue** turns it into work, **child tickets** carry the pieces, and each ticket's
 **acceptance criteria** are checkboxes in its body. The criteria are the contract
 — they are what a test is written against, what a review judges, and what a
@@ -56,12 +56,14 @@ ADR 0020. The glossary defines the six; `dror-adr-review` mints them.
 
 The same shape once more, turned on the skills: find, then fix, in two runs,
 with the finding refuted before it reaches you. The subject is one skill's
-directory — its `SKILL.md` and companions — judged against the harness
-contract, the tree it runs in, itself, the shelf and the agent that reads it.
+directory — its `SKILL.md` and companions — judged against Anthropic's
+published rules, the harness contract, the tree it runs in, itself, the shelf
+and the agent that reads it.
 
 | Skill | Question it answers | Writes |
 |---|---|---|
-| `dror-skill-review` | Is this skill still true, still coherent, still executed as meant? | `skill-review-report-<name>.md` |
+| `dror-skill-vendor-rules` | Has the published guide moved since the vendor baseline was distilled from it — and, where a person says yes, re-distil it | `ANTHROPIC-SKILL-RULES.md`, unstaged, in `refresh` mode only |
+| `dror-skill-review` | Is this skill still true, still coherent, still executed as meant, still inside Anthropic's published rules? | `skill-review-report-<name>.md` |
 | `dror-skill-repair` | Bring the skill's text, and every drifted copy of it, back in line with the repo | the skill's prose, and any index row, map entry or glossary line an `echo` names |
 | `dror-skill-review-repair` | Loop the two over one skill until it converges, up to a cap of its own — the ADR loop's cap and no round-1 floor, for the same one-document reason | whatever its two steps write |
 
@@ -108,6 +110,9 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
   and stops.
 - **`dror-guide`** governs the style of step-by-step answers. It works at the
   level of the session, on whatever is being discussed.
+- **`dror-brief-me`** governs the style in which a choice is put to the user:
+  the background first, then the problem, the fact that settles it, each option
+  with its cost, and a recommendation. It works at the level of the session too.
 
 `dror-internal-shared` is the shelf the others read from, holding
 [`WRITING-TESTS.md`](WRITING-TESTS.md), [`REPORT-STORE.md`](REPORT-STORE.md),
@@ -121,7 +126,9 @@ Two tiers, and each skill says which it is in (ADR 0011):
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
   `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
-  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`.
+  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`, `dror-brief-me`, and
+  `dror-skill-vendor-rules`, which is the extreme case — it reads no repo at
+  all, only the shelf file it maintains, so it takes no facts either.
   They name no path and no tracker; whatever a repo
   declares reaches them through the facts. It does not mean free of **git**:
   `dror-code-review`'s scope is the unpushed work and `dror-implement-ticket`'s

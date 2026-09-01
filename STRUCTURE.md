@@ -1,6 +1,6 @@
 # Structure
 
-Nineteen skills over one way of working. Every description below is the skill's
+Twenty skills over one way of working. Every description below is the skill's
 own `description:` line, verbatim, minus its "Use when" trigger clause. This
 file owns the "Reach for it when" voice — the human's index — and nothing else:
 descriptions belong to each skill's frontmatter, and where this file and
@@ -145,6 +145,31 @@ criteria, the review judges the diff by them. A sentence that quietly stopped
 being true becomes a rule broken by somebody following instructions correctly,
 and by then the tickets are wrong too.
 
+## Three pairs, one document type each
+
+The same find-then-fix shape appears three times below, and the three are
+deliberately **not** interchangeable. `dror-code-review` and `dror-code-repair`
+work on code. `dror-adr-review` and `dror-adr-repair` work on decision records.
+`dror-skill-review` and `dror-skill-repair` work on skills. Each pair
+specialises in its own kind of document, and each repair skill is built to take
+exactly what its own reviewer produces.
+
+So a rule that is about *what settles a sentence here* belongs inside the pair
+that needs it, in that pair's own words. A skill is a directory, so what the
+directory holds is evidence for a skill repair; an ADR is one file, so it is
+not evidence there. Identical wording across two pairs is not the goal, and a
+skill that borrows its counterpart's definition is a defect — the borrowing
+hides which pair the rule was written for, and a later sharpening in one pair
+silently misses the other.
+
+What the three pairs may share is the plumbing around them: the report store,
+the log schemas, the finding-id shape, the ticket numbering. Those live once on
+the shelf, in `dror-internal-shared/`, and every pair points at them. The
+glossary in
+[`dror-internal-shared/CONTEXT.md`](dror-internal-shared/CONTEXT.md) names a
+term and says which file fixes its details; it does not fix them itself when
+the details differ by document type.
+
 ## The chain
 
 | Skill | Reach for it when | Description | Writes |
@@ -185,8 +210,8 @@ routing lives in
 
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
-| `dror-skill-review` | Before editing a skill that has sat untouched while the repo moved, or when a run of it misbehaved and you want the text checked before blaming the model. | Review one skill against the harness contract, the tree it runs in, itself, the shelf and the agent that reads it — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
-| `dror-skill-repair` | A skill review returned `text`, `hole`, `sprawl` or `echo` findings and you want the text corrected without the skill being redesigned. | Repair a skill's text from findings already made — every corrected sentence grounded in the file or command it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. | the skill's prose, and any index row, map entry or glossary line an `echo` names |
+| `dror-skill-review` | Before editing a skill that has sat untouched while the repo moved, or when a run of it misbehaved and you want the text checked before blaming the model. | Review one skill against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
+| `dror-skill-repair` | A skill review returned `text`, `hole`, `sprawl` or `echo` findings and you want the text corrected without the skill being redesigned. | Repair a skill's text from findings already made — every corrected sentence grounded in the file, command or directory it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. | the skill's prose, and any index row, map entry or glossary line an `echo` names |
 | `dror-skill-review-repair` | Same as `dror-skill-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop skill review and repair over one skill until it converges — `dror-skill-review`, then `dror-skill-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
 ## Beside the chain
@@ -195,6 +220,7 @@ routing lives in
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review logs across runs and say what the lenses are getting wrong and what the rounds are worth — which lens produces false positives, which recurring assumption causes them, what a later round caught that an earlier one had in front of it, and what a round costs. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
+| `dror-skill-vendor-rules` | By hand, bare, when you want to know whether the guide moved and to be offered the refresh; on a weekly timer with `check`, which never offers anything. | Check whether the published guide behind the skill reviews' vendor baseline has been re-uploaded since that baseline was distilled, and re-distil it on request. Called bare it reports and then offers the refresh; called with check it only reports; called with refresh it rewrites the baseline and its stamp, unstaged, and never commits. |
 | `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
@@ -227,12 +253,13 @@ reasons, and the depth arithmetic, are ADR 0043.
 
 ## Style and tools
 
-These work at the level of the session itself: two change how answers come back
-to you, one changes what Claude can see.
+These work at the level of the session itself: three change how answers come
+back to you, one changes what Claude can see.
 
 | Skill | Reach for it when | Description |
 |---|---|---|
 | `dror-guide` | An answer went over your head, or the next thing you must do is a sequence of steps outside the editor. | Answer as a step-by-step guide in plain words, assuming nothing. |
+| `dror-brief-me` | A decision has landed in an area you have never worked in, and you need the ground before the options. | Bring the user up to speed on an area they have not worked in, then lay out the choice — background, the problem, the fact that settles it, each option with its cost, a recommendation. |
 | `brief` | The replies have grown into essays and you want them cut back for the rest of the session. | Reset the answering style to terse plain speech — answer first, one or two short sentences, no lists. |
 | `screen-capture` | The problem is something you can see and cannot paste — a GUI, a rendered plot, a dialog behaving oddly. | Capture the user's screen (or a specific monitor / region) to a PNG and view it, so Claude can see what is on screen and guide GUI steps. |
 
@@ -249,7 +276,7 @@ One writer per direction, because a tick is a claim about evidence:
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
   `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
-  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`.
+  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`, `dror-brief-me`.
   They name no path and no tracker; whatever a repo declares reaches them
   through the facts.
 - **Convention-bound** — `dror-show-tickets` and `dror-implement-adr` assume

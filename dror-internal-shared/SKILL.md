@@ -1,6 +1,6 @@
 ---
 name: dror-internal-shared
-description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run.
+description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the glossary, the map and the decision record. A shelf, read by the skills that run.
 disable-model-invocation: true
 ---
 
@@ -31,6 +31,18 @@ that sharpening a rule sharpens every run that obeys it.
   padding and prefix it tolerates, the path escape hatch, and the stop on a
   number that resolves to none or two. Read by every skill taking an ADR by
   number.
+- [`ANTHROPIC-SKILL-RULES.md`](ANTHROPIC-SKILL-RULES.md) — Anthropic's published
+  rules for writing a skill, distilled to what can be checked by reading one,
+  stamped with the `ETag` of the upload they were read off, and closing with the
+  places this repo diverges on purpose. It is prose for a person deciding what
+  the rules are; nothing at run time reads it, and only
+  `dror-skill-vendor-rules` in `refresh` mode rewrites it. Two scripts sit beside it, each owning one half of the work:
+  [`skill-rules-check.sh`](skill-rules-check.sh) takes a skill directory and
+  prints one `BREACH:` line per rule broken — it enforces them, so it is where
+  their numerals live (ADR 0049) — and
+  [`anthropic-stamp.sh`](anthropic-stamp.sh) compares the stamp against what the
+  source serves now and prints one `VENDOR:` line. The rules file owns the URL,
+  the `ETag` and the rules in prose.
 - [`CONTEXT.md`](CONTEXT.md) — the glossary. One entry per word these skills use.
 - [`DROR-SKILLS.md`](DROR-SKILLS.md) — the map: what each skill is for and how
   they chain.

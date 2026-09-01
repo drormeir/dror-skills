@@ -46,13 +46,23 @@ condensed pointer, and that file owns the term.
   test alone is the deliverable.
 - **Unmet criterion** — a criterion the diff claims and misses. Neither a bug
   nor a gap in cover.
-- **Tool finding** — a lint or type-check diagnostic on a line the diff added
-  or changed, raised by `dror-code-review`'s mechanical pass before the lenses run.
-  It skips the refuter — the tool's output is its own proof — and carries the
-  reserved lens name `tool` (ADR 0045).
+- **Tool finding** — whatever a mechanical pass decided before the lenses ran:
+  in `dror-code-review`, a lint or type-check diagnostic on a line the diff
+  added or changed (ADR 0045); in `dror-skill-review`, a breach of Anthropic's
+  published rules printed by `skill-rules-check.sh` (ADR 0049). It skips the
+  refuter — the tool's output is its own proof — and carries the reserved lens
+  name `tool`, which spans both pools because it names who decided, not which
+  pool asked.
 - **Lens** — one review perspective, defined by a section of
   `dror-code-review/LENSES.md`, `dror-adr-review/LENSES.md` or
   `dror-skill-review/LENSES.md`, run as one agent that proposes findings.
+- **Vendor baseline** — `dror-internal-shared/ANTHROPIC-SKILL-RULES.md`:
+  Anthropic's published rules for writing a skill, distilled locally and stamped
+  with the `ETag` of the upload they were read off (ADR 0047).
+  `skill-rules-check.sh` beside it enforces them, so they are settled by a
+  script and never by the live source — two runs over one skill cannot disagree
+  about the rules. The breaches it prints are `tool` findings and skip the
+  refuter (ADR 0049).
 - **Refuter** — the agent handed one merged finding whose job is to kill it.
 - **Claim** — a comment written into source recording an invariant that is
   invisible at the site. Written by a refuter, verified rather than trusted by a
@@ -101,8 +111,11 @@ A sentence is settled by reading the tree, so the two words below stand where
 **red** and **green** stand for code.
 
 - **grounded** — the corrected sentence was read out of the tree as it stands
-  now, and the run can quote the `file:line` or command output that says it.
-  Every sentence `dror-adr-repair` writes is grounded.
+  now, and the run can quote what says it. Every sentence a document repair
+  writes is grounded. Which forms count is each repair skill's own: an ADR is
+  one file, a skill is a directory, so `dror-adr-repair/SKILL.md` and
+  `dror-skill-repair/SKILL.md` each fix their own list and neither is the
+  other's.
 - **ungrounded** — nothing in the tree settles it. The sentence is not written;
   the question goes to the user.
 
