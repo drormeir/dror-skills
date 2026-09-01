@@ -32,6 +32,7 @@
     "./dror-internal-project-facts",
     "./dror-internal-shared",
     "./dror-guide",
+    "./dror-brief-me",
     "./brief",
     "./screen-capture"
   ]

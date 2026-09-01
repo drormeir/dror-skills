@@ -66,11 +66,19 @@ second is a shelf of reference material — the test-writing rules, the report
 store's rules, the ADR worktree's rules, the glossary, the map and the decision
 records behind the design.
 
-Three skills work at the level of the session itself: `dror-guide` governs
-step-by-step answers, `brief` resets the answering style, and `screen-capture`
-lets Claude see your screen.
+Four skills work at the level of the session itself: `dror-guide` governs
+step-by-step answers, `dror-brief-me` governs how a choice is put to you,
+`brief` resets the answering style, and `screen-capture` lets Claude see your
+screen.
 
 ## Why it is shaped this way
+
+The find-then-fix pair appears three times — once for code, once for decision
+records, once for skills — and the three are deliberately not interchangeable.
+Each pair specialises in its own kind of document, and each repair skill takes
+exactly what its own reviewer produces. What they share is the plumbing, held
+once on the shelf. [`STRUCTURE.md`](STRUCTURE.md) owns that rule, under "Three
+pairs, one document type each".
 
 Every decision behind these skills is written down in
 [`dror-internal-shared/docs/adr/`](dror-internal-shared/docs/adr/) — one file per
