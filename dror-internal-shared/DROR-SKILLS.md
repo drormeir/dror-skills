@@ -4,7 +4,7 @@ The agent-facing map. It owns the tier lists, the checkbox rules and the
 finding-kind routing; the glossary owns the terms, and each skill's own file its
 procedure.
 
-Seventeen skills over one way of working: an **ADR** states a decision, a **spec
+Eighteen skills over one way of working: an **ADR** states a decision, a **spec
 issue** turns it into work, **child tickets** carry the pieces, and each ticket's
 **acceptance criteria** are checkboxes in its body. The criteria are the contract
 — they are what a test is written against, what a review judges, and what a

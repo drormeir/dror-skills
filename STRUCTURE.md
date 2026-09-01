@@ -1,6 +1,7 @@
 # Structure
 
-Twenty skills over one way of working. Every description below is the skill's
+Eighteen skills over one way of working, and the shelf they read, listed here
+with them. Every description below is the skill's
 own `description:` line, verbatim, minus its "Use when" trigger clause. This
 file owns the "Reach for it when" voice — the human's index — and nothing else:
 descriptions belong to each skill's frontmatter, and where this file and
