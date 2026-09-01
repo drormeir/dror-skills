@@ -190,11 +190,24 @@ joined by `+`) · `lenses_dropped` (the same, or `-`) · `findings` (how many
 merged findings this run produced, kills included) · `run_tag` (this run's tag) ·
 `concurrent` (what the run knows about who else was in the tree) · `round` (as
 in `refutations.tsv` above) · `subject` (the same) · `elapsed_s` (whole seconds
-this run took, from its own two clock readings, or `-` where it took none).
+this run took, from its own two clock readings, or `-` where it took none) ·
+`lenses_lost` (the lenses this run launched whose output never came back).
 Each writer says in its own file what it may write in `concurrent` — the two
 differ, and the difference is the point: a review that runs a neighbour check of
 its own can write `-` for *looked and saw nobody*, and one that runs none writes
 `unchecked`, which is not the same fact.
+
+**`lenses_lost` is the third state a lens can be in, and the two columns before
+it cannot hold it.** A lens that launched and delivered nothing is neither run —
+its axis was never judged — nor dropped, which says a run chose not to look. Put
+it in either and the log asserts something false about what was covered. So it
+has a column of its own, carrying the writer's own closed lens names joined by
+`+`, or `-` where every launched lens returned. Only a run that counted what
+came back against what it launched may write either, so **the column is written
+by `dror-code-review` and `dror-adr-review` alone**. A writer that runs no such
+check ends its row at `elapsed_s` and leaves this field off, by the append-only
+rule below: a short row is the truth about a run that never had the fact, and
+`-` there would claim a check that never ran.
 
 **`elapsed_s` is a measurement, not bookkeeping.** A review run is a lens
 fan-out and a refuter under each finding, and how much of a chain's wall-clock
