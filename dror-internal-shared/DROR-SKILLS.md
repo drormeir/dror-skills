@@ -96,7 +96,7 @@ Matt's `/implement`
 does the same shape with his own `/tdd` and `/code-review` in place of the two
 middle steps — one or the other, never both, or one ticket gets two test sets.
 
-## The three beside the chain
+## The four beside the chain
 
 - **`dror-internal-project-facts`** sits under all of them — it caches what the repo
   declares in `<repo>/.claude/dror-skills/facts.md`, and every chain skill's file
