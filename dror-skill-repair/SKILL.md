@@ -8,8 +8,8 @@ allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/fact
 
 # dror-skill-repair
 
-Repair the skill text a review has already found fault with. Runs start to
-finish without stopping.
+Repair the skill text a review has already found fault with. Works the whole
+list in one run.
 
 **It writes prose and nothing else — and here the prose is the machine.** A
 skill file is read by an agent mid-run, so every edit is a behaviour change;
@@ -210,7 +210,9 @@ A skill has no suite, so the check is a reading and two searches:
 Where the repo declares a docs check of its own — a link checker, a formatter
 — run it and paste its output.
 
-The run ends here, with the changes uncommitted. Committing is the user's.
+The editing ends here, leaving the edited files for the user to read and
+commit. Three things are still owed before the run ends: the report below, the
+`repairs.tsv` append after it, and the review-owed line last.
 
 ## Report
 

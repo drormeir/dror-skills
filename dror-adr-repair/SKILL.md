@@ -8,8 +8,8 @@ allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/fact
 
 # dror-adr-repair
 
-Repair the ADR text a review has already found fault with. Runs start
-to finish without stopping.
+Repair the ADR text a review has already found fault with. Works the whole list
+in one run.
 
 **It writes prose and nothing else.** No production code, no tests. A finding
 that says the *code* is wrong is not this run's to fix — it is named and handed
@@ -213,7 +213,7 @@ The document has no suite, so the check is a reading and two searches:
 Where the project declares a docs check of its own — a link checker, a
 formatter, a spell pass — run it and paste its output.
 
-The editing ends here, with the changes uncommitted. Committing is the user's.
+The editing ends here, leaving the edited files for the user to read and commit.
 Three things are still owed before the run ends: the report below, the
 `repairs.tsv` append after it, and the review-owed line last.
 

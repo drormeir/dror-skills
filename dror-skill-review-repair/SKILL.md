@@ -46,8 +46,8 @@ paragraph of context**, so the rounds judge one reading and not several.
 runs the lenses it chooses; a focus that mentioned two sentences does not
 excuse the rest. What it buys is a lens that knows why the question was asked.
 
-**It commits nothing.** The run ends with the skill changed and uncommitted;
-what to commit is the user's call.
+**The whole loop is one piece of work.** However many rounds it takes, the run
+ends once, leaving the edited files for the user to read and commit.
 
 ## What this loop does not repair
 
@@ -122,13 +122,12 @@ and a short summary.
 
 What each agent returns is exactly what step 4 weighs and what the summary
 prints, and nothing else: **from the review** — the report path it wrote, how
-many survivors, their kinds, which lenses it dropped, and its own one-line
-verdict on **whether a repair should follow**; **from the repair** — one line
-per item (what was found, the outcome), which files it edited, and its own
-one-line answer to **whether another review is owed**. From either, one word
-if a log under `~/.claude/dror-skills/` could not be written — neither skill
-blocks on that, so an agent that says nothing is taken to have written its
-lines.
+many survivors, their kinds, and its own one-line verdict on **whether a
+repair should follow**; **from the repair** — one line per item (what was
+found, the outcome), which files it edited, and its own one-line answer to
+**whether another review is owed**. From either, one word if a log under
+`~/.claude/dror-skills/` could not be written — neither skill blocks on that,
+so an agent that says nothing is taken to have written its lines.
 
 What each agent is **given** is small on purpose: the prompt below and the
 focus paragraph where there is one. Not the previous rounds' transcripts, not
@@ -203,10 +202,14 @@ review's closing stop is **a prohibition against guidance** — the two shapes a
 run ends on by mistake, in DELEGATION.md's words. So this step's named next
 action: **immediately after the review returns, and in the same turn, list
 `<repo>/.claude/dror-skills/` and confirm the file it named is there** — or,
-where it named none, **say the review wrote no report and print §Present's
-summary**. That is not an error: `dror-skill-review` writes none for a stub —
-frontmatter and no procedure — and ends on that one sentence, which step 0's
-`git` questions cannot see coming. That call is this step's last move, and it
+where it named none, **read what it returned instead**. A review that returned
+`EMPTY SKILL:` reviewed a skill that is frontmatter and no procedure, which
+step 0's `git` questions cannot see coming: that is not an error, so say what
+it said and print §Present's summary. A review that named no report and did
+**not** return that line has broken — it stopped before writing anything, and
+its findings, if any, are lost. Say so plainly, do not read its silence as an
+empty skill, and do not invoke it again in the same round without saying that
+is what you are doing. That call is this step's last move, and it
 is the "path step 1 confirmed it wrote" that step 3 passes on.
 
 **Confirm the path; do not read the report.** Step 2 judges from the review's
@@ -249,9 +252,10 @@ Invoke the `dror-skill-repair` skill:
 earlier round's.** The default `skill-review-report-<name>.md` may be another
 run's entirely, and passing it sends this repair at somebody else's findings;
 an earlier round's file sends it at findings this loop has already repaired.
-Pass the path step 1 confirmed it wrote — it should be this round's `-r<k>`
-file, and a review that reports any other name is a disagreement to say out
-loud rather than work around.
+Pass the path step 1 confirmed it wrote — this round's `-r<k>` file, or that
+same name carrying a `-<k>` where the claim found another writer already
+there. Any other name is a disagreement to say out loud rather than work
+around.
 
 `dror-skill-repair` has no suite to stand on: its evidence is that every
 sentence it wrote was **grounded** in the tree, and its step 3 reads the

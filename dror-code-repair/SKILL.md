@@ -8,8 +8,8 @@ allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/fact
 
 # dror-code-repair
 
-Fix every bug already named, and pin each one with a test. Runs start to finish
-without stopping.
+Fix every bug already named, and pin each one with a test. Works the whole list
+in one run.
 
 **Every bug found is on the list.** The default is the whole report, or
 everything the findings file names. The user subtracts from it — "skip 4",
@@ -91,8 +91,10 @@ Two words are this skill's own:
 A ticket number may be passed to this run. If one is, read it the way the
 **issue convention** fact says this repo tracks work, and number its acceptance
 criteria 1..N, the same numbering `dror-prove` and `dror-code-review` use. A repo whose
-convention came back unstated carries on without the ticket and says so; it is
-focus, not scope, so nothing on the list depends on it.
+convention came back unstated carries on without the ticket and says so; so does
+a run whose number does not resolve — a fetch that exits non-zero and hands back
+no body is the same state arriving another way. It is focus, not scope, so
+nothing on the list depends on it.
 
 It is **focus, not scope**: the list to repair is still the review's findings,
 and a criterion nobody implemented is not a bug this run invents. What it buys
@@ -103,7 +105,7 @@ criterion is caught while it is being written rather than at review.
 **A box may be unticked, never ticked.** A criterion whose test this run saw go
 **red** has its `- [x]` cleared, because the tree contradicts it. Ticking stays
 with `dror-prove`, which holds the criterion-to-test mapping. Say which boxes
-moved.
+moved, below the report's rows.
 
 ## The project facts
 
@@ -138,10 +140,8 @@ failure scenario live. A repro that no longer fails is evidence the tree moved
 since the review: say so, and carry the item on as any other. Either way the
 test is still written — a repro command is a proof, not a regression net.
 
-For a bug a test can catch, place the test by the reference's three routes —
-enrich an existing test, enrich a test added in the work under review, or create
-one file covering several bugs. Run that test alone and paste its failing
-assertion, with the run's summary line.
+For a bug a test can catch, place the test by the reference's three routes. Run
+that test alone and paste its failing assertion, with the run's summary line.
 
 A test that goes green before any fix means the bug was never real. Leave that
 code alone, report the bug as not reproduced with the passing run quoted, and
@@ -152,9 +152,7 @@ written into this repo exactly as a bug's is, and it passes here — that is wha
 "the code is sound" means, and a green run in the tree is the wrong evidence,
 because a test that asserts nothing passes too. So it is made **red by
 mutation**, by the reference's route, with the finding's own failure scenario as
-the mutation: a review that said "delete this line and the suite stays green" has
-already named the edit, so make *that* edit. A scenario no copy can stage is
-recorded as **unproven**.
+the mutation. A scenario no copy can stage is recorded as **unproven**.
 
 Done when every bug on the list is red, untestable, or reported as not
 reproduced — and every cover item red by mutation or unproven — with the output
@@ -226,7 +224,10 @@ like any other, and it is named in the report.
   the report (`Test updated`) saying what it used to assert. Every such edit is
   visible in the report.
 
-Done when every bug on the list has an edit behind it.
+Done when every bug on the list has an edit behind it, or a recorded reason it
+has none — reported as not reproduced, ruled out, a duplicate of another item,
+out of scope or deferred — and every cover item is left unedited by the rule
+above, with the edit or the reason on screen for each.
 
 ## Step 3 — Green
 
@@ -281,8 +282,8 @@ somewhere a later run can read, every one of them stays on the record as a
 success.
 
 So for every finding that carried an **id** in the report, append one line to
-`~/.claude/dror-skills/repairs.tsv`, on the store reference's terms for every log:
-create it with its header where it is absent, append only, never block the run.
+`~/.claude/dror-skills/repairs.tsv` — the same log the other repairs write, on
+the store reference's terms for every log.
 
 The columns and their order are the store reference's (`REPORT-STORE.md`, "The
 logs"), stated there once, including the rule that the same `files_edited` and
@@ -299,12 +300,6 @@ one the previous round's review had in scope and did not return. That is the
 only recall proxy these logs can carry, and it is unavailable retrospectively —
 the run that edited the files is the only one that knows which they were.
 
-The reference's rule that those two carry the **same** list on every row this run
-appends — a `Ruled out` and a `Couldn't reproduce` included — has a reason that
-is this skill's own: step 2 is deliberately serial and a shared helper is edited
-for several findings at once, so a per-finding attribution would claim a
-precision this skill does not have.
-
 **Copy the id whole, exactly as the report spells it**, by the store reference's
 rule.
 
@@ -312,8 +307,9 @@ A report whose findings carry no id — an older one, or one this skill was not
 given — records nothing here, and that is not a failure: the join has no key,
 and a line keyed on a guess is worse than an absent one.
 
-Nothing is committed — committing is the user's. Two things are still owed
-before the run ends: the report below, and the review-owed line after it.
+The run leaves the edited tree for the user to read and commit. Two things are
+still owed before the run ends: the report below, and the review-owed line
+after it.
 
 ## Report
 
@@ -383,9 +379,10 @@ pair leaves a reader guessing, and then it says in a few words what is missing
 Otherwise report the same rows as one line each, in the same order, reading
 `<item> — test: <name or none> — found: <kind> — outcome: <outcome> — <note>`.
 
-Below the rows: the final verification output. A test that was updated is a
-`Test updated` row above, not a footnote — but its `Note` carries what it used
-to assert, which is the part a reader cannot reconstruct.
+Below the rows: the final verification output, and — where a ticket came with
+the run — which boxes it unticked, by criterion number. A test that was updated
+is a `Test updated` row above, not a footnote — but its `Note` carries what it
+used to assert, which is the part a reader cannot reconstruct.
 
 ## Say whether another review is owed
 
@@ -414,5 +411,4 @@ caller that needed it and did not get it has to ask again for what this run
 already knew.
 
 Name the files plainly, since that is the part a caller cannot re-derive without
-a diff, and keep the whole thing to two lines. The run ends here, with the
-changes uncommitted.
+a diff, and keep the whole thing to two lines.

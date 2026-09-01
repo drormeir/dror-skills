@@ -45,8 +45,8 @@ context**, so the rounds judge one reading and not several.
 the lenses it chooses; a focus that mentioned two sentences does not excuse the
 rest. What it buys is a lens that knows why the question was asked.
 
-**It commits nothing.** The run ends with the document changed and uncommitted;
-what to commit is the user's call.
+**The whole loop is one piece of work.** However many rounds it takes, the run
+ends once, leaving the edited files for the user to read and commit.
 
 ## What this loop does not repair
 
@@ -253,9 +253,9 @@ Invoke the `dror-adr-repair` skill:
 round's.** The default `adr-review-report-<n>.md` may be another run's entirely,
 and passing it sends this repair at somebody else's findings; an earlier round's
 file sends it at findings this loop has already repaired. Pass the path step 1
-confirmed it wrote — it should be this round's `-r<k>` file, and a review that
-reports any other name is a disagreement to say out loud rather than work
-around.
+confirmed it wrote — this round's `-r<k>` file, or that same name carrying a
+`-<k>` where the claim found another writer already there. Any other name is a
+disagreement to say out loud rather than work around.
 
 `dror-adr-repair` has no suite to stand on: its evidence is that every sentence
 it wrote was **grounded** in the tree, and its step 3 reads the document whole

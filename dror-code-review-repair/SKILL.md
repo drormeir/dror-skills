@@ -115,8 +115,8 @@ the one that does — and it is the caller's word that is trusted here, since th
 skill cannot see what happens after it returns. Say in the summary which boxes
 moved, so the caller's prove knows its list without re-deriving it.
 
-It **commits nothing** either. The run ends with the tree changed and
-uncommitted; what to commit is the user's call.
+**The whole loop is one piece of work.** However many rounds it takes, the run
+ends once, leaving the edited tree for the user to read and commit.
 
 ## 0. Know what is already in the tree
 
@@ -355,9 +355,9 @@ Spawn the repair agent — `dror-code-repair`'s file, by the shelf's carrier:
 round's.** The default `review-report.md` may be another run's entirely, and
 passing it sends this repair at somebody else's findings; an earlier round's
 file sends it at findings this loop has already repaired. Pass the path step 1
-confirmed it wrote — it should be this round's `-r<n>` file, and a review that
-reports any other name is a disagreement to say out loud rather than work
-around.
+confirmed it wrote — this round's `-r<n>` file, or that same name carrying a
+`-<k>` where the claim found another writer already there. Any other name is a
+disagreement to say out loud rather than work around.
 
 **A fix that lands outside a narrowed scope is reported, not hidden.** The
 repair's list comes from the report, so it normally stays inside — but a fix
