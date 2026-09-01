@@ -345,9 +345,11 @@ and found none" and "never looked" under one value in one column. `unchecked` is
 the honest word, and a caller that did look — `dror-adr-review-repair` does, once
 before its first round — passes what it saw, which is then written instead.
 
-One line per review, whether it found anything or not — a run that produced no
-findings is exactly the run the log cannot see, and the only one this file exists
-to record.
+One line per review that ran lenses, whether it found anything or not — a run
+that produced no findings is exactly the run the log cannot see, and the only one
+this file exists to record. A stub ADR ends the run before this section is
+reached and writes no line: there is no `lenses_run` value for a run that chose
+none, and the log exists to give a lens its denominator.
 
 ## Present
 

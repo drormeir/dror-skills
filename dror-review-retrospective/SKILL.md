@@ -218,15 +218,15 @@ is a miss the earlier round could have caught.
 Report the three as counts per round index, never as a rate against anything
 else, and say what they rest on.
 
-**It needs a `path` that varies, so it is a code-pool question.**
-`dror-skill-review` writes the reviewed skill's own `SKILL.md` into `path` on
-every row it appends, whatever file the evidence sat in — its own file says so —
-so a skill loop's rounds all carry one path and the three buckets collapse into
-bucket one by construction. Say the question cannot be answered for those rows,
-with their count, exactly as for a row missing `round`. Never read the collapse
-as a run that returned to known ground: that is the log's key saying nothing,
-not a measurement. An ADR loop's rows carry the ADR's own path and collapse the
-same way.
+**It needs a `path` that varies.** `dror-skill-review` writes into `path` the
+file the finding's own sentence sits in — the reviewed skill's `SKILL.md`, or
+the companion beside it the finding is about — so a skill loop's rows carry more
+than one path and the three buckets do not collapse by construction; sort those
+rows as any others, remembering that the pool they range over is one directory
+wide. An ADR loop's rows carry the ADR's own path and do collapse into bucket
+one: say the question cannot be answered for them, with their count, exactly as
+for a row missing `round`. Never read a collapse as a run that returned to known
+ground: that is the log's key saying nothing, not a measurement.
 
 **This is the question that decides what the round-1 floor is.**
 `dror-code-review-repair` takes round 2 unconditionally where round 1 repaired

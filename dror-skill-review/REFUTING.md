@@ -56,8 +56,9 @@ companion file the step points at, or on the shelf where the skill sends its
 reader — or when the missing sentence cannot be **grounded**: nothing in the
 tree or the skill's own reasoning says what it would have to say, so the
 repair could only invent it. A delegation `hole` dies only by reading the
-step's actual ending: a named command, file or invocation there kills it, a
-paraphrase of "then continue" does not. Say which of the two killed it.
+step's actual ending against the shelf's `DELEGATION.md`, which owns what
+counts as a named action there and what a conditional ending has to name. Say
+which of the two killed it.
 
 **`sprawl`** — a rule, tunable or vocabulary living in more places than its
 owner. It dies when the second copy is **the owner** — the header or the

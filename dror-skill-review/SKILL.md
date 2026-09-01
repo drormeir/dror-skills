@@ -107,18 +107,24 @@ one sentence. There is nothing to refute.
 ## Run the lenses
 
 [`LENSES.md`](LENSES.md) is a **pool**, not a running order. Choose the ones
-this skill raises and run each as one agent, all launched in parallel, each
-given the skill's directory path, the path of the store's `facts.md`, the two
-scratch paths from the read above, the mirror paths, and the path of
-`LENSES.md` with the name of its lens — it reads that file itself, and is told
-that the preamble and the section headed with its name bind it while the other
-sections are other agents'. Paths, never contents.
+this skill raises and run each as one agent, all launched in parallel. Every
+lens is given the skill's directory path, the path of the store's `facts.md`,
+the grep capture from the read above, and the path of `LENSES.md` with the name
+of its lens — it reads that file itself, and is told that the preamble and the
+section headed with its name bind it while the other sections are other
+agents'. Beyond those, the read above assigns the inputs per lens: the capture
+of what moved since goes to `anchors` and `mirrors`, and the mirror paths to
+`mirrors`. Paths, never contents.
 
-Choosing is this skill's job, not the user's. Skip a lens whose concerns the
-skill never raises — a skill that invokes no other skill and spawns nothing
-needs no `sequence` bullets about delegation, though its other bullets may
-still earn it a place; a repo with no index needs no `mirrors`. Say in the
-report which were dropped, so a reader knows what was not looked at.
+Choosing is this skill's job, not the user's, and **the test is at bullet
+granularity**: a fact that retires some of a lens's bullets retires those
+bullets and not the lens, and a lens is dropped only when none of its bullets
+applies. A skill that invokes no other skill and spawns nothing raises no
+`sequence` bullet about delegation, but still raises the ones about a closing
+contract, an undefined word, two passages that disagree — so the lens runs. A
+repo with no index needs no `mirrors`, and that is the whole-lens case: every
+one of its bullets presupposes a copy that is not there. Say in the report
+which were dropped, so a reader knows what was not looked at.
 
 **There is no count cap here, and that is a decision.** Every lens the skill
 raises runs, up to the whole pool. A numeric cap below the pool's size drops a
@@ -180,33 +186,25 @@ Survivors are the report.
 
 ## The kinds
 
-Every survivor carries exactly one, and the kind is what decides whose work it
-is next:
+Every survivor carries exactly one. The five values — `text`, `hole`, `sprawl`,
+`echo`, `conflict` — and what each **means** are minted in
+[`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens agent's
+prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section by
+section. Neither is restated here.
 
-- **`text`** — the skill says something that is not true, or no longer true —
-  a dead path, a renamed name, a wrong command, a promise the body breaks — or
-  says something true that its executing agent acts wrongly on. Repaired by
-  `dror-skill-repair`.
-- **`hole`** — the skill's own procedure forces a question it leaves
-  unanswered: a word used and never defined, a return contract never stated, a
-  delegating step that ends on no named next action (the shape is
-  `../dror-internal-shared/DELEGATION.md`'s). Repaired by `dror-skill-repair`,
-  and only where the missing sentence can be **grounded** in the tree or the
-  skill's own reasoning.
-- **`sprawl`** — a rule, tunable or vocabulary living in more places than its
-  owner: a shelf rule restated where a pointer belongs, a cap spelled as a
-  numeral in two files, a closed vocabulary defined outside the text that mints
-  its values. Nothing need have drifted yet — the duplication is the defect,
-  because it is how the next `echo` is made. Repaired by `dror-skill-repair`,
-  which collapses the copy to a pointer.
-- **`echo`** — the skill is right and a copy of it elsewhere has drifted: its
-  index row, its map entry, a glossary line, a sibling's paraphrase. The copy
-  that gets read is the one that governs, so the finding names **every** copy
-  with its `file:line`, and `dror-skill-repair` synchronises all of them at
-  once. The `mirrors` lens is what mints it.
-- **`conflict`** — two documents claim the same rule differently and both
-  declare ownership, or two skills decide one question two ways. **Nobody
-  repairs this without the user**: picking a side is deciding.
+What this file adds is the part neither carries: the kind is what decides
+**whose work it is next**.
+
+- `text`, `hole`, `sprawl` and `echo` go to `dror-skill-repair`. A `hole` only
+  where the missing sentence can be **grounded** in the tree or the skill's own
+  reasoning — the shape a delegation `hole` is filled in is
+  `../dror-internal-shared/DELEGATION.md`'s. A `sprawl` is collapsed to a
+  pointer, never synchronised into two copies. An `echo` is repaired in
+  **every** copy the finding names, at once, because the copy that gets read is
+  the one that governs.
+- `conflict`: **nobody repairs it without the user.** Two documents that both
+  declare ownership, or two skills deciding one question two ways — picking a
+  side is deciding.
 
 A finding a refuter could not settle says so on its line and keeps its kind.
 
@@ -303,15 +301,17 @@ section above gives them; and `elapsed_s` is the difference between a
 `date +%s` read immediately before the lenses are launched and one read as
 this line is written, or `-` where the first reading was not taken.
 
-One line per review, whether it found anything or not.
+One line per review that ran lenses, whether it found anything or not. A stub
+skill ends the run before this section is reached and writes no line — there is
+no `lenses_run` value for a run that chose none, and the log exists to give a
+lens its denominator.
 
 ## Present
 
 Show the same numbered list, in that order, each line naming its kind. Under
 it, say in one sentence which findings are this chain's next work and whose:
 the `text`, `hole`, `sprawl` and `echo` ones go to `dror-skill-repair`, and a
-`conflict` waits for the user, because somebody must choose. Then stop and
-wait.
+`conflict` waits for the user, because somebody must choose.
 
 Name the report file this run wrote, since a repair run has to be pointed at
 it and only this run knows which name it took, and say this run's tag once.
@@ -321,6 +321,8 @@ sentence. Three answers — *yes*, naming which findings need the edit; *no*,
 where every survivor is something to know rather than something to change;
 *the user's call*, where a `conflict` is the whole list. It binds nobody; a
 looping caller reads this line to decide whether to spend a repair at all.
+
+Then stop and wait.
 
 Done when every lens has returned, the findings have been merged, every merged
 finding has faced a refuter, this run's report file holds the survivors and
