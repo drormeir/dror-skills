@@ -15,12 +15,19 @@ that sharpening a rule sharpens every run that obeys it.
   line that makes the name checkable, the finding id, and the columns and
   discipline of all three logs. Read whole by the reviews that write a report,
   the repairs that read one, the loops that name the path both ends use, and
-  `dror-review-retrospective`, which joins the logs by finding id.
+  `dror-review-retrospective`, which joins the logs by finding id. It shares a
+  script with WORKTREE.md below: [`claim-path.sh`](claim-path.sh) takes a
+  caller-named path and claims it exclusively, so of two writers reaching for one
+  path exactly one gets it. Its mode says what the loser does — `next-free`
+  steps aside to a name beside it, which is what a report wants; `exclusive`
+  refuses and names the holder, which is what a lock wants. It enforces the
+  claim, so it is where its bound lives. The two references own when each mode is
+  reached for.
 - [`WORKTREE.md`](WORKTREE.md) — where an ADR's worktree goes and what it is
-  called, the three guards a project must satisfy before one may sit inside it,
-  what is symlinked in, the preflight that proves the environment, and how a
-  later run adopts what it finds. Read whole by the drains that create or resume
-  one.
+  called, the lock that keeps one ADR to one session, the three guards a project
+  must satisfy before one may sit inside it, what is symlinked in, the preflight
+  that proves the environment, and how a later run adopts what it finds. Read
+  whole by the drains that create or resume one.
 - [`DELEGATION.md`](DELEGATION.md) — what a sub-skill's closing contract means to
   its caller, and the shape a delegating step must have: it ends on a named next
   action, and the sub-skill's own stop is never edited to suit it. Read whole at

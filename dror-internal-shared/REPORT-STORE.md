@@ -59,14 +59,21 @@ wearing the default name — keep your own findings, take a name of your own, an
 say on screen which file they went to and why.
 
 **A caller-named path is claimed before anything is written to it**: run
-[`claim-report-path.sh`](claim-report-path.sh), the script beside this file,
-with the path as its one argument, and write the report to the path it prints. It creates the file empty and prints either the path asked for
+[`claim-path.sh`](claim-path.sh), the script beside this file, in its
+`next-free` mode with the path after it, and write the report to the path it
+prints. It creates the file empty and prints either the path asked for
 or the same name with a `-<k>` before the extension, and of two writers reaching
 for one path exactly one wins, decided by the kernel rather than by a clock
 reading or a look-then-write. Where it printed a path other than the one asked
 for, that is another writer already there — say so on screen with the path it
 gave, and tell the caller that name, since the caller is what a repair reads the
 path from. The script owns how far the `-<k>` names run; this file does not
+restate it.
+
+**`next-free` is the right mode because a report's name is a filing convention.**
+Nothing opens a report by guessing its name — a repair is told the path. The
+script's other mode refuses instead of stepping aside, and it is for a file a
+later run *does* open by name; WORKTREE.md owns that case and this file does not
 restate it.
 
 **A default name is not claimed.** It is the name of the *thing* reviewed rather
@@ -112,15 +119,15 @@ ordinary case and not evidence the report is fresh.
 
 **`<head>-<tag>-<hhmm>-<n>`** — the short commit in the front matter, the run's
 tag, the report's own time from the front matter, and the finding's number in it:
-`9af24df-3f2a-1432-3`. It is the only key joining a report to the logs — the
-report names no lens, and a `file:line` moves. Each part answers what none of the
-others can, and neither the tag nor the minute is optional (ADR 0025).
+`9af24df-1788272409342146839-1432-3`. It is the only key joining a report to
+the logs — the report names no lens, and a `file:line` moves. Each part answers
+what none of the others can, and neither the tag nor the minute is optional
+(ADR 0025).
 
-**The tag is minted by this recipe and no other**: four hex characters from
-`openssl rand -hex 2`, or the last four of `date +%s` where that is not there —
-unless the caller handed a tag in, in which case that one is used unchanged. A
-skill that needs a tag says "mint a run tag by the store's recipe" and does not
-restate the commands.
+**The tag is minted by this recipe and no other**: the epoch nanoseconds from
+`date +%s%9N` — unless the caller handed a tag in, in which case that one is
+used unchanged. A skill that needs a tag says "mint a run tag by the store's
+recipe" and does not restate the command. A clock reading, not a random draw.
 
 **Every finding carries one, survivors and kills alike.** A report written
 without ids cannot be joined to anything: its repair records nothing, and its log
@@ -204,10 +211,11 @@ it in either and the log asserts something false about what was covered. So it
 has a column of its own, carrying the writer's own closed lens names joined by
 `+`, or `-` where every launched lens returned. Only a run that counted what
 came back against what it launched may write either, so **the column is written
-by `dror-code-review` and `dror-adr-review` alone**. A writer that runs no such
-check ends its row at `elapsed_s` and leaves this field off, by the append-only
-rule below: a short row is the truth about a run that never had the fact, and
-`-` there would claim a check that never ran.
+by `dror-code-review`, `dror-adr-review` and `dror-skill-review`** — the three
+that run that check. A writer that runs no such check ends its row at
+`elapsed_s` and leaves this field off, by the append-only rule below: a short
+row is the truth about a run that never had the fact, and `-` there would claim
+a check that never ran.
 
 **`elapsed_s` is a measurement, not bookkeeping.** A review run is a lens
 fan-out and a refuter under each finding, and how much of a chain's wall-clock
