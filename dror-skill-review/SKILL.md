@@ -1,9 +1,9 @@
 ---
 name: dror-skill-review
-description: Review one skill against the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
+description: Review one skill against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*)
 ---
 
 # dror-skill-review
@@ -15,7 +15,8 @@ editing no line of the skill and no line of anything else.
 executes mid-run, so it is judged the way `dror-adr-review` judges a decision —
 on axes, each admitting a different kind of evidence — and the axes are its
 own. The lens pool is organised on that: five axes, set out in
-[`LENSES.md`](LENSES.md)'s preamble.
+[`LENSES.md`](LENSES.md)'s preamble, with a sixth thing — Anthropic's published
+rules — settled by a script before any of them runs.
 
 - **Against the harness** — the frontmatter and the promises it makes: the
   description against the body, the fork flags, the injected commands.
@@ -30,6 +31,10 @@ own. The lens pool is organised on that: five axes, set out in
 - **Against the agent that reads it** — a sentence that is true and gets
   executed wrongly, which no later run ever catches, because the reader is not
   a person who asks.
+- **Against the publisher** — Anthropic's own published rules for a skill,
+  which this repo's conventions sit on top of and do not overrule. These are
+  not a lens: every one of them is decided by a script, whose breaches skip the
+  refuter the way `dror-code-review`'s lint pass does (ADR 0045, ADR 0049).
 
 Only one axis reads code-as-such, so **a `file:line` outside the skill's own
 directory is not what a finding owes** — it is what some axes' findings owe.
@@ -75,6 +80,33 @@ that means, at authoring time. Either way, the moment the facts are in hand,
 **resolve the skill's name to its directory, in the same turn**, by the rule
 above.
 
+## Whether Anthropic's rules are still the ones on file
+
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh`
+
+`../dror-internal-shared/ANTHROPIC-SKILL-RULES.md` holds Anthropic's published
+rules for writing a skill, stamped with the `ETag` of the upload they were read
+off, and `skill-rules-check.sh` beside it enforces them. The rules, the stamp
+values and the enforcement all live there; none is restated here.
+
+The `VENDOR:` line above is that stamp compared against what the source serves
+now, by `anthropic-stamp.sh` before this text reached you. It reads one of three
+ways, and **all three run the review**:
+
+- `current` — the baseline matches the published guide. Nothing more is owed.
+- `moved` — Anthropic re-uploaded the guide, so the baseline may be stale. The
+  mechanical pass still runs and its breaches still stand; the report carries
+  the line verbatim in its front matter, and the presentation says in one
+  sentence that the baseline wants re-distilling.
+- `unknown` — no comparison was made, because the network, `curl` or the
+  source's own headers did not allow one. Treat it exactly as `moved`: the
+  review runs and the report says the baseline could not be checked. A run with
+  no network still reviews.
+
+Blocking a run on a stale baseline was rejected (ADR 0047): these rules are the
+stable half of what a review checks, and a re-upload is likelier to be a typo
+fix than a reversal.
+
 ## Read the skill
 
 Open the resolved `SKILL.md` and list the directory beside it.
@@ -104,6 +136,27 @@ returns (ADR 0038). Then find, in this order:
 A skill that is a stub — frontmatter and no procedure — ends the run with that
 one sentence. There is nothing to refute.
 
+## The mechanical pass
+
+Before any lens is launched, run
+`bash ../dror-internal-shared/skill-rules-check.sh <the resolved directory>`.
+It decides every one of Anthropic's published rules that a tool can decide, and
+prints one `BREACH:` line per rule broken, or `CLEAN`. It takes the directory as
+an argument, which is why it runs here and not as an injection at the top.
+
+**Each `BREACH:` line is a finding that skips the refuter.** The script's own
+output is its proof (ADR 0006), and a model asked to second-guess a string
+comparison can only get it wrong. They carry the reserved lens name **`tool`**,
+ADR 0045's, and their verdict is `survived` by construction. Their kind is
+`text`: the frontmatter or the directory is wrong and the repair corrects it.
+
+Redirect the output into a scratch file and give **every** lens its path, with
+the instruction not to re-report what it holds. `LENSES.md`'s preamble says the
+same thing from the lens's side; this is the input that makes it enforceable.
+
+The pass is **not a lens**. It appears in neither `lenses_run` nor
+`lenses_dropped`, and dropping a lens never drops it.
+
 ## Run the lenses
 
 [`LENSES.md`](LENSES.md) is a **pool**, not a running order. Choose the ones
@@ -113,8 +166,9 @@ the grep capture from the read above, and the path of `LENSES.md` with the name
 of its lens — it reads that file itself, and is told that the preamble and the
 section headed with its name bind it while the other sections are other
 agents'. Beyond those, the read above assigns the inputs per lens: the capture
-of what moved since goes to `anchors` and `mirrors`, and the mirror paths to
-`mirrors`. Paths, never contents.
+of what moved since goes to `anchors` and `mirrors`, the mirror paths to
+`mirrors`, and the mechanical pass's scratch file to all of them. Paths, never
+contents.
 
 Choosing is this skill's job, not the user's, and **the test is at bullet
 granularity**: a fact that retires some of a lens's bullets retires those
@@ -150,7 +204,7 @@ own. Spend the tokens where the judgement is.
 **Cap what a lens reads, on its own axis.** Every lens gets the skill's
 directory. Beyond it: `anchors` gets the files the skill points at, `ownership`
 and `mirrors` get the shelf files and index rows the grep capture names,
-`contract` and `execution` get the skill alone, and `sequence` gets the skill
+`contract` and `execution` get the skill alone, `sequence` gets the skill
 plus any ADR a spawn step's parameters rest on. A lens that cannot
 reach a verdict inside its boundary says so and returns the question rather
 than widening — reading a subsystem to settle one sentence is the refuter's
@@ -225,8 +279,10 @@ another kind of run's findings.
 Front matter first: **the skill this report is for** — `Skill: <name>`, the
 identity line — with its resolved directory; the commit `HEAD` was at; the
 commit and date the skill itself last moved; the time this report was written
-(`date +%H%M`, the same call the log's date comes from); and **this run's
-tag**, minted by the store's recipe unless the caller gave one.
+(`date +%H%M`, the same call the log's date comes from); **this run's
+tag**, minted by the store's recipe unless the caller gave one; and the
+`VENDOR:` line this run was given, quoted verbatim, so a reader of the report
+alone can tell which baseline the `tool` breaches rest on.
 
 Then one section per finding, numbered as on screen, each with:
 
@@ -277,7 +333,8 @@ name**; `round` is the round a looping caller named, or `-`; and `run_tag` is
 this run's tag.
 
 **The `lens` column is a closed vocabulary**: a section name from this skill's
-[`LENSES.md`](LENSES.md), or one from another review's own pool. Nothing else
+[`LENSES.md`](LENSES.md), the reserved name `tool` for a mechanical-pass
+breach (ADR 0045), or a name from another review's own pool. Nothing else
 may be written there — a name outside that set silently corrupts every rate
 `dror-review-retrospective` computes. The three pools' names are disjoint,
 which is what lets one log hold them and a reader tell them apart. Where the
@@ -315,6 +372,11 @@ the `text`, `hole`, `sprawl` and `echo` ones go to `dror-skill-repair`, and a
 
 Name the report file this run wrote, since a repair run has to be pointed at
 it and only this run knows which name it took, and say this run's tag once.
+
+Where the `VENDOR:` line read `moved` or `unknown`, add one sentence: which of
+the two it was, and that `dror-skill-vendor-rules` in `refresh` mode is what
+re-distils the baseline. It is a note to the user, not work for the repair, and
+this run does not invoke it.
 
 Then **one line saying whether a repair should follow**, and why in half a
 sentence. Three answers — *yes*, naming which findings need the edit; *no*,

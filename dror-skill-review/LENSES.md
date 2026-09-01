@@ -28,9 +28,16 @@ thing. Find your axis before you raise anything:
   executing agent makes after reading the sentence, stated concretely. The
   reader here is an agent mid-run, which asks nothing and does what the
   nearest hard rule says.
-
 Five axes, and a finding is settled on **its own lens's** and no other.
 Judging your finding by a neighbouring axis's standard is how a true one dies.
+
+**Anthropic's published rules are not one of your axes.** A script settles them
+before you are launched, and your prompt hands you its output as a file. Do not
+re-report what it holds: a folder's case, the instruction file's spelling,
+`name:` against the directory, the description's bound and its missing trigger,
+an angle bracket in the frontmatter, a `README.md` in the skill folder. The
+guide's advice about writing *well* is yours as usual, under `execution` and
+`sequence`, where it always was (ADR 0049).
 
 Every finding carries:
 
@@ -201,6 +208,7 @@ copy, compare it with what the skill itself says now.
 **Name every copy, with its `file:line`.** The kind is `echo`, and the repair
 edits every copy the finding names. Do not raise a copy that is *coarser* than
 the skill and still true — an index summarising in one line is doing its job.
+
 
 ## execution — the skill read as its agent will run it
 
