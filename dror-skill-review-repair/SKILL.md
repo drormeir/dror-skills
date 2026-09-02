@@ -1,6 +1,6 @@
 ---
 name: dror-skill-review-repair
-description: Loop skill review and repair over one skill until it converges - dror-skill-review, then dror-skill-repair on what survived, round after round while a round is still owed. Use when the user names a skill and asks to check and fix it in one run, or to keep going until nothing is left.
+description: Loop skill review and repair over one skill, or one shared document the skills read, until it converges - dror-skill-review, then dror-skill-repair on what survived, round after round while a round is still owed. Use when the user names a skill or a shelf document and asks to check and fix it in one run, or to keep going until nothing is left.
 context: fork
 background: false
 ---
@@ -51,10 +51,10 @@ ends once, leaving the edited files for the user to read and commit.
 
 ## What this loop does not repair
 
-One of the five kinds `dror-skill-review` reports is **not** this loop's work:
-a **`conflict`** — two documents owning one rule differently, or two skills
-deciding one question two ways — is a choice, and somebody must make it. It
-goes to the user with both passages quoted.
+One of the five kinds `dror-skill-review` reports is **not** this loop's work: a
+**`conflict`** goes to the user, with both passages quoted, because it is a
+choice and somebody must make it. What the kind means is minted in
+`dror-skill-review/LENSES.md`'s preamble and is not restated here.
 
 **A `conflict` never makes a round owed.** A round that returned nothing else
 has repaired nothing and will find the same conflict again, so a loop that
@@ -148,6 +148,12 @@ whole run: round `<k>`'s report is
 `../dror-internal-shared/REPORT-STORE.md` makes the answer over any name the
 review would derive.
 
+**Where the target is a document rather than a skill**, take the shelf's
+document default and suffix it the same way —
+`doc-review-report-<slug>-<tag>-r<k>.md`, the slug being the shelf's. The two
+families stay apart for the reason the shelf gives: no run erases another kind
+of run's findings.
+
 **The tag is the run's and the suffix is the round's**, so the loop leaves one
 file per round rather than one file — the same arrangement as the other two
 loops', and ADR 0041's decision ("each round keeps its report") is why: an
@@ -167,7 +173,9 @@ the same prose at the same time, and a directory of documents has no seam a
 tag divides: the second writer edits text the first has already moved. So
 **look for the other run and say what you find**, before round 1 and once
 only: list `<repo>/.claude/dror-skills/` and read the front matter of every
-`skill-review-report*.md` that is not this run's. **Not this run's** means
+report in **this run's own family** — `skill-review-report*.md`, or
+`doc-review-report*.md` where the target is a document — that is not this
+run's. **Not this run's** means
 every file carrying this run's tag, whatever its round suffix — before round 1
 there are none of them, so this costs the check nothing. A recently-written
 report under another tag naming **this** skill is another run on it — name it

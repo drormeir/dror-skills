@@ -40,14 +40,12 @@ it, and they are the same shape one level up: find, then fix, in two runs
 They divide the findings by **kind**, because different hands fix them. Six
 kinds, and this is where each one goes:
 
-- `text`, `hole` and `echo` are the document's fault and go to
-  `dror-adr-repair`. An `echo` is a rule the ADR states correctly and a copy of
-  it elsewhere has drifted, so it names every copy and is repaired in all of
-  them at once — the copy that gets read is the one that governs.
-- `breach` is the code's and goes to `dror-code-repair`.
-- `conflict` between two decisions is nobody's until the user says which wins.
-- `revisit` is nobody's either, for the opposite reason: nothing is wrong, and
-  what the decision predicted has not held. Whether to reopen it is the user's.
+- `text`, `hole` and `echo` go to `dror-adr-repair`. An `echo` names every copy
+  and is repaired in all of them at once — the copy that gets read is the one
+  that governs.
+- `breach` goes to `dror-code-repair`.
+- `conflict` is nobody's until the user says which decision wins.
+- `revisit` is nobody's either, and whether to reopen is the user's.
 
 Neither skill writes code, and neither may rewrite what was decided — see
 ADR 0020. `dror-adr-review/LENSES.md` defines the six and its lenses mint them;
@@ -69,10 +67,10 @@ and the agent that reads it.
 | `dror-skill-review-repair` | Loop the two over one skill until it converges, up to a cap of its own — the ADR loop's cap and no round-1 floor, for the same one-document reason | whatever its two steps write |
 
 Its kinds and their routing: `text`, `hole`, `sprawl` and `echo` go to
-`dror-skill-repair` — a `sprawl` is a rule, tunable or vocabulary living in
-more places than its owner, collapsed to a pointer — and a `conflict` between
-two owners is nobody's until the user says which wins. `dror-skill-review`'s
-own `LENSES.md` mints them. `dror-skill-repair` may not redesign a skill: it
+`dror-skill-repair` — a `sprawl` is collapsed to a pointer, never synchronised
+into two copies — and a `conflict` is nobody's until the user says which owner
+wins. `dror-skill-review`'s own `LENSES.md` mints them and this paragraph owns
+only where each one goes. `dror-skill-repair` may not redesign a skill: it
 makes sentences true and never changes what a skill does.
 
 A typical ticket: implement → `dror-prove` → the review-repair loop →
@@ -117,6 +115,7 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
 
 `dror-internal-shared` is the shelf the others read from, holding
 [`WRITING-TESTS.md`](WRITING-TESTS.md), [`REPORT-STORE.md`](REPORT-STORE.md),
+[`LENS-FANOUT.md`](LENS-FANOUT.md),
 [`WORKTREE.md`](WORKTREE.md), [`DELEGATION.md`](DELEGATION.md),
 [`ADR-FILE.md`](ADR-FILE.md), [`DIRECTORY-OVERRIDE.md`](DIRECTORY-OVERRIDE.md),
 [`STEP-AGENT.md`](STEP-AGENT.md), this map, the glossary and the ADRs.

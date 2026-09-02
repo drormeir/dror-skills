@@ -151,7 +151,9 @@ and by then the tickets are wrong too.
 The same find-then-fix shape appears three times below, and the three are
 deliberately **not** interchangeable. `dror-code-review` and `dror-code-repair`
 work on code. `dror-adr-review` and `dror-adr-repair` work on decision records.
-`dror-skill-review` and `dror-skill-repair` work on skills. Each pair
+`dror-skill-review` and `dror-skill-repair` work on skills, and on the shelf
+documents the skills read, which drift the same way and are judged against the
+same tree. Each pair
 specialises in its own kind of document, and each repair skill is built to take
 exactly what its own reviewer produces.
 
@@ -164,7 +166,9 @@ hides which pair the rule was written for, and a later sharpening in one pair
 silently misses the other.
 
 What the three pairs may share is the plumbing around them: the report store,
-the log schemas, the finding-id shape, the ticket numbering. Those live once on
+the log schemas, the finding-id shape, the ticket numbering, and the lens
+fan-out — which model an agent runs on, what a run does about a lens whose
+output never arrived, and the merge. Those live once on
 the shelf, in `dror-internal-shared/`, and every pair points at them. The
 glossary in
 [`dror-internal-shared/CONTEXT.md`](dror-internal-shared/CONTEXT.md) names a
@@ -212,9 +216,9 @@ routing lives in
 
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
-| `dror-skill-review` | Before editing a skill that has sat untouched while the repo moved, or when a run of it misbehaved and you want the text checked before blaming the model. | Review one skill against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
-| `dror-skill-repair` | A skill review returned `text`, `hole`, `sprawl` or `echo` findings and you want the text corrected without the skill being redesigned. | Repair a skill's text from findings already made — every corrected sentence grounded in the file, command or directory it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. | the skill's prose, and any index row, map entry or glossary line an `echo` names |
-| `dror-skill-review-repair` | Same as `dror-skill-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop skill review and repair over one skill until it converges — `dror-skill-review`, then `dror-skill-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
+| `dror-skill-review` | Before editing a skill that has sat untouched while the repo moved, or when a run of it misbehaved and you want the text checked before blaming the model. Also takes a shelf document. | Review one skill, or one shared document the skills read, against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
+| `dror-skill-repair` | A skill review returned `text`, `hole`, `sprawl` or `echo` findings and you want the text corrected without the skill being redesigned. | Repair a skill's text, or a shared document's, from findings already made — every corrected sentence grounded in the file, command or directory it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. | the skill's prose, and any index row, map entry or glossary line an `echo` names |
+| `dror-skill-review-repair` | Same as `dror-skill-review`, but you want the correcting done too and do not want to be asked between rounds. | Loop skill review and repair over one skill, or one shared document the skills read, until it converges — `dror-skill-review`, then `dror-skill-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
 ## Beside the chain
 
@@ -223,7 +227,7 @@ routing lives in
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review logs across runs and say what the lenses are getting wrong and what the rounds are worth — which lens produces false positives, which recurring assumption causes them, what a later round caught that an earlier one had in front of it, and what a round costs. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
 | `dror-skill-vendor-rules` | By hand, bare, when you want to know whether the guide moved and to be offered the refresh; on a weekly timer with `check`, which never offers anything. | Check whether the published guide behind the skill reviews' vendor baseline has been re-uploaded since that baseline was distilled, and re-distil it on request. Called bare it reports and then offers the refresh; called with check it only reports; called with refresh it rewrites the baseline and its stamp, unstaged, and never commits. |
-| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, the map and the decision record. A shelf, read by the skills that run. |
+| `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the lens fan-out's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the glossary, the map and the decision record. A shelf, read by the skills that run. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
 `project-facts` opens every skill in the chain — its stamp script runs before
@@ -286,8 +290,9 @@ One writer per direction, because a tick is a claim about evidence:
   `dror-adr-review` and `dror-adr-review-repair` assume ADRs in a conventional
   decision directory, resolved by the shelf's `ADR-FILE.md`; `dror-skill-review`
   assumes skills as directories holding a `SKILL.md`, resolved by the rule its
-  own file states, and `dror-skill-review-repair` inherits that from it by
-  taking a skill by name. In a repo that does
+  own file states, and reads any other Markdown file it is pointed at as a
+  document instead, and `dror-skill-review-repair` inherits both from it by
+  taking a skill by name or a document by path. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 The reasons behind all of it are one file per decision in

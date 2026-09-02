@@ -19,7 +19,10 @@ miss and never an error.
 
 Create the directory when it is not there. Nothing in the store is a history — a
 report is replaced or set aside by the next run of the same thing; the logs
-below are the history.
+below are the history. **A loop's rounds are the exception** (ADR 0041): each
+round keeps its own report, at the round-suffixed path its caller names, and no
+round overwrites another. What a later run replaces is the last run's report of
+the same thing, never an earlier round of its own.
 
 ## Which name a report takes
 
@@ -41,6 +44,12 @@ of it:
   close to unreachable, since an ADR is what that skill is invoked on.
 - a skill review — `skill-review-report-<name>.md`, `<name>` being the skill's
   own name, which that run always has, since a skill is what it is invoked on.
+- a skill review given a **document** rather than a skill —
+  `doc-review-report-<slug>.md`, `<slug>` being the document's repo-relative
+  path with every `/` and `.` turned into `-`, so
+  `dror-internal-shared/REPORT-STORE.md` becomes
+  `doc-review-report-dror-internal-shared-REPORT-STORE-md.md`. The path is the
+  only name a document has that two of them cannot share.
 
 One name per ticket, per ADR and per skill is what keeps two sessions in one
 checkout from overwriting each other's work-product — a report a repair run is
@@ -70,6 +79,16 @@ gave, and tell the caller that name, since the caller is what a repair reads the
 path from. The script owns how far the `-<k>` names run; this file does not
 restate it.
 
+**A run writes its report once.** The claim above stops another writer taking
+the path; it cannot stop the claimant taking it twice, since by then the file is
+the run's own. So before writing, read what is there: a report at that path
+already carrying **this run's tag and this run's round** is this run's own
+earlier write, and the run has repeated a stage it already finished. Do not
+overwrite it and do not write beside it. Say on screen that the report was
+already written, name the path, and end the run on that — a second pass over one
+round is a defect to surface, not a result to file. Only a run that finds the
+path empty, or holding another run's tag, writes.
+
 **`next-free` is the right mode because a report's name is a filing convention.**
 Nothing opens a report by guessing its name — a repair is told the path. The
 script's other mode refuses instead of stepping aside, and it is for a file a
@@ -86,8 +105,18 @@ report writing beside it instead.
 A name can be taken, mistyped or slugged, so the name is a filing convention and
 never the report's identity. The front matter carries it instead — `Ticket: <n>`,
 or `Ticket: none`; `ADR: <n>` for an ADR review; `Skill: <name>` for a skill
-review — written even where the name already has the number, so that the two
-can be compared (ADR 0021).
+review; `Document: <repo-relative path>` for a review given a document rather
+than a skill — written even where the name already has the number, so that the
+two can be compared (ADR 0021). A document's line carries the path unslugged,
+since the slug in the file name is lossy and the path is what a reader opens.
+
+**The front matter also says who wrote it.** `Run: <tag>`, this run's tag, and
+`Round: <k>` or `Round: -` where no caller named one. The name may carry the tag
+too, and it is written again here for the same reason the number is: a name is a
+filing convention and the front matter is the fact. Together they are what lets
+a reader that finds the file changed tell **its own run's second write from
+another run's first** — the one question the path cannot answer, and the one
+whose wrong answer blames a session that was never there.
 
 **Whatever picked the file, check what it says it is** before working from it:
 
@@ -98,8 +127,9 @@ can be compared (ADR 0021).
   name, and the file name is exactly what will not reveal it.
 - It carries **no** identity line at all — a report written before the line
   existed. Fall back to the file **name**: a `review-report-<n>.md`,
-  `adr-review-report-<n>.md` or `skill-review-report-<name>.md` matching your
-  number or name is yours, and anything else is
+  `adr-review-report-<n>.md`, `skill-review-report-<name>.md` or
+  `doc-review-report-<slug>.md` matching your
+  number, name or path is yours, and anything else is
   read only when the caller named it outright. Never take a bare report for a
   numbered run's on the grounds that it is the only file present; it is as likely
   to be another number's round that could not take its own name.
@@ -117,12 +147,14 @@ ordinary case and not evidence the report is fresh.
 
 ## The finding id
 
-**`<head>-<tag>-<hhmm>-<n>`** — the short commit in the front matter, the run's
-tag, the report's own time from the front matter, and the finding's number in it:
-`9af24df-1788272409342146839-1432-3`. It is the only key joining a report to
-the logs — the report names no lens, and a `file:line` moves. Each part answers
-what none of the others can, and neither the tag nor the minute is optional
-(ADR 0025).
+**`<head>-<tag>-r<k>-<n>`** — the short commit in the front matter, the run's
+tag, the round with an `r` in front of it, and the finding's number in it:
+`9af24df-1788272409342146839-r2-3`. Where no caller named a round it is `r-`,
+the same fact the logs' `round` column writes as `-`. It is the only key joining
+a report to the logs — the report names no lens, and a `file:line` moves. Each
+part answers what none of the others can, and neither the tag nor the round is
+optional: the tag separates two runs and the round separates one run's rounds,
+which share a commit because a repair never commits (ADR 0050).
 
 **The tag is minted by this recipe and no other**: the epoch nanoseconds from
 `date +%s%9N` — unless the caller handed a tag in, in which case that one is
@@ -134,12 +166,15 @@ without ids cannot be joined to anything: its repair records nothing, and its lo
 lines answer only the questions that need no id. If a finding is worth writing
 down it is worth a key, and the key costs one string.
 
-**Match an id whole; never split it into parts.** Three shapes are in the logs by
-age — `<head>-<n>`, `<head>-<hhmm>-<n>`, `<head>-<tag>-<hhmm>-<n>` — and a reader
-that split on `-` and took position 2 as the minute would read a tag as a time
-and produce a wrong answer rather than an error. A writer copies the string
-verbatim from the report and never rebuilds it. A collision here is **silent**,
-so its cost is paid entirely by a later reader (ADR 0025).
+**Match an id whole; never split it into parts.** Four shapes are in the logs by
+age — `<head>-<n>`, `<head>-<hhmm>-<n>`, `<head>-<tag>-<hhmm>-<n>` and the
+current one — and a reader that split on `-` and took position 2 as the minute
+would read a tag as a time and produce a wrong answer rather than an error. The
+last change makes this worse, not better: a round and a minute are both short and
+both numeric, so a reader taking a position now reads one as the other with
+nothing to notice. A writer copies the string verbatim from the report and never
+rebuilds it. A collision here is **silent**, so its cost is paid entirely by a
+later reader (ADR 0025, ADR 0050).
 
 ## The logs
 
@@ -171,7 +206,7 @@ report's finding id, copied whole) · `report` (the path this run's report was
 written to, as named on screen) · `round` (which round of a caller's loop this
 run was, `1` upward, or `-` where the caller ran no loop) · `subject` (the
 ticket or ADR number this run was given — or, for a skill review, the skill's
-name — or `-`) · `run_tag` (this run's tag, the same value
+name, or the repo-relative path of the document it was given instead — or `-`) · `run_tag` (this run's tag, the same value
 its `runs.tsv` row carries). **`id` and `report` keep their positions in
 that order, and every column added later follows them**, so a row written
 before the addition stays readable as the shorter row it is. Each writer says
@@ -182,8 +217,9 @@ three-round loop appends its findings as one undifferentiated block, and the
 question a retrospective most wants to ask — did a later round find defects in
 files an earlier round never opened, or in the code its repair had just
 written — cannot be asked of the log at any price. It is written by the run,
-from the number its caller handed in, and never inferred from a finding id's
-minute field, which the id rule above forbids splitting. `round` separates a
+from the number its caller handed in, and never read back out of a finding id —
+the id now carries the round, and the rule above still forbids splitting one to
+get at it. `round` separates a
 loop's rounds; **`run_tag` is what joins them into one run** — ids may not be
 split and report names are matched whole, so without this column no reader can
 tell which round-1 rows belong with which round-2 rows once two loops share a

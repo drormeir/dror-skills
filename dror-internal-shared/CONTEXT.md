@@ -56,6 +56,15 @@ condensed pointer, and that file owns the term.
 - **Lens** — one review perspective, defined by a section of
   `dror-code-review/LENSES.md`, `dror-adr-review/LENSES.md` or
   `dror-skill-review/LENSES.md`, run as one agent that proposes findings.
+- **Fan-out** — the batch of lens agents a review launches at once. What the
+  three reviews do alike — which model each agent runs on, the escape a lens
+  takes when its boundary cannot settle the question, what happens to a lens
+  whose output never arrives, and the merge — is
+  `dror-internal-shared/LENS-FANOUT.md`'s, on the shelf.
+- **Lost lens** — one that launched and whose output never reached the run: not
+  run, since its axis was never judged, and not dropped, since the run did mean
+  to look. It is recorded in `runs.tsv`'s `lenses_lost`, and it is never asked
+  again — a second ask is a second pass.
 - **Vendor baseline** — `dror-internal-shared/ANTHROPIC-SKILL-RULES.md`:
   Anthropic's published rules for writing a skill, distilled locally and stamped
   with the `ETag` of the upload they were read off (ADR 0047).
@@ -197,10 +206,17 @@ These words are the same in every `dror-*` run.
   from the code review's, so neither review can erase the other's findings.
 - **Skill review report** — `skill-review-report-<name>.md` in the store: the
   same for one skill review, a third family kept separate for the same reason.
-- **Identity line** — `Ticket: <n>` or `ADR: <n>` in a report's front matter,
+- **Document review report** — `doc-review-report-<slug>.md` in the store, the
+  slug being the document's repo-relative path flattened: the same for a
+  `dror-skill-review` run given a shelf document rather than a skill, a fourth
+  family for the same reason again.
+- **Identity line** — `Ticket: <n>`, `ADR: <n>`, `Skill: <name>` or
+  `Document: <path>` in a report's front matter,
   and the report's identity: a name can be taken, mistyped or slugged, so only
-  the line inside can be compared against the number a reader was handed
-  (ADR 0021).
+  the line inside can be compared against what a reader was handed
+  (ADR 0021). `Run:` and `Round:` sit beside it and say **who** wrote the file,
+  which is what tells a reader its own run's second write from another run's
+  first.
 - **Refutation log** — `~/.claude/dror-skills/refutations.tsv`, outside any repo: one
   line per merged finding, appended by every review and never rewritten. Its
   `summary` is what a finding *claimed*; why it died is in the report the
@@ -219,12 +235,12 @@ These words are the same in every `dror-*` run.
   says whether a survivor was a real defect once somebody tried to fix it — and,
   read across a head's rounds, which findings a round had in scope and did not
   return.
-- **Finding id** — `<head>-<tag>-<hhmm>-<n>`: the short commit a report was
-  written at, the run's tag, the minute it was written, and the finding's number
+- **Finding id** — `<head>-<tag>-r<k>-<n>`: the short commit a report was
+  written at, the run's tag, the round, and the finding's number
   in it. The one key joining a report, the refutation log and the repair log;
-  the report carries no lens and a `file:line` moves. Two older shapes are in the
-  logs — `<head>-<hhmm>-<n>` and `<head>-<n>` — so an id is matched **whole** and
-  never split into parts (ADR 0025).
+  the report carries no lens and a `file:line` moves. Three older shapes are in
+  the logs — `<head>-<tag>-<hhmm>-<n>`, `<head>-<hhmm>-<n>` and `<head>-<n>` — so
+  an id is matched **whole** and never split into parts (ADR 0050).
 - **Run tag** — a clock reading minted once per review run, by the recipe
   `REPORT-STORE.md` owns. Names the *run* in a report's front matter and in
   `runs.tsv`. It is not the report's file name,

@@ -157,39 +157,21 @@ still agree. `misreading` is the third, wherever the ADR states rules somebody
 will act on — every other lens asks whether the document is true, and that one
 asks whether it will be obeyed as meant, which nothing downstream ever catches.
 
-**Lenses run on the cheap model, refuters on the strong one.** Pass
-`model: "sonnet"` to every lens agent and leave the refuters on the session's
-own. Spend the tokens where the judgement is.
+**The models, the read boundary, what came back and the merge are the shelf's**:
+`../dror-internal-shared/LENS-FANOUT.md` holds them in one copy for all three
+reviews. Read it whole before launching the batch. It is not restated here.
 
-**Cap what a lens reads, on its own axis.** A code-axis lens gets the ADR, the
-files it names and their direct callers. A lens on any other axis gets the ADR
-plus the thing it is judged against and nothing more — the sibling ADRs and the
-copies for `neighbours` and `echoes`, the named rows of the listing it was handed for
-`tickets`, and for the three that read the document against itself, the document
-alone. A lens that cannot reach a verdict inside its own boundary says so and
-returns the question rather than widening — reading a subsystem to settle one
-sentence is the refuter's budget to spend, on one finding.
-
-**Check that every lens returned, before merging.** Merge below opens on the
-*returned* findings, and nothing above counts them against what was launched —
-so a lens whose result never arrives leaves no trace of itself, and its area
-reads exactly like one that came back clean. Before merging, list the agents
-this batch launched and confirm each of them returned. A lens that launched and
-whose output did not arrive is an area nobody looked at: say so in the report
-like any other that was not run, and say there that this run's findings are
-that lens short. Keep its name for the run log below, which has a column for
-exactly this and for neither of the other two states.
-`refutations.tsv` is no help here — this run writes it after
-the refuters, below, so at the moment output goes missing it holds nothing of
-this run's.
+**What this run gives each lens, inside that boundary.** A code-axis lens gets
+the ADR, the files it names and their direct callers. A lens on any other axis
+gets the ADR plus the thing it is judged against and nothing more — the sibling
+ADRs and the copies for `neighbours` and `echoes`, the named rows of the listing
+it was handed for `tickets`, and for the three that read the document against
+itself, the document alone.
 
 ## Merge
 
-Two lenses reading adjacent paragraphs report one defect twice. Group the
-returned findings by the **ADR line** they name and by what they claim is wrong,
-before anything is refuted: findings that name the same defect become one,
-keeping the clearest statement, and noting every lens that raised it. One
-defect, one finding, whatever found it.
+**The key this review groups by** is the **ADR line** a finding names and what it
+claims is wrong. The rest of the merge is the shelf's.
 
 A `text` and a `breach` finding about the same rule are **not** a duplicate —
 they are the two readings of one disagreement, and which of them is right is the
@@ -271,7 +253,7 @@ it does not, the reference says under its finding-id rule.
 Then one section per finding, numbered as on screen, each with:
 
 - its **id**, minted by the reference's rule from the front matter's commit, this
-  run's tag, the report's own time and the finding's number;
+  run's tag, this run's round and the finding's number;
 - the **ADR line or quoted sentence** it is about, and **what it was judged
   against**, in the form its axis takes: a `file:line` in the code, the other
   passage of this document with its line number, the other document's own

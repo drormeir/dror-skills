@@ -1,5 +1,11 @@
 # The finding id carries the minute, because a repair never commits
 
+> **The minute is gone — superseded by
+> [ADR 0050](0050-the-finding-id-carries-the-round.md), which puts the round
+> where the minute was. The argument below for why `<head>-<n>` was not enough
+> still holds; the part rejecting a round number does not, since ADR 0041 gave
+> every review a round to write.**
+>
 > **Superseded in part by [ADR 0025](0025-the-finding-id-carries-the-run.md).**
 > Everything below stands except the last paragraph: the id is now
 > `<head>-<tag>-<hhmm>-<n>`. The minute is still there and still separates the

@@ -355,7 +355,8 @@ stay here, in this context, because they are git and tracker questions this skil
 asks for itself and the answers are what §Present is built from.
 
 **Why.** A ticket run is the whole chain — an implementation, two proves, a
-review-repair loop of up to three rounds and sometimes a settling loop after it —
+review-repair loop at the cap `dror-implement-ticket` names, and sometimes a
+settling loop after it —
 and every source file it reads, every suite it runs and every instruction file it
 loads would otherwise land here and stay, ticket after ticket, until a drain of
 any length runs out of window in the middle of the list it exists to work. The

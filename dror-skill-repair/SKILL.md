@@ -1,6 +1,6 @@
 ---
 name: dror-skill-repair
-description: Repair a skill's text from findings already made - every corrected sentence grounded in the file, command or directory it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. Use when asked to fix a skill review's findings, or to bring a named skill back in line with the repo it runs in.
+description: Repair a skill's text, or a shared document's, from findings already made - every corrected sentence grounded in the file, command or directory it points at, restatements collapsed to pointers, every drifted copy synchronised, and no behaviour redesigned. Use when asked to fix a skill review's findings, or to bring a named skill or shelf document back in line with the repo it runs in.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)

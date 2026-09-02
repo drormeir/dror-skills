@@ -51,16 +51,17 @@ ends once, leaving the edited files for the user to read and commit.
 ## What this loop does not repair
 
 Three of the six kinds `dror-adr-review` reports are **not** this loop's work,
-and each leaves it by a different door:
+and each leaves it by a different door. What each kind **means** is minted in
+`dror-adr-review/LENSES.md`'s preamble and is not restated here; what follows is
+only where each one goes:
 
-- A **`breach`** says the code violates the ADR's rule and the document is fine.
-  `dror-adr-repair` grounds it and hands it on; nothing in this loop edits code.
-  Carry every breach to the summary as work for `/dror-code-repair`, with its
-  `file:line`.
-- A **`conflict`** is two decisions disagreeing, and somebody must choose. It
-  goes to the user with both passages quoted.
-- A **`revisit`** is a decision whose prediction did not hold. Nothing is wrong,
-  so there is no sentence to correct, and whether to reopen is the user's.
+- A **`breach`** goes to the summary as work for `/dror-code-repair`, with its
+  `file:line`. `dror-adr-repair` grounds it and hands it on; nothing in this loop
+  edits code.
+- A **`conflict`** goes to the user, with both passages quoted, because somebody
+  must choose.
+- A **`revisit`** goes to the user too. There is no sentence to correct, and
+  whether to reopen is theirs.
 
 **None of the three ever makes a round owed.** A round that returned nothing else
 has repaired nothing and will find the same three again, so a loop that rounded
@@ -177,8 +178,11 @@ the other run and say what you find**, before round 1 and once only: list
 `adr-review-report*.md` that is not this run's. **Not this run's** means every
 file carrying this run's tag, whatever its round suffix — before round 1 there
 are none of them, so this costs the check nothing. A recently-written report under
-another tag naming **this** ADR is another run on this document — name it on
-screen, carry it into the summary, and pass it into every round's repair.
+another tag naming **this** ADR says another run wrote about this document, last
+at the time its front matter carries. **It does not say that run is still
+going**: the store is never pruned, so a finished run's report reads exactly like
+a live one's. Name what you found on screen with that time, carry it into the
+summary, and pass it into every round's repair.
 
 **It is a report, not a gate** (ADR 0024). What is available is that neither run
 is surprised; a user who wants the two kept apart runs them on different ADRs.
@@ -194,8 +198,9 @@ one:
 > this run's and overrides the name you would derive. Use `<tag>` as your run tag,
 > so every round's finding ids carry it. This is **round `<k>`** of this loop; log
 > it as that round. `<Where the concurrency check saw a
-> neighbour: another run is on this ADR — …, last seen at … — write its tag in
-> your run row's `concurrent` column.>` For context, why this document is being
+> neighbour: another run wrote a report on this ADR, last at … — it may or may
+> not still be running — write its tag in your run row's `concurrent` column.>`
+> For context, why this document is being
 > checked now: `<the focus paragraph>` — focus, not scope; read the document
 > whole.
 
@@ -245,9 +250,9 @@ Invoke the `dror-adr-repair` skill:
 > stands, each echo synchronised in every copy it names. Change no decision. For
 > context, why this document is being checked now: `<the focus paragraph>`. The
 > other reports in that directory belong to other runs — do not read or touch
-> them. `<Where the concurrency check saw a neighbour: another run is editing
-> this same document — …, last seen at … — so a sentence changing under you may
-> be theirs.>`
+> them. `<Where the concurrency check saw a neighbour: another run wrote a report
+> on this same document, last at … — it may still be editing it — so a sentence
+> changing under you may be theirs.>`
 
 **Name this round's tagged file, never the store's default and never an earlier
 round's.** The default `adr-review-report-<n>.md` may be another run's entirely,
@@ -328,12 +333,13 @@ repair findings this run already repaired.
 Never write **owed** at the cap and stop silently; a reader would take the stop
 for convergence.
 
-**Each round overwrites the last round's report**, because this run hands every
-round the one tagged path. That is deliberate: what the file holds is always the
-open list, which is what the next repair needs, and each finding's outcome is
-already keyed by its id in `~/.claude/dror-skills/repairs.tsv` for a later
-retrospective. A round's findings a reader will want later belong in this run's
-summary, not in a file the next round replaces.
+**Each round keeps its own report**, at the `-r<k>` path above, and no round
+overwrites another. §The run's own report name holds the reason.
+
+**The repair still reads one file: this round's.** Step 3 passes the path step 1
+confirmed it wrote, so what the repair works from is the open list and nothing
+more. The earlier rounds' files are for a reader, and nothing in this loop reads
+them back.
 
 The user may stop the loop at any point, and a run told to stop reports what it
 has rather than finishing the round.

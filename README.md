@@ -52,7 +52,8 @@ the ten lenses read code at all.
 
 The same shape turns on the skills themselves: `dror-skill-review` reviews one
 skill's directory — against the harness contract, the tree it runs in, itself,
-the shelf and the agent that reads it — `dror-skill-repair` corrects its
+the shelf and the agent that reads it — or one shelf document, which drifts the
+same way. `dror-skill-repair` corrects the
 text from the findings without redesigning what the skill does, and
 `dror-skill-review-repair` loops the two the way the other loops do.
 Beside it, `dror-review-retrospective`
@@ -63,8 +64,8 @@ positives.
 are: the first opens every skill in the chain — its stamp script injects the
 cached facts, and the skill itself runs only on a miss — the
 second is a shelf of reference material — the test-writing rules, the report
-store's rules, the ADR worktree's rules, the glossary, the map and the decision
-records behind the design.
+store's rules, the lens fan-out's rules, the ADR worktree's rules, the glossary,
+the map and the decision records behind the design.
 
 Four skills work at the level of the session itself: `dror-guide` governs
 step-by-step answers, `dror-brief-me` governs how a choice is put to you,

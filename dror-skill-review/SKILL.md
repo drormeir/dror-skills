@@ -1,6 +1,6 @@
 ---
 name: dror-skill-review
-description: Review one skill against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
+description: Review one skill, or one shared document the skills read, against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill or a shelf document and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
@@ -50,9 +50,36 @@ like the one these files live in), `<repo>/.claude/skills/<name>/SKILL.md`,
 `~/.claude/skills/<name>/SKILL.md` — and the first hit wins. No match ends the
 run: say so and stop, and do not guess which skill was meant.
 
+**This skill reviews two kinds of target, and the target itself says which.**
+A name, or a path to a `SKILL.md`, is a **skill**, and the unit is its whole
+directory. Any other path resolves by **who owns the file**, in this order:
+
+- **A file the neighbouring `SKILL.md` names as part of its own procedure** — a
+  lens pool, a refuting brief, a resume file — is a **companion**, and the
+  target is that skill. Reviewing it alone would judge it with the skill that
+  reads it outside the read boundary, and would file the findings under a
+  second report family from its skill's own. Say on screen which skill the path
+  resolved to.
+- **An ADR** — a numbered decision file, resolved by
+  `../dror-internal-shared/ADR-FILE.md`'s convention — belongs to
+  `dror-adr-review`, which judges a decision against the code it governs. Name
+  that skill and stop; do not review it here.
+- **Anything else** is a **document**: a file an agent reads mid-run, drifting
+  the same way and against the same tree. A shelf file like `REPORT-STORE.md`,
+  a map, a glossary.
+
+Nothing is asked and no mode is typed. Note that a shelf directory may hold a
+`SKILL.md` of its own without its files being companions — `dror-internal-shared`
+does, and says in it that the other skills reach its files by path, as
+documents. That sentence is the test, not the directory listing. Everything
+below that turns on the distinction says so where it applies.
+
 **The unit of review is the skill's whole directory**: `SKILL.md` and every
 companion file beside it (a lens pool, a refuting brief, a script). The
 companions are part of the procedure and drift exactly as the main file does.
+**A document's unit is the one file**, and nothing beside it: the files sharing
+its directory are other documents with owners of their own, and sweeping them
+in would review several things under one report.
 
 Everything else about the repo in hand arrives through the facts below.
 
@@ -107,9 +134,11 @@ Blocking a run on a stale baseline was rejected (ADR 0047): these rules are the
 stable half of what a review checks, and a re-upload is likelier to be a typo
 fix than a reversal.
 
-## Read the skill
+## Read the target
 
-Open the resolved `SKILL.md` and list the directory beside it.
+Open the resolved `SKILL.md` and list the directory beside it. **For a
+document, open the one file** and list nothing; `<dir>` below is the document
+itself, and the grep is for its file name rather than a skill's.
 
 **Read it whole, here, before anything is spawned.** Choosing the lenses is
 this skill's job and it cannot be done unread. Every agent needs it too, and
@@ -136,7 +165,9 @@ returns (ADR 0038). Then find, in this order:
 A skill that is a stub — frontmatter and no procedure — ends the run here, on
 the line **`EMPTY SKILL: <name> is frontmatter and no procedure`** and nothing
 else. There is nothing to refute, so no lens runs, no report is written and no
-log line is owed.
+log line is owed. **A document is never a stub by this test**, since it carries
+no frontmatter to be all of; an empty document ends the run on the same line
+with `is empty` in place of the reason.
 
 **That line is the only reason this skill ends without a report**, so it is
 what a caller reads to tell an empty skill from a run that broke. A run that
@@ -149,6 +180,12 @@ Before any lens is launched, run
 It decides every one of Anthropic's published rules that a tool can decide, and
 prints one `BREACH:` line per rule broken, or `CLEAN`. It takes the directory as
 an argument, which is why it runs here and not as an injection at the top.
+
+**It runs for a skill and not for a document.** Every rule it enforces is a
+rule about a `SKILL.md` — a frontmatter field, a directory's shape — and a
+document has none of them, so its verdict on one would be an answer to a
+question nobody asked. A document run says in its report that the pass does not
+apply, which is not the same as `CLEAN`.
 
 **Each `BREACH:` line is a finding that skips the refuter.** The script's own
 output is its proof (ADR 0006), and a model asked to second-guess a string
@@ -203,38 +240,20 @@ different arguments, and each states its own.
 run: between them they are the whole question of whether the skill still runs
 and whether it runs as meant.
 
-**Lenses run on the cheap model, refuters on the strong one.** Pass
-`model: "sonnet"` to every lens agent and leave the refuters on the session's
-own. Spend the tokens where the judgement is.
+**The models, the read boundary, what came back and the merge are the shelf's**:
+`../dror-internal-shared/LENS-FANOUT.md` holds them in one copy for all three
+reviews. Read it whole before launching the batch. It is not restated here.
 
-**Cap what a lens reads, on its own axis.** Every lens gets the skill's
-directory. Beyond it: `anchors` gets the files the skill points at, `ownership`
-and `mirrors` get the shelf files and index rows the grep capture names,
-`contract` and `execution` get the skill alone, `sequence` gets the skill
-plus any ADR a spawn step's parameters rest on. A lens that cannot
-reach a verdict inside its boundary says so and returns the question rather
-than widening — reading a subsystem to settle one sentence is the refuter's
-budget to spend, on one finding.
-
-**Check that every lens returned, before merging.** Merge below opens on the
-*returned* findings, and nothing above counts them against what was launched —
-so a lens whose result never arrives leaves no trace of itself, and its area
-reads exactly like one that came back clean. Before merging, list the agents
-this batch launched and confirm each of them returned. A lens that launched and
-whose output did not arrive is an area nobody looked at: say so in the report
-like any other that was not run, and say there that this run's findings are
-that lens short. Keep its name for the run log below, which has a column for
-exactly this and for neither of the other two states. `refutations.tsv` is no
-help here — this run writes it after the refuters, below, so at the moment
-output goes missing it holds nothing of this run's.
+**What this run gives each lens, inside that boundary.** Every lens gets the
+skill's directory. Beyond it: `anchors` gets the files the skill points at,
+`ownership` and `mirrors` get the shelf files and index rows the grep capture
+names, `contract` and `execution` get the skill alone, `sequence` gets the skill
+plus any ADR a spawn step's parameters rest on.
 
 ## Merge
 
-Two lenses reading adjacent concerns report one defect twice. Group the
-returned findings by the **skill line** they name and by what they claim is
-wrong, before anything is refuted: findings that name the same defect become
-one, keeping the clearest statement, and noting every lens that raised it. One
-defect, one finding, whatever found it.
+**The key this review groups by** is the **skill line** a finding names and what
+it claims is wrong. The rest of the merge is the shelf's.
 
 An `ownership` and a `mirrors` finding about the same rule are **not** a
 duplicate — one says the rule lives in too many places, the other that a copy
@@ -295,8 +314,9 @@ written to whatever path the claim printed. It is a separate file family from th
 review's and the ADR review's on purpose: no run should be able to erase
 another kind of run's findings.
 
-Front matter first: **the skill this report is for** — `Skill: <name>`, the
-identity line — with its resolved directory; the commit `HEAD` was at; the
+Front matter first: **what this report is for** — the identity line the
+reference gives, `Skill: <name>` or `Document: <path>` — with its resolved
+directory or file; the commit `HEAD` was at; the
 commit and date the skill itself last moved; the time this report was written
 (`date +%H%M`, the same call the log's date comes from); **this run's
 tag**, minted by the store's recipe unless the caller gave one; and the
@@ -306,7 +326,7 @@ alone can tell which baseline the `tool` breaches rest on.
 Then one section per finding, numbered as on screen, each with:
 
 - its **id**, minted by the reference's rule from the front matter's commit,
-  this run's tag, the report's own time and the finding's number;
+  this run's tag, this run's round and the finding's number;
 - the **skill line or quoted sentence** it is about, and **what it was judged
   against**, in the form its axis takes: the file or command that contradicts
   it, the other passage of the same skill, the shelf file or index row with its
@@ -344,12 +364,13 @@ values: `path` is **the file the finding's own sentence sits in, repo-relative**
 — the skill's `SKILL.md`, or the companion beside it the finding is about, since
 the unit of review is the whole directory and a log that flattened every finding
 onto `SKILL.md` could not say which file drifted; a finding whose *evidence*
-sits elsewhere still takes the path of the sentence it is about; `kind` is
+sits elsewhere still takes the path of the sentence it is about; for a document
+it is that one file, every time; `kind` is
 `text / hole / sprawl / echo /
 conflict`; `claim` is always `no` — this skill writes no claim comments, and
 the column stays so the pools share one schema; `subject` is **the skill's
-name**; `round` is the round a looping caller named, or `-`; and `run_tag` is
-this run's tag.
+name**, or **the document's repo-relative path**; `round` is the round a
+looping caller named, or `-`; and `run_tag` is this run's tag.
 
 **The `lens` column is a closed vocabulary**: a section name from this skill's
 [`LENSES.md`](LENSES.md), the reserved name `tool` for a mechanical-pass

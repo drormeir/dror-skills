@@ -1,5 +1,10 @@
 # The finding id carries the run, because two runs share a tree
 
+> **Superseded on the id's shape by
+> [ADR 0050](0050-the-finding-id-carries-the-round.md): the minute is replaced
+> by the round, giving `<head>-<tag>-r<k>-<n>`. What this document decides about
+> the tag stands, and ADR 0050 carries it. Read the minute below as the round.**
+
 The id joining a report, the refutation log and the repair log is
 `<head>-<tag>-<hhmm>-<n>`: the short commit, the run's tag, the report's minute,
 and the finding's number in it. It was `<head>-<hhmm>-<n>` (ADR 0022), and before

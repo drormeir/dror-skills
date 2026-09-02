@@ -1,6 +1,6 @@
 ---
 name: dror-internal-shared
-description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the glossary, the map and the decision record. A shelf, read by the skills that run.
+description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the lens fan-out's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the glossary, the map and the decision record. A shelf, read by the skills that run.
 disable-model-invocation: true
 ---
 
@@ -23,6 +23,12 @@ that sharpening a rule sharpens every run that obeys it.
   refuses and names the holder, which is what a lock wants. It enforces the
   claim, so it is where its bound lives. The two references own when each mode is
   reached for.
+- [`LENS-FANOUT.md`](LENS-FANOUT.md) — which model a lens and a refuter run on,
+  the escape a lens takes when its read boundary cannot settle the question,
+  what a run does about a lens whose output never arrived and why it never asks
+  twice, and the merge. Read whole by the three reviews before they launch a
+  batch. Which lenses a review has, what each is given and what its merge groups
+  by stay in the review that owns them.
 - [`WORKTREE.md`](WORKTREE.md) — where an ADR's worktree goes and what it is
   called, the lock that keeps one ADR to one session, the three guards a project
   must satisfy before one may sit inside it, what is symlinked in, the preflight

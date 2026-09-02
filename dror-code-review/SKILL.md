@@ -237,32 +237,15 @@ wider diff makes each lens dig deeper, not multiply. Where more than five
 qualify, keep the ones whose concerns this diff most obviously raises and say in
 the report which were dropped, so a reader knows what was not looked at.
 
-**Lenses run on the cheap model, refuters on the strong one.** Pass
-`model: "sonnet"` to every lens agent and leave the refuters on the session's
-own. Spend the tokens where the judgement is: a weak lens proposal costs one
-refuter, a wrong refuter decision ships a false positive or buries a real bug.
+**The models, the read boundary, what came back and the merge are the shelf's**:
+`../dror-internal-shared/LENS-FANOUT.md` holds them in one copy for all three
+reviews. Read it whole before launching the batch. It is not restated here.
 
-**Cap what a lens reads.** The changed files, and the direct callers of what the
-diff touches. A lens that cannot reach a verdict inside that boundary says so
-and returns the question rather than widening — reading a subsystem to settle
-one finding is the refuter's budget to spend, on one finding, not every lens's
-on all of them.
+**What this run gives each lens, inside that boundary.** The changed files, and
+the direct callers of what the diff touches.
 
-**Check that every lens returned, before merging.** Merge opens on the
-*returned* findings, and nothing above counts them against what was launched —
-so a lens whose result never arrives leaves no trace of itself, and its area
-reads exactly like one that came back clean. List the agents this batch
-launched and confirm each of them returned. A lens that launched and whose
-output did not arrive is an area nobody looked at: say so in the report like any
-other that was not run, say there that this run's findings are that lens short,
-and keep its name for the run log below, which has a column for exactly this and
-for neither of the other two states.
-
-**Merge.** Two lenses looking at adjacent concerns report one defect twice.
-Group the returned findings by `file:line` and failure scenario before anything
-is refuted: findings that name the same defect become one, keeping the clearest
-statement of the scenario and noting every lens that raised it. One defect, one
-finding, whatever found it.
+**The key this review groups by**, in the merge the shelf describes, is the
+finding's `file:line` and its failure scenario.
 
 **Refute.** Hand each merged finding to one independent agent, all launched in
 parallel — one refuter per finding, however many survived the merge, with **no
