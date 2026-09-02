@@ -110,6 +110,15 @@ narrower than the ADR's rule rather than against it. It survives only where an
 open ticket would have somebody build the thing the ADR now forbids; say which
 of the two is stale, and, as with any conflict, do not choose.
 
+**`unticketed`** — the ADR decides something and no ticket asks for it. This is
+a claim about the **ticket set**, so neither the tree nor the document kills it,
+and the listing you were handed may be stale — re-read the bodies yourself
+(`gh issue view <n> --json title,body,state`). It dies three ways: a ticket does
+carry the work, under any wording, and you quote its number; a **closed** ticket
+carries it, which means the work was done and nothing is missing; or the ADR's
+sentence is a description rather than a rule, and so gives nobody anything to
+build. A survivor names the numbers you read and says none of them carries it.
+
 **`revisit`** — the decision is sound and what it predicted has not held. This
 is the kind most likely to be an opinion wearing a measurement's clothes, so it
 is held to the hardest standard in this file: **re-measure it yourself**. Run

@@ -47,7 +47,9 @@ Every finding carries:
   (the document is missing something it must carry), `breach` (the code breaks a
   rule the document states), `conflict` (two decisions disagree), `echo` (a copy
   of the rule elsewhere has drifted — only the `echoes` lens mints this one),
-  `revisit` (nothing is wrong and what the decision predicted has not held);
+  `unticketed` (the ADR decides something no ticket asks for — only the
+  `tickets` lens mints this one), `revisit` (nothing is wrong and what the
+  decision predicted has not held);
 - **what would make it true**: the corrected fact and the evidence for it. Not
   the replacement prose — writing that is the repair's job.
 
@@ -210,9 +212,12 @@ and the set was found before you were spawned. Do not shell out for more.
   threshold, owner, path, default or order. Quote both.
 - A criterion resting on a **name the ADR has since changed**: a module, a path,
   a command, a key. The ticket reads as current and cannot be followed.
-- A rule the ADR states that **no open ticket carries**, where the decision is
-  not yet built. That is the part that will quietly not happen; say which
-  ticket it belongs on.
+- A rule the ADR states that **no ticket carries**, where the decision is not
+  yet built. That is the part that will quietly not happen; say which ticket it
+  belongs on, or that it needs one of its own. The kind is `unticketed`. Read
+  the **closed** rows too before raising it: a closed
+  ticket carrying the rule means the work was done, which is the opposite
+  finding and no finding at all.
 - A ticket **whose subject the ADR no longer decides** — the section it came
   from was amended away, or another ADR took the question over.
 - A criterion the ADR's decision makes **impossible or already true**. Both mean
@@ -233,6 +238,10 @@ as `conflict` and name the ticket. Only where the ADR's own sentence is the
 stale one is it `text`. A ticket that is simply ahead of the document — it
 records a decision the ADR never took — is `conflict` too, and the user chooses
 which side wins.
+
+**An absence has no direction**, so that paragraph is not about it: it weighs
+two texts that both exist. A rule with no ticket at all is `unticketed`, and
+nothing about the document is wrong.
 
 Never judge a ticket against the code, and never say whether it is done: that is
 `dror-show-tickets`'s table and this lens has no business duplicating it. The

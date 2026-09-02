@@ -14,9 +14,13 @@ in one run.
 **It writes prose and nothing else.** No production code, no tests. A finding
 that says the *code* is wrong is not this run's to fix — it is named and handed
 on. Prose wherever it lives counts: the ADR, the conventions doc, the glossary,
-a README index, a module docstring. A docstring is edited only when a finding
-names it and only as text; the line below it is not this run's. That is the same split as everywhere in this chain, and it is what keeps a
-document repair from quietly changing behaviour to make a sentence true.
+a README index, a module docstring, and the body of a ticket. A docstring is
+edited only when a finding names it and only as text; the line below it is not
+this run's. A ticket body is the same writing with a different destination — it
+says what to build and builds none of it, and the code that answers it is
+somebody else's run. That is the same split as everywhere in this chain, and it
+is what keeps a document repair from quietly changing behaviour to make a
+sentence true.
 
 **Every finding is on the list.** The default is the whole report, or everything
 the findings file names. The user subtracts from it — "skip 3", "leave the
@@ -127,6 +131,14 @@ the document already said — is carried the same way and reported as not
 reproduced, with the evidence quoted. Neither is an error; both are the ordinary
 outcome of checking.
 
+An `unticketed` item is grounded **three ways, not two**. The ordinary two still
+hold: the decision is in the ADR, quoted, and the code does not do it. The third
+is what stops this run filing a duplicate — **search the tracker, open rows and
+closed alike, for a ticket that already carries the work**. A hit ends the item
+as not reproduced, with the number quoted. Which tracker, and the command that
+reads an issue, are the facts block's issue convention; a facts block that names
+none cannot answer, and the item carries that word to step 2.
+
 A `breach` item is grounded like the others and then **stops here**: confirm the
 site still violates the rule, quote it, and carry it as work for `dror-code-repair`.
 Nothing is written for it. A `revisit` item stops here too, and for the opposite
@@ -142,7 +154,9 @@ path of the store's `facts.md`, the ADR's path — paths, never their contents
 (ADR 0038) — and that it **writes nothing** — not the ADR, not
 source, not a scratch note in the tree. It returns the corrected fact with its
 evidence, or `ungrounded` with what could not be settled, or `not reproduced`
-with the passage of code that agrees with the document.
+with the passage of code that agrees with the document — or, for an
+`unticketed`, the number of the ticket that already carries the work. Filing
+one is nobody's here: an agent that writes nothing writes no issue either.
 
 Grouping is by item and not by file because every edit lands in one document,
 which is precisely why the *writing* below is not parallelized.
@@ -185,11 +199,38 @@ which an agent holding one sentence cannot make.
   Where the finding says a copy is **missing**, write it where the finding says
   it should be echoed, in that document's own form.
 
+- An **`unticketed`** item is written as a **ticket**, and the ADR is not
+  touched for it. The document already decides the thing; a line added to it
+  saying so would make missing work read as done. The draft carries four
+  things — a **title**, the **parent** it hangs from, **what to build**, and
+  **acceptance criteria** a later run can tick, each one checkable. Its wording
+  is the ADR's own, quoted where the rule is exact.
+
 The ADR's own metadata — its title, number and any status line the project keeps
 — is left alone unless a finding named it.
 
-Done when every grounded item has an edit behind it and every other item has a
-recorded reason it has none.
+### A ticket is written here and filed only on a yes
+
+Filing creates an issue other people see and other runs pick up. That is an
+outward action, and no report is a yes to it. So the tracker's create command
+runs **only when this run was handed a yes** — the invocation said to file, or
+named the parent to file under. Absent that, the draft is written and nothing
+is filed.
+
+**This run cannot ask mid-way and must not pretend to.** It is forked, so its
+text reaches nobody until it returns (ADR 0042); §Start from the written report
+holds what becomes of a question here — it goes back as the result and whoever
+invoked this puts it. So an unfiled draft goes into the report **whole**, with
+the question under it, and the yes reaches a later run as an argument.
+
+**Which tracker, and whether there is one, come from the facts block and from
+nowhere in this file** — its issue convention names the tracker, the command
+that reads an issue and how a child names its parent, which is what keeps this
+skill repo-agnostic. A facts block naming none has nothing to ask about: leave
+the draft in the report and say so.
+
+Done when every grounded item has an edit behind it — a drafted ticket for an
+`unticketed` one — and every other item has a recorded reason it has none.
 
 ## Step 3 — Check
 
@@ -229,6 +270,8 @@ the outcome carries the verdict.
   - `wrong` — the document was never right.
   - `unclear` — true but readable two ways.
   - `hole` — something a decision record must carry was missing.
+  - `unticketed` — the ADR decides something no ticket asks for. Not a `hole`:
+    the document is whole and the *work* is missing.
   - `echo` — the rule is right here and wrong in a copy of it elsewhere.
   - `breach` — the code violates the document's rule. The document is fine.
   - `conflict` — two decisions disagree.
@@ -241,9 +284,14 @@ the outcome carries the verdict.
     a line records what replaced it.
   - `Synchronised` — an `echo`: every copy the finding named now says the same
     thing. The note lists them, and a copy left alone says why.
-  - `Left — needs a decision` — repairing it would rewrite what was decided, or
-    it is a `revisit` and nothing is broken. Names the question the user has to
-    answer, and for a `revisit` both numbers.
+  - `Ticket drafted` — an `unticketed` written up. The note carries the **issue
+    number** where this run was told to file, and the **draft itself** — title,
+    parent, what to build, acceptance criteria — where it was not. The draft is
+    the work either way; the number only says it landed.
+  - `Left — needs a decision` — repairing it would rewrite what was decided; or
+    it is a `revisit` and nothing is broken; or it is an `unticketed` and
+    whether the work is wanted at all is the user's. Names the question the user
+    has to answer, and for a `revisit` both numbers.
   - `Left — ungrounded` — nothing in the tree settles it. Names what is missing.
   - `Not reproduced` — the tree agrees with the document. Nothing changed, and
     the evidence is quoted.
@@ -260,6 +308,10 @@ Never pair a finding with an outcome that contradicts it:
 - `conflict` and `revisit` end in `Left — needs a decision`, never in a
   `Corrected` — the first because somebody must choose, the second because there
   was never a wrong sentence to correct.
+- `unticketed` ends in `Ticket drafted`, `Not reproduced` or
+  `Left — needs a decision`, never in a `Corrected` — no sentence of the
+  document is wrong, so an edit to it is prose written to cover missing work,
+  and it makes the work look done to the next reader.
 - `echo` ends in `Synchronised`, never in a bare `Corrected (grounded)` — the
   outcome has to say that every copy was reached, since reaching one is the
   failure this finding exists to prevent.
@@ -275,8 +327,10 @@ Otherwise report the same rows as one line each, in the same order, reading
 `<item> — found: <kind> — outcome: <outcome> — evidence: <file:line or none> —
 <note>`.
 
-Below the rows: the other-document hits from step 3 and the docs-check output,
-if any. Then mark the report — **the file this run read**, never the store's
+Below the rows: the other-document hits from step 3, the docs-check output, and
+every unfiled ticket draft in full — title, parent, what to build, acceptance
+criteria — with the question under it. A draft abbreviated to a row is lost:
+this report is the only place it exists. Then mark the report — **the file this run read**, never the store's
 default name where they differ. Add to every finding this run handled a line
 saying what became of it, and leave the rest of the file as it stands, so a
 later run skips what is already done.
@@ -312,9 +366,13 @@ grounds in half a sentence, and name what was edited.
 
 - **yes** — prose was written, so there are now sentences no review has read.
   Strongest where an edit reached a document the findings never named, or where
-  an `echo` was synchronised across several copies.
+  an `echo` was synchronised across several copies. **A ticket this run filed
+  counts**: the ticket set is what the review's `tickets` lens reads, and it has
+  moved. A draft that was not filed does not — nothing outside this report has
+  changed.
 - **no** — nothing was written at all: every item was `Not reproduced`,
-  `Left — ungrounded`, `Left — needs a decision`, or handed to `dror-code-repair`. A
+  `Left — ungrounded`, `Left — needs a decision`, an unfiled `Ticket drafted`, or
+  handed to `dror-code-repair`. A
   run that changed no file leaves nothing for a further pass to read.
 - **the user's call** — the document moved only in the narrow way each finding
   described, and the run has nothing further to suggest.

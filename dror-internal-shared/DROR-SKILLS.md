@@ -38,18 +38,19 @@ it, and they are the same shape one level up: find, then fix, in two runs
 | `dror-adr-repair` | Bring the document, and every drifted copy of its rules, back in line with the tree | the ADR's prose, and any other document an `echo` names |
 | `dror-adr-review-repair` | Loop the two over one ADR until it converges, up to a cap of its own — lower than the loop below it, and with no round-1 floor | whatever its two steps write |
 
-They divide the findings by **kind**, because different hands fix them. Six
+They divide the findings by **kind**, because different hands fix them. Seven
 kinds, and this is where each one goes:
 
-- `text`, `hole` and `echo` go to `dror-adr-repair`. An `echo` names every copy
-  and is repaired in all of them at once — the copy that gets read is the one
-  that governs.
+- `text`, `hole`, `echo` and `unticketed` go to `dror-adr-repair`. An `echo`
+  names every copy and is repaired in all of them at once — the copy that gets
+  read is the one that governs. An `unticketed` is repaired with a ticket rather
+  than a sentence, and it is filed only on the user's yes.
 - `breach` goes to `dror-code-repair`.
 - `conflict` is nobody's until the user says which decision wins.
 - `revisit` is nobody's either, and whether to reopen is the user's.
 
 Neither skill writes code, and neither may rewrite what was decided — see
-ADR 0020. `dror-adr-review/LENSES.md` defines the six and its lenses mint them;
+ADR 0020. `dror-adr-review/LENSES.md` defines the seven and its lenses mint them;
 this paragraph owns only where each one goes.
 
 ## On the machinery itself

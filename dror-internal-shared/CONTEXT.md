@@ -84,7 +84,7 @@ condensed pointer, and that file owns the term.
 ## Findings about an ADR
 
 The kinds `dror-adr-review` returns — `text`, `hole`, `breach`, `conflict`,
-`revisit`, `echo` — minted and defined in its own `LENSES.md` preamble, the
+`revisit`, `echo`, `unticketed` — minted and defined in its own `LENSES.md` preamble, the
 text pasted into every lens agent's prompt; this entry is the condensed
 pointer, and that file owns them. They are separate words because each names a
 different hand as the one that fixes it, and

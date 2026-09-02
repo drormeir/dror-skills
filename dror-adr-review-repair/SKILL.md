@@ -45,12 +45,18 @@ context**, so the rounds judge one reading and not several.
 the lenses it chooses; a focus that mentioned two sentences does not excuse the
 rest. What it buys is a lens that knows why the question was asked.
 
+**A yes to file is optional and arrives with the invocation.** Filing an issue
+is an outward action, and this run is forked — it cannot ask for one mid-way
+(ADR 0042). So a caller that wants the missing work filed says so when it starts
+the loop, and every round's repair is told; a caller that says nothing gets
+drafts, and the drafts leave by §Present.
+
 **The whole loop is one piece of work.** However many rounds it takes, the run
 ends once, leaving the edited files for the user to read and commit.
 
 ## What this loop does not repair
 
-Three of the six kinds `dror-adr-review` reports are **not** this loop's work,
+Three of the seven kinds `dror-adr-review` reports are **not** this loop's work,
 and each leaves it by a different door. What each kind **means** is minted in
 `dror-adr-review/LENSES.md`'s preamble and is not restated here; what follows is
 only where each one goes:
@@ -62,6 +68,11 @@ only where each one goes:
   must choose.
 - A **`revisit`** goes to the user too. There is no sentence to correct, and
   whether to reopen is theirs.
+
+**`unticketed` is not a fourth door.** It goes to `dror-adr-repair` beside
+`text`, `hole` and `echo`: the missing work is written up as a ticket, and the
+step returns either an issue number or a draft. A draft reaches the user only to
+be filed — never as a question about what was decided.
 
 **None of the three ever makes a round owed.** A round that returned nothing else
 has repaired nothing and will find the same three again, so a loop that rounded
@@ -132,7 +143,8 @@ prints, and nothing else: **from the review** — the report path it wrote, how
 many survivors, their kinds, which lenses it dropped, and its own one-line
 verdict on **whether a repair should follow**; **from the repair** — one line per
 item (what was found, the outcome), which documents it edited, the breaches it
-handed on with their `file:line`, and its own one-line answer to **whether
+handed on with their `file:line`, the tickets it filed by number and the ones it
+left drafted, in full, and its own one-line answer to **whether
 another review is owed**. From either, one word if a log under
 `~/.claude/dror-skills/` could not be written — neither skill blocks on that, so
 an agent that says nothing is taken to have written its lines.
@@ -246,8 +258,11 @@ carries what the count cannot, and a run that repairs against the review's
 Invoke the `dror-adr-repair` skill:
 
 > Repair the findings in `<the report file step 1 named>`: every `text`, every
-> `hole` and every `echo`, each corrected sentence grounded in the tree as it
-> stands, each echo synchronised in every copy it names. Change no decision. For
+> `hole`, every `echo` and every `unticketed`, each corrected sentence grounded
+> in the tree as it stands, each echo synchronised in every copy it names, each
+> unticketed written up as a ticket. Change no decision.
+> `<Where this run was told to file: file the drafted tickets. Otherwise: leave
+> every ticket drafted — you have no yes to file on.>` For
 > context, why this document is being checked now: `<the focus paragraph>`. The
 > other reports in that directory belong to other runs — do not read or touch
 > them. `<Where the concurrency check saw a neighbour: another run wrote a report
@@ -287,6 +302,11 @@ Weigh what happened, in this order:
   *before* the repair touched it. An `echo` synchronised across several documents
   is the strongest form of it, since the copies were never in the reviewed file
   at all.
+- **What the repair filed.** A ticket that landed is repair as much as a
+  corrected sentence is, and it makes a round owed: the ticket set is what the
+  next review's `tickets` lens reads against the document, and it has moved
+  since the last one read it. A ticket left **drafted** is not — nothing outside
+  the report changed — and it leaves by §Present instead.
 - **What is left that a review cannot settle.** `ungrounded` items, conflicts and
   revisits are questions for the user, and another round asks them again word for
   word.
@@ -304,8 +324,9 @@ from the first.
 
 Answer in **one of three words**, with the grounds in a sentence:
 
-- **owed** — the repair wrote prose that nothing has reviewed. Name the
-  documents. **Under the cap, take the round**: say so and go back to step 1.
+- **owed** — the repair wrote prose that nothing has reviewed, or filed a
+  ticket. Name the documents and the issue numbers. **Under the cap, take the
+  round**: say so and go back to step 1.
 - **optional** — the edits were narrow and local, or the only thing left waits on
   the user. Say what a round would look at, and **stop**: an optional round is
   the user's to ask for.
@@ -362,10 +383,14 @@ repairs and the part a reader will otherwise lose:
 - the **breaches**, each with its `file:line`, as work for `/dror-code-repair`;
 - the **conflicts** and **revisits**, each as the question the user has to
   answer, with the passages or the two numbers the review carried;
-- the **ungrounded** items, each with what could not be settled.
+- the **ungrounded** items, each with what could not be settled;
+- the **ticket drafts** nothing filed, each in full — title, parent, what to
+  build, acceptance criteria — with the one question they carry: file this, or
+  not. They exist nowhere but the round's report until somebody answers.
 
 Then say the document is left uncommitted, name every file this run edited — the
-ADR, and any copy an `echo` reached — and name what was written outside it: this
+ADR, and any copy an `echo` reached — and name what was written outside it: every ticket it
+filed, by number, this
 run's report files, one per round, and the logs under `~/.claude/dror-skills/` that every round
 appends to — `refutations.tsv` and `runs.tsv` from each review, `repairs.tsv`
 from each repair.

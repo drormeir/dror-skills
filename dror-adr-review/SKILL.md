@@ -29,7 +29,8 @@ five **axes**, each admitting a different kind of evidence, set out in
   differently, or a copy of this rule in the conventions doc or the glossary
   that has drifted from it.
 - **Against its tickets** — a criterion that no longer matches the rule, which
-  is a rule about to be broken by somebody following instructions correctly.
+  is a rule about to be broken by somebody following instructions correctly, or
+  a rule with no ticket at all, which is a decision about to quietly not happen.
 - **Against the reader** — a sentence that is true and gets acted on wrongly,
   which nothing downstream ever catches.
 
@@ -196,8 +197,8 @@ Survivors are the report.
 
 ## The kinds
 
-Every survivor carries exactly one. The six values — `text`, `hole`, `breach`,
-`conflict`, `echo`, `revisit` — and what each **means** are minted in
+Every survivor carries exactly one. The seven values — `text`, `hole`, `breach`,
+`conflict`, `echo`, `unticketed`, `revisit` — and what each **means** are minted in
 [`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens agent's
 prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section by
 section. Neither is restated here.
@@ -205,10 +206,12 @@ section. Neither is restated here.
 What this file adds is the part neither carries: the kind is what decides
 **whose work it is next**.
 
-- `text`, `hole` and `echo` go to `dror-adr-repair`. A `hole` only where the
-  missing sentence can be **grounded** — an alternative nobody recorded is not
-  one this skill invents; an `echo` in **every** copy the finding names, at
-  once.
+- `text`, `hole`, `echo` and `unticketed` go to `dror-adr-repair`. A `hole` only
+  where the missing sentence can be **grounded** — an alternative nobody
+  recorded is not one this skill invents; an `echo` in **every** copy the
+  finding names, at once. An `unticketed` is the one of the four that ends in no
+  edited sentence: what the repair writes for it is a ticket body, filed only on
+  the user's yes.
 - `breach` goes to `dror-code-repair` untouched. The document is fine; this is a
   bug report that happens to have been found by reading a document, and naming
   it here and fixing it there is the same split as everywhere else in this
@@ -230,8 +233,8 @@ it. It is not restated here.
 
 Number the survivors: `conflict` first — it is the kind that blocks
 somebody — then `breach` in the order of the damage a violation does, then
-`text`, then `hole`, then `echo`, then `revisit` last, which is the only kind that asks for
-nothing to be fixed. Save them under the name the reference gives — claimed
+`text`, then `hole`, then `unticketed`, then `echo`, then `revisit` last, which
+is the only kind that asks for nothing to be fixed. Save them under the name the reference gives — claimed
 first where that name came from a caller, as the reference says, and written to
 whatever path the claim printed. It is a separate file from the code review's on purpose: a code
 review and an ADR review are started for different reasons and neither should be
@@ -265,7 +268,11 @@ Then one section per finding, numbered as on screen, each with:
   **what would make it true**: the corrected fact, with the evidence the refuter
   stood on, and for an `echo` the `file:line` of **every** copy it names. Not the
   replacement prose; that is the repair's writing, and a review that drafts it
-  has done the repair badly and in the wrong run.
+  has done the repair badly and in the wrong run;
+- for an `unticketed` — **what is missing**: the ADR's rule quoted, the ticket
+  numbers the refuter read and found not to carry it, and whether it belongs on
+  one of them or needs a ticket of its own. Not the ticket body; drafting that is
+  the repair's, for the same reason.
 
 **A finding is about fifteen lines.** This file is read start to finish by a
 repair run and by you tomorrow, so it carries what is needed to act and not the
@@ -291,7 +298,7 @@ One tab-separated line per finding — the columns and their order are the store
 reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
 values: `path` is **the ADR's repo-relative path**, which is what this run
 reviewed, even for a `breach` whose evidence sits in code; `kind` is `text /
-hole / breach / conflict / revisit / echo`; `claim` is always `no` — this skill
+hole / breach / conflict / revisit / echo / unticketed`; `claim` is always `no` — this skill
 writes no claim comments, and the column stays so the pools share one
 schema; `subject` is **the ADR's number**, the same one the identity line
 carries; `round` is the round a looping caller named, or `-`; and `run_tag` is
@@ -356,7 +363,7 @@ none, and the log exists to give a lens its denominator.
 
 Show the same numbered list, in that order, each line naming its kind. Under it,
 say in one sentence which findings are this chain's next work and whose: the
-`text`, `hole` and `echo` ones go to `dror-adr-repair`, the `breach` ones to
+`text`, `hole`, `echo` and `unticketed` ones go to `dror-adr-repair`, the `breach` ones to
 `dror-code-repair`, and a `conflict` or a `revisit` waits for the user — the first
 because somebody must choose, the second because nothing is broken.
 

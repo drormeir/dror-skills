@@ -32,13 +32,20 @@ conventions doc, the glossary, a README index, a docstring at the site — becau
 the ADR is rarely the copy that governs behaviour. That is still "text only": no
 line below a docstring is touched.
 
-> **Extended since.** The list above is four kinds; there are six. `echo` was
+> **Extended since.** The list above is four kinds; there are seven. `echo` was
 > added later and is the named form of the paragraph immediately above it — a
 > rule the ADR states correctly whose copy elsewhere has drifted. It is the
 > document's fault and goes to `dror-adr-repair`, which synchronises every copy
 > the finding names in one pass. The split this document draws is unchanged;
-> `echo` is on the `text` and `hole` side of it. The current routing for all six
-> is in [`DROR-SKILLS.md`](../../DROR-SKILLS.md).
+> `echo` is on the `text` and `hole` side of it.
+>
+> `unticketed` was added later still, and it widens "writes prose and nothing
+> else" by exactly one destination. Nothing in the document is wrong — the ADR
+> decides something no ticket asks for — so there is no sentence to correct, and
+> the repair writes a **ticket body** instead: prose, saying what to build and
+> building none of it. Filing it creates an issue other people act on, so it is
+> filed only on the user's yes; without one the draft is the outcome. The
+> current routing for all seven is in [`DROR-SKILLS.md`](../../DROR-SKILLS.md).
 
 ## The decision itself is not repairable
 
