@@ -20,6 +20,7 @@
   "skills": [
     "./dror-show-tickets",
     "./dror-implement-adr",
+    "./dror-adr-resume",
     "./dror-implement-ticket",
     "./dror-prove",
     "./dror-code-review",
@@ -29,6 +30,10 @@
     "./dror-adr-review",
     "./dror-adr-repair",
     "./dror-adr-review-repair",
+    "./dror-skill-vendor-rules",
+    "./dror-skill-review",
+    "./dror-skill-repair",
+    "./dror-skill-review-repair",
     "./dror-internal-project-facts",
     "./dror-internal-shared",
     "./dror-guide",

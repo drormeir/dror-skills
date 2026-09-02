@@ -27,6 +27,7 @@ against, what a review judges, and what a closed ticket means.
 |---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? |
 | `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own |
+| `dror-adr-resume` | Whose is the lock an interrupted drain left, and start the drain again where it is nobody's |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order |
 | `dror-prove` | Does every criterion have a test that bites? |
 | `dror-code-review` | What is wrong with the unpushed work? |

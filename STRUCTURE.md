@@ -1,6 +1,6 @@
 # Structure
 
-Eighteen skills over one way of working, and the shelf they read, listed here
+Twenty-one skills over one way of working, and the shelf they read, listed here
 with them. Every description below is the skill's
 own `description:` line, verbatim, minus its "Use when" trigger clause. This
 file owns the "Reach for it when" voice — the human's index — and nothing else:
@@ -97,6 +97,7 @@ flowchart TD
 
     subgraph build ["STAGE 2 · build it — one ticket at a time"]
         ST[dror-show-tickets] --> IA[dror-implement-adr]
+        RES[dror-adr-resume] -->|"clears the lock an<br/>interrupted drain left"| IA
         IA -->|"one ticket at a time,<br/>each in an agent of its own"| IT[dror-implement-ticket]
         ST -->|one ticket by hand| IT
 
@@ -181,6 +182,7 @@ the details differ by document type.
 |---|---|---|---|
 | `dror-show-tickets` | You are deciding what to do next, or want to know whether an ADR is finished. Read it before and after the rest. | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
 | `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. It is forked, so it says nothing until it finishes: watch the desktop notification it fires per ticket, or `tail -f` its progress log. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one ticket at a time through `dror-implement-ticket`, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. | a worktree at `.claude/adr-wip/adr-<N>` (removed on a clean finish), a branch `adr-<N>`, a push and a close per ticket, the spec issue's close on a clean finish, a drain state file and a progress log |
+| `dror-adr-resume` | A drain was interrupted and the next one says the ADR is locked. It is also the safe way to start a drain, since an absent lock costs it one line. | Clear the drain lock an interrupted `dror-implement-adr` left behind, then start the drain again on the same ADR — the holder identified before anything is removed, and a live one left alone. | nothing of its own — it removes the lock, then whatever the drain writes |
 | `dror-implement-ticket` | One ticket, start to closed, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closed — implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes |
 | `dror-code-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding tool-proven or refuted before it reaches you. Reports the survivors and changes no behaviour. | a review report, its per-criterion verdicts inside |
@@ -238,7 +240,8 @@ only on a miss; `shared` is a shelf of documents those skills read as they work.
 
 Every skill in the chain runs in a context of its own: its frontmatter forks it,
 so the conversation you invoke it from never reaches it and its working context
-never reaches you — only its closing summary does. Two habits keep the bill
+never reaches you — only its closing summary does. `dror-adr-resume` is the one
+exception, and its own file says why. Two habits keep the bill
 lower still. Invoke a chain skill right after `/clear`, since the session that
 receives the summary pays for whatever it already holds on every turn until
 then. And for a run nobody is watching — a drain, an overnight loop — start it
@@ -286,7 +289,9 @@ One writer per direction, because a tick is a claim about evidence:
   They name no path and no tracker; whatever a repo declares reaches them
   through the facts.
 - **Convention-bound** — `dror-show-tickets` and `dror-implement-adr` assume
-  GitHub issues reachable by `gh`; `dror-show-tickets`, `dror-implement-adr`,
+  GitHub issues reachable by `gh`, and `dror-adr-resume` inherits that by
+  invoking the drain, plus the lock path the shelf's `WORKTREE.md` fixes;
+  `dror-show-tickets`, `dror-implement-adr`,
   `dror-adr-review` and `dror-adr-review-repair` assume ADRs in a conventional
   decision directory, resolved by the shelf's `ADR-FILE.md`; `dror-skill-review`
   assumes skills as directories holding a `SKILL.md`, resolved by the rule its

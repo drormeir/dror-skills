@@ -152,7 +152,9 @@ and that file owns it.
   session draining that ADR. Claimed before the worktree is created or adopted,
   released on every ending. A second session on the same ADR loses it and stops.
 - **Stale lock** — an ADR lock whose pid no agent process wears any more: the
-  mark of a killed session. It is reported and never taken over on its own.
+  mark of a killed session. No run takes one over on its own; `dror-adr-resume`
+  is the user asking for it by name, and the only thing that removes a lock it
+  did not take.
 - **Guard** — one condition a project must satisfy before a worktree may sit
   inside it: `.claude/` gitignored, pytest's `norecursedirs` naming it, mypy's
   `exclude` covering it. A guard that does not hold stops the run.

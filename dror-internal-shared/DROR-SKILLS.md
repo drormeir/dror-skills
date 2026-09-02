@@ -4,7 +4,7 @@ The agent-facing map. It owns the tier lists, the checkbox rules and the
 finding-kind routing; the glossary owns the terms, and each skill's own file its
 procedure.
 
-Eighteen skills over one way of working: an **ADR** states a decision, a **spec
+Twenty-one skills over one way of working: an **ADR** states a decision, a **spec
 issue** turns it into work, **child tickets** carry the pieces, and each ticket's
 **acceptance criteria** are checkboxes in its body. The criteria are the contract
 — they are what a test is written against, what a review judges, and what a
@@ -19,6 +19,7 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 |---|---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? | nothing |
 | `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | `adr-<N>.lock` (released on every ending), a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, the spec issue's close on a clean finish, `drain-<ADR>.json`, `drain-<ADR>.log` |
+| `dror-adr-resume` | Whose is the lock on ADR N, and start the drain again where it is nobody's | nothing of its own — it removes `adr-<N>.lock`, then whatever the drain writes |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
 | `dror-code-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
@@ -85,7 +86,10 @@ frontmatter (ADR 0036), so each runs in
 an agent of its own whether the user invoked it or another skill did: what
 reaches it is its own file, the facts its first line injects, and its
 arguments, never the conversation that invoked it, and what comes back is its
-closing summary. Beneath those, `dror-code-review` and `dror-adr-review` spawn a lens
+closing summary. **`dror-adr-resume` is the one skill above the chain that does
+not fork**, so that the drain it invokes lands at the depth a drain the user
+typed lands at; its own file holds the reason and ADR 0043 the cap behind it.
+Beneath those, `dror-code-review` and `dror-adr-review` spawn a lens
 agent per lens with a refuter under each, `dror-code-repair` fans out per test
 file and `dror-adr-repair` per item; every such agent is given paths and never
 pasted text (ADR 0038). Each file owns its own arrangement and lists what its
@@ -134,7 +138,9 @@ Two tiers, and each skill says which it is in (ADR 0011):
   `dror-code-review`'s scope is the unpushed work and `dror-implement-ticket`'s
   step 0 counts commits, and both say so.
 - **Convention-bound** — `dror-implement-adr`, which inherits the binding from
-  `dror-show-tickets` by using its vocabulary, `dror-show-tickets`, which assumes GitHub issues
+  `dror-show-tickets` by using its vocabulary, `dror-adr-resume`, which inherits
+  it from `dror-implement-adr` by taking an ADR by number and reads the lock
+  path `WORKTREE.md` fixes, `dror-show-tickets`, which assumes GitHub issues
   reachable by `gh` and ADRs in a conventional decision directory, `dror-adr-review`,
   which assumes the second of those, `dror-adr-review-repair`, which inherits
   it from `dror-adr-review` by taking an ADR by number, `dror-skill-review`,

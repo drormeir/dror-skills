@@ -70,6 +70,12 @@ and only they know whether that session is really gone.
 rm <the user's checkout>/.claude/adr-wip/adr-<N>.lock
 ```
 
+**`dror-adr-resume` is that call made by name.** A user who invokes it on an ADR
+has said the holder is gone; the skill identifies the holder before removing
+anything, refuses a live one and a lock claimed on another host, and then starts
+the drain. It is where the rule above is delegated, and the only thing in this
+chain that removes a lock it did not take.
+
 **Release it wherever the run ends**, and that is the same command — a clean
 finish, a stop for the user, a failed guard, a failed preflight. There is no
 release mode and no unlock script, because a release and a takeover are the same
