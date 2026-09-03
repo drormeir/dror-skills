@@ -229,6 +229,13 @@ These words are the same in every `dror-*` run.
   lenses run and the lenses dropped. The denominator the refutation log cannot
   hold, since a lens that finds nothing writes no finding. It also carries the
   run's `elapsed_s`, the only record of what a review costs in wall-clock.
+- **Hand-back log** — `~/.claude/dror-skills/handbacks.tsv`: one line per
+  criterion `dror-prove` hands back to the user instead of ticking, carrying the
+  command its Note offered and the recommendation it made. How often the chain
+  stops, and how much of the work behind each stop was already done.
+- **Prove evidence** — `prove-evidence-<ticket>.md` in the store: the checks
+  behind a run's hand-backs, where they ran to more than a couple of commands.
+  One file per ticket, appended to across criteria.
 - **Repair log** — `~/.claude/dror-skills/repairs.tsv`: one line per finding a repair
   handled, appended by `dror-code-repair`, `dror-adr-repair` and
   `dror-skill-repair`, keyed by the

@@ -206,6 +206,17 @@ which an agent holding one sentence cannot make.
   **acceptance criteria** a later run can tick, each one checkable. Its wording
   is the ADR's own, quoted where the rule is exact.
 
+  **A criterion states a property of the tree, where one can be written.** "The
+  three keys are gone and nothing writes them" is a property of the tree; "no
+  test was deleted to make the bar green" is a property of the diff and of the
+  author's conduct, which no test in that tree can hold and which therefore ends
+  as a hand check somebody has to judge. That guard is real and worth keeping —
+  put it in `## What to build`, where the review reads it, rather than in a box
+  that can only ever be ticked by hand. Where the property genuinely is about a
+  transition — a value moved once, an old key read and never written again — the
+  criterion says so and stays; the rule is a preference for the testable
+  wording, not a ban on the others.
+
 The ADR's own metadata — its title, number and any status line the project keeps
 — is left alone unless a finding named it.
 

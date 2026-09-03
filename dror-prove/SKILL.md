@@ -171,7 +171,8 @@ State is one of:
 - **`partial`** — the test proves part of the criterion and no test can prove
   the rest today (a clause naming another ticket's component, a platform this
   machine is not). Name the unproven clause in the Note. It does not tick:
-  half a criterion is not the criterion.
+  half a criterion is not the criterion. Where the unproven clause was checked
+  by hand all the same, §Notes somebody else must act on applies to that half.
 - **`already covered`** — an existing test holds it, named, and was seen green
   this run. Ticks like `green`.
 - **`gate`** — the criterion **is** the project's own verification gate: "the
@@ -192,6 +193,7 @@ State is one of:
   would cost more than it proves, never for one a test would hold plainly. The
   Note carries what was checked, how, and what a real test would have to do —
   and a `noted` never ticks, because a check nobody can re-run is not a proof.
+  §Notes somebody else must act on says what that Note must hold.
 - **`not testable`** — with the reason. No test written. It is for a criterion
   nothing here *can* judge — another ticket's work, a platform this machine is
   not, a process — never for one that is merely not held by a test of its own.
@@ -222,6 +224,59 @@ earns a single run of its own only where neither is true. Then one closing
 line — **how many criteria of N are ticked, and what the ticket needs before
 the rest can be**. Never report a count you did not run.
 
+### Notes somebody else must act on
+
+A `noted`, and the hand-checked half of a `partial`, end with a person deciding
+what this run would not. That person is the reader of the Note, so the Note is
+sized for **their** decision and not for this run's confidence. The question to
+ask before writing it is *can they act on this without repeating my work* —
+never *am I satisfied*. The second question is cheaper and is the one that
+produces a hand-back nobody can use.
+
+Three things follow, and a Note missing any of them is not finished:
+
+- **The check is a command, not a claim.** Write what a reader can paste and
+  run, with what it printed. `git diff <base>..HEAD -- '*test*' | grep '^-def
+  test_'` and its two lines of output is a check. "Both are renames asserting
+  the same invariant" is a claim about what somebody saw, and a reader who
+  wants to believe it has to redo the work. Where no single command covers it,
+  write the commands that do, in order.
+- **The check is exhaustive over something named.** Say what the population
+  was and how it was enumerated — every removed test in the diff, every file
+  naming the key, every caller of the function. A check over an unnamed
+  population is a sample, whatever its size, and a sample cannot settle a
+  criterion that says *every* or *none*.
+- **The Note ends in a recommendation**: `met`, `not met`, or `cannot say` with
+  what would settle it. This is a judgement, not a tick, and the box does not
+  move — but a reader confirming a conclusion is doing a different job from a
+  reader starting an investigation, and only the first is what a hand-back is
+  for.
+
+**Gather it when the verdict is reached, not when the report is written.** The
+evidence for a criterion settled in Step 4 is cheapest there, while its tree,
+its base and its output are on screen. Deferred to Step 6 it is assembled at
+the end of a long run, from memory, by a caller with one step left — which is
+exactly when a claim gets written in place of a command.
+
+Where the check ran more than a couple of commands, or printed more than a
+screen, write it to **`<repo>/.claude/dror-skills/prove-evidence-<ticket>.md`**
+in the store and name that path in the Note. Tab-separated where the check is a
+table — a file-by-file sweep, a before-and-after count — prose where it is a
+transcript. One file per ticket, appended to across criteria, by the store's own
+naming rule.
+
+In the report, a `noted` or a `partial` whose Note holds all three, and whose
+recommendation is `met`, reads **`<verdict> — ready to tick`**. Those words are
+for the reader: they say the work behind the box is done and only the judgement
+is theirs. They tick nothing here — Step 7 is unchanged, and no verdict but
+`green`, `already covered` and a made `gate` moves a box.
+
+Then append one line to the **hand-back log** for every criterion this run hands
+back — a `noted`, a `partial`, a `criterion wrong`, a `question open` — by
+`dror-internal-shared/REPORT-STORE.md`'s column list. It is the record of how
+often this skill asks the user for something, and of how many of those asks
+arrived ready to act on.
+
 ## Step 7 — tick what went green
 
 This skill holds the criterion-to-test mapping, so this skill owns the boxes
@@ -239,6 +294,12 @@ and a criterion the code already satisfies is met. `red`, `unproven`, `partial`,
 body
 back in one edit, and never untick a box this run did not judge — another run's
 verdict is not this run's to withdraw.
+
+**`ready to tick` is not a tick.** A `noted` that did its work well reads that
+way in the report and still leaves its box alone: the words describe how
+complete the hand-back is, not what the evidence proved. A run that ticks on
+them has certified its own hand check, which is the one thing ADR 0004 exists
+to prevent.
 
 Say how many boxes moved. A tests-only run that ended at red moves none, which
 is the ordinary case and not a failure.

@@ -178,7 +178,7 @@ later reader (ADR 0025, ADR 0050).
 
 ## The logs
 
-Three tab-separated files under `~/.claude/dror-skills/`, outside any repo,
+Four tab-separated files under `~/.claude/dror-skills/`, outside any repo,
 because the questions they answer are about the lenses and the skills rather than
 about a project, and one repo's runs are too few to read anything into (ADR
 0009):
@@ -187,8 +187,9 @@ about a project, and one repo's runs are too few to read anything into (ADR
   unmerged `tool` findings (ADR 0045).
 - `runs.tsv` — one line per review run.
 - `repairs.tsv` — one line per finding a repair handled.
+- `handbacks.tsv` — one line per criterion a prove hands back to the user.
 
-**Every one of the three has several writers**, so all three column lists live
+**The first three have several writers each**, so all their column lists live
 here, once. A skill that appends to one of these files points at this section
 and does not restate the list; what it does say in its own file is what its own
 **values** are, which is the part that genuinely differs between the writers.
@@ -277,7 +278,24 @@ ruled out or not reproduced: `files_edited` and `production` describe the *run*,
 not the finding, and a per-finding attribution would claim a precision no repair
 has, since a shared helper is edited for several findings at once.
 
-What follows holds for all three.
+**`handbacks.tsv`** — written by `dror-prove` alone, one line per criterion it
+hands back rather than ticks:
+
+`date` (ISO) · `repo` (the directory name) · `head` (short commit) · `subject`
+(the ticket number) · `criterion` (its number in the ticket, by Step 1's
+numbering) · `state` (the verdict word: `noted`, `partial`, `criterion wrong`,
+`question open`) · `check` (the command the Note carries, under 120 characters
+and no tabs, or `-` where the Note carries none) · `recommendation` (`met`,
+`not met`, `cannot say`, or `-`) · `evidence` (the store path the Note names, or
+`-`) · `run_tag` (this run's tag).
+
+It answers one question nothing else can: how often this chain stops for the
+user, and how many of those stops arrived with the work behind them done. A row
+whose `check` is `-` and whose `recommendation` is `-` is a hand-back the user
+had to investigate themselves, and a run of them is the signal that the Note
+rules are being written past.
+
+What follows holds for all four.
 
 **Create the directory and the file with its header row when they are not
 there** — the first run's ordinary case, since nothing else creates that

@@ -13,7 +13,7 @@ that sharpening a rule sharpens every run that obeys it.
   proved to bite. Read whole by `dror-prove` and `dror-code-repair`.
 - [`REPORT-STORE.md`](REPORT-STORE.md) — which name a report takes, the identity
   line that makes the name checkable, the finding id, and the columns and
-  discipline of all three logs. Read whole by the reviews that write a report,
+  discipline of all four logs. Read whole by the reviews that write a report,
   the repairs that read one, the loops that name the path both ends use, and
   `dror-review-retrospective`, which joins the logs by finding id. It shares a
   script with WORKTREE.md below: [`claim-path.sh`](claim-path.sh) takes a

@@ -538,8 +538,10 @@ can tell which layer said what.
 Then one line for what the run wrote **outside the tree**: the boxes
 `dror-prove` ticked and the loop's repairs unticked. Those are the only marks
 this chain leaves on the ticket — `dror-code-review` writes its per-criterion verdicts
-into its own report and posts nothing. The three logs under
-`~/.claude/dror-skills/` carry a line per round for a later retrospective. Then
+into its own report and posts nothing. The four logs under
+`~/.claude/dror-skills/` carry a line per round for a later retrospective, the
+fourth being `handbacks.tsv` — a line per criterion the prove handed back rather
+than ticked, and the record of how often this chain stops for the user. Then
 the commit: its short sha, its subject, and the branch it was pushed to — or, on
 the default branch, a repo with no remote, or a round still owed, that it is
 unpushed and why. Then **the counted run**, on one line the next ticket's step 0

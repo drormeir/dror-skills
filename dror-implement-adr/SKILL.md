@@ -811,6 +811,14 @@ read, and which the user pushes after running it — write the state file, then 
 the choice is. Then stop, and wait. Resuming is a fresh run of this skill; the
 state file makes it cheap.
 
+**A stop on a criterion carries its check up with it.** Where the ticket run
+hands back a `noted` or a `partial`, `dror-prove` owes that criterion a
+re-runnable command, a named population and a recommendation — its §Notes
+somebody else must act on. Put the command and the recommendation in those three
+lines, and name the evidence file where there is one. A stop that says only
+*this one is yours* hands the user a question with the work still in it, which
+is the delegation running backwards.
+
 "Whatever this run wrote" is the whole of it, and on two of the stop causes that
 is **nothing**. A ticket refused because the tree was already dirty wrote no
 line, and committing what it found would put another ticket's work under this
