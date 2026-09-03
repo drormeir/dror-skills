@@ -183,9 +183,46 @@ which an agent holding one sentence cannot make.
 - A **`hole`** is filled with the grounded sentence and no more. Where filling
   it means recording an alternative or a consequence, it is written as what it
   is: a fact recovered now, not a claim about what the authors weighed then.
-- **Fix what the fix makes untrue.** A corrected name that appears three times
-  in the document is corrected three times; a link that the correction breaks is
-  repaired. Grep the document for the old spelling before moving on.
+- **Fix what the fix makes untrue, inside the document and outside it.** A
+  corrected name that appears three times in the document is corrected three
+  times; a link that the correction breaks is repaired. Grep the document for the
+  old spelling before moving on.
+
+  **Then grep the copies**, for every rule this run stated for the first time or
+  restated differently — the conventions doc, the glossary, the module docstring
+  at the site, the README index, the developer documents the ADR names. A rule
+  written here for the first time has no copy that carries it, and a rule
+  restated here leaves every copy saying the old thing. **No `echo` finding can
+  have named these**: the copies agreed with the document when the review ran,
+  and this run is what made them disagree. Synchronise them in their own
+  registers, by the `echo` bullet's rules, and name each one in the report.
+
+  **Then the tickets, on the same terms.** A ticket's acceptance criteria are the
+  copy of the decision that gets *implemented* — whoever builds the thing reads
+  the criteria and not the ADR behind them — so a rule this run rewrote leaves
+  every criterion resting on the old wording about to be built wrong. Read the
+  ADR's ticket set, and where **this run's own writing** made a criterion or a
+  body stale, correct it: the smallest edit that makes it match, in the ticket's
+  own voice, quoting the ADR's words where the rule is exact. A ticked criterion
+  is corrected the same way and the tick is left alone — it records what was
+  built, and this run does not know whether the build still satisfies it; say so
+  beside the edit.
+
+  **This one edit needs no yes**, and it is the single exception to §A ticket is
+  written here and filed only on a yes. Filing creates an issue; this changes an
+  issue that already exists, to say what the document it was cut from now says.
+  Leaving it stale is not the safe half of the choice — it is the one that ends
+  in wrong code.
+
+  Which tracker, and the command that edits an issue, come from the facts block's
+  issue convention. **A facts block naming no tracker cannot do this**: name the
+  criteria that went stale, in the report, and edit nothing.
+
+  This is not a licence to sweep, in the documents or the tracker. It reaches
+  **only what this run's own writing made untrue** — step 3's third search still
+  governs every other document, and a ticket that disagreed with the ADR
+  *before* this run touched it is a `conflict` for the user, exactly as the
+  review's `tickets` lens minted it.
 - **Never delete a decision.** Superseded text is marked as superseded, with
   what replaced it. Deleting it destroys the only record that the question was
   ever settled the other way.
@@ -228,6 +265,12 @@ runs **only when this run was handed a yes** — the invocation said to file, or
 named the parent to file under. Absent that, the draft is written and nothing
 is filed.
 
+**This governs creating, not correcting.** Step 2's sweep edits an existing
+ticket whose criteria this run's own writing made stale, and it needs no yes: the
+issue is already there and already read, and the choice is not whether to add
+something to the tracker but whether to leave a criterion saying what the ADR no
+longer says. Nothing else about an existing ticket is this run's to touch.
+
 **This run cannot ask mid-way and must not pretend to.** It is forked, so its
 text reaches nobody until it returns (ADR 0042); §Start from the written report
 holds what becomes of a question here — it goes back as the result and whoever
@@ -256,7 +299,9 @@ The document has no suite, so the check is a reading and two searches:
    link is the defect this run was called to fix.
 3. **Search the tree for the old spelling** of anything renamed, in `CLAUDE.md`,
    `CONTEXT.md`, the README index and the other ADRs. A hit a finding named is
-   already repaired by then, under its `echo` item. A hit **no finding named** is
+   already repaired by then, under its `echo` item, and so is one this run's own
+   writing made stale — step 2's "Fix what the fix makes untrue" reached that one.
+   A hit **no finding named and this run did not cause** is
    the review's miss, not this run's licence: name it in the report and leave it,
    because an edit nobody refuted is exactly what this chain's two-run split
    exists to prevent. Where there are several, say so plainly — it is the signal
@@ -338,7 +383,13 @@ Otherwise report the same rows as one line each, in the same order, reading
 `<item> — found: <kind> — outcome: <outcome> — evidence: <file:line or none> —
 <note>`.
 
-Below the rows: the other-document hits from step 3, the docs-check output, and
+Below the rows: every copy this run's own writing made stale and then
+synchronised, each named with what it now says, and every **ticket** it corrected
+for the same reason, **by number**, with the criterion quoted before and after —
+they belong to no item, so a row cannot carry them, and a corrected criterion
+nobody names is an outward edit that left no trace. A ticket named here and *not*
+edited says why: a ticked criterion whose build this run cannot vouch for, or a
+facts block with no tracker. Then the other-document hits from step 3, the docs-check output, and
 every unfiled ticket draft in full — title, parent, what to build, acceptance
 criteria — with the question under it. A draft abbreviated to a row is lost:
 this report is the only place it exists. Then mark the report — **the file this run read**, never the store's
@@ -377,10 +428,10 @@ grounds in half a sentence, and name what was edited.
 
 - **yes** — prose was written, so there are now sentences no review has read.
   Strongest where an edit reached a document the findings never named, or where
-  an `echo` was synchronised across several copies. **A ticket this run filed
-  counts**: the ticket set is what the review's `tickets` lens reads, and it has
-  moved. A draft that was not filed does not — nothing outside this report has
-  changed.
+  an `echo` was synchronised across several copies. **A ticket this run filed or
+  corrected counts**: the ticket set is what the review's `tickets` lens reads,
+  and it has moved. A draft that was not filed does not — nothing outside this
+  report has changed.
 - **no** — nothing was written at all: every item was `Not reproduced`,
   `Left — ungrounded`, `Left — needs a decision`, an unfiled `Ticket drafted`, or
   handed to `dror-code-repair`. A

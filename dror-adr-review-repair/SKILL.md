@@ -269,6 +269,19 @@ Invoke the `dror-adr-repair` skill:
 > on this same document, last at … — it may still be editing it — so a sentence
 > changing under you may be theirs.>`
 
+**Each repair synchronises what it wrote — the documents that restate a rule and
+the criteria that rest on one — and this file asks it for nothing.**
+`dror-adr-repair`'s step 2 owns that rule. It is why a run that stops at the cap
+still leaves the glossary, the conventions doc and the ticket set saying what the
+ADR says: a round's review reads the document as it stood *before* that round's
+repair, so neither the `echoes` lens nor the `tickets` lens can have found a copy
+the repair itself made stale. Step 4 still counts that prose as a round **owed** —
+the sweep keeps the copies true, and a round is what reads the new sentences.
+
+**A corrected ticket is the one edit this loop makes outside the working tree.**
+Say so in the summary, by number, so a reader who diffs the checkout is not told
+a half-truth about what the run changed.
+
 **Name this round's tagged file, never the store's default and never an earlier
 round's.** The default `adr-review-report-<n>.md` may be another run's entirely,
 and passing it sends this repair at somebody else's findings; an earlier round's
@@ -302,11 +315,12 @@ Weigh what happened, in this order:
   *before* the repair touched it. An `echo` synchronised across several documents
   is the strongest form of it, since the copies were never in the reviewed file
   at all.
-- **What the repair filed.** A ticket that landed is repair as much as a
-  corrected sentence is, and it makes a round owed: the ticket set is what the
-  next review's `tickets` lens reads against the document, and it has moved
-  since the last one read it. A ticket left **drafted** is not — nothing outside
-  the report changed — and it leaves by §Present instead.
+- **What the repair filed, and what it corrected.** A ticket that landed is
+  repair as much as a corrected sentence is, and so is a criterion the repair's
+  own writing made stale and it then rewrote. Either makes a round owed: the
+  ticket set is what the next review's `tickets` lens reads against the document,
+  and it has moved since the last one read it. A ticket left **drafted** is not —
+  nothing outside the report changed — and it leaves by §Present instead.
 - **What is left that a review cannot settle.** `ungrounded` items, conflicts and
   revisits are questions for the user, and another round asks them again word for
   word.
@@ -389,15 +403,19 @@ repairs and the part a reader will otherwise lose:
   not. They exist nowhere but the round's report until somebody answers.
 
 Then say the document is left uncommitted, name every file this run edited — the
-ADR, and any copy an `echo` reached — and name what was written outside it: every ticket it
-filed, by number, this
+ADR, any copy an `echo` reached, and any copy a repair's own sweep brought into
+line — and name what was written outside it: every ticket it
+filed **or corrected**, by number — a corrected ticket is an edit in your
+tracker, not in your working tree, and nothing but this line says so — this
 run's report files, one per round, and the logs under `~/.claude/dror-skills/` that every round
 appends to — `refutations.tsv` and `runs.tsv` from each review, `repairs.tsv`
 from each repair.
 Say if one could not be written. Then stop.
 
 Done when every round that found repairable survivors has repaired them, every
-round that found none is named as such, the document has been read whole after
+round that found none is named as such, every rule the last repair wrote has been
+carried into the copies that restate it and into the criteria that rest on it,
+the document has been read whole after
 the last edit — `dror-adr-repair`'s own step 3, in the round that made it — the
 loop's end is accounted for in one word with its grounds, everything leaving the
 run for somebody else is named, and that summary is on screen with nothing
