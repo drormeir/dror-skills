@@ -96,7 +96,9 @@ writes the sentence.
 
 Do not widen. You have one finding. Reading a subsystem to settle it is your
 budget to spend, on it; reading a subsystem to find a second one is not yours
-at all.
+at all. A budget you spent without settling the finding does not refute it:
+where you have looked and still cannot say whether anything is at fault, the
+finding survives as **unverified**, and you say what was left unsettled.
 
 Do not edit anything. This skill's one promise is that a review of a skill
 leaves the skill alone.

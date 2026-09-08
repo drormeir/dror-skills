@@ -18,8 +18,9 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | Skill | Question it answers | Writes |
 |---|---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? | nothing |
-| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own | `adr-<N>.lock` (released on every ending), a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, the spec issue's close on a clean finish, `drain-<ADR>.json`, `drain-<ADR>.log` |
+| `dror-implement-adr` | Work one ADR's ticket list to exhaustion, on a branch of its own | `adr-<N>.lock` (released on every ending), a worktree (removed on a clean finish), a branch, each ticket's push, each ticket's close, the spec issue's close on a clean finish, `drain-<ADR>.json`, `drain-<ADR>.log`, one ADR review report from the check before its first ticket |
 | `dror-adr-resume` | Whose is the lock on ADR N, and start the drain again where it is nobody's | nothing of its own — it removes `adr-<N>.lock`, then whatever the drain writes |
+| `dror-interview` | Ask, before the drain starts, everything it can be expected to stop on | `interview-<ADR>.md` |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
 | `dror-code-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
@@ -35,10 +36,11 @@ it, and they are the same shape one level up: find, then fix, in two runs
 | Skill | Question it answers | Writes |
 |---|---|---|
 | `dror-adr-review` | Is this decision still true, still coherent, still obeyed — usually asked before implementing it? | `adr-review-report-<adr>.md` |
-| `dror-adr-repair` | Bring the document, and every drifted copy of its rules, back in line with the tree | the ADR's prose, and any other document an `echo` names |
+| `dror-adr-repair` | Bring the document, and every drifted copy of its rules, back in line with the tree | the ADR's prose, and any other document an `echo` names; a drafted ticket, filed only on a yes; an existing ticket's criteria its own writing made stale |
 | `dror-adr-review-repair` | Loop the two over one ADR until it converges, up to a cap of its own — lower than the loop below it, and with no round-1 floor | whatever its two steps write |
+| `dror-adr-sweep` | Work the loop above over every ADR in the decision directory, one at a time in number order, as one pre-implementation phase | whatever its members write, plus `adr-sweep-report-<tag>.md` and `adr-sweep.json` |
 
-They divide the findings by **kind**, because different hands fix them. Seven
+They divide the findings by **kind**, because different hands fix them. Eight
 kinds, and this is where each one goes:
 
 - `text`, `hole`, `echo` and `unticketed` go to `dror-adr-repair`. An `echo`
@@ -47,10 +49,14 @@ kinds, and this is where each one goes:
   than a sentence, and it is filed only on the user's yes.
 - `breach` goes to `dror-code-repair`.
 - `conflict` is nobody's until the user says which decision wins.
+- `unstated` is nobody's either — a ticket decided a value the ADR left open, and
+  writing it into the document adopts that decision, which is the user's to do.
+  It is `unticketed`'s mirror: that one is work no ticket carries, this one is a
+  decision no ADR carries.
 - `revisit` is nobody's either, and whether to reopen is the user's.
 
 Neither skill writes code, and neither may rewrite what was decided — see
-ADR 0020. `dror-adr-review/LENSES.md` defines the seven and its lenses mint them;
+ADR 0020. `dror-adr-review/LENSES.md` defines the eight and its lenses mint them;
 this paragraph owns only where each one goes.
 
 ## On the machinery itself
@@ -63,7 +69,7 @@ and the agent that reads it.
 
 | Skill | Question it answers | Writes |
 |---|---|---|
-| `dror-skill-vendor-rules` | Has the published guide moved since the vendor baseline was distilled from it — and, where a person says yes, re-distil it | `ANTHROPIC-SKILL-RULES.md`, unstaged, in `refresh` mode only |
+| `dror-skill-vendor-rules` | Has the published guide moved since the vendor baseline was distilled from it — and, where a person says yes, re-distil it | `ANTHROPIC-SKILL-RULES.md` and `skill-rules-check.sh`, unstaged, in `refresh` mode only |
 | `dror-skill-review` | Is this skill still true, still coherent, still executed as meant, still inside Anthropic's published rules? | `skill-review-report-<name>.md` |
 | `dror-skill-repair` | Bring the skill's text, and every drifted copy of it, back in line with the repo | the skill's prose, and any index row, map entry or glossary line an `echo` names |
 | `dror-skill-review-repair` | Loop the two over one skill until it converges, up to a cap of its own — the ADR loop's cap and no round-1 floor, for the same one-document reason | whatever its two steps write |
@@ -80,19 +86,26 @@ A typical ticket: implement → `dror-prove` → the review-repair loop →
 `dror-implement-ticket <N>` runs in one go.
 `dror-show-tickets` is the map you read before and after.
 
-**Where the context boundaries are.** Every skill in the chain and above it —
-the ticket, the drain, the three loops, prove, review, repair, the three ADR
-skills and the three skill-on-skill ones — carries `context: fork` in its
-frontmatter (ADR 0036), so each runs in
+**Where the context boundaries are.** Thirteen skills carry `context: fork` in
+their frontmatter (ADR 0036) — the ticket, the drain, prove, the three reviews,
+the three repairs, the three loops and `dror-skill-vendor-rules` — so each runs in
 an agent of its own whether the user invoked it or another skill did: what
 reaches it is its own file, the facts its first line injects, and its
 arguments, never the conversation that invoked it, and what comes back is its
-closing summary. **`dror-adr-resume` is the one skill above the chain that does
-not fork**, so that the drain it invokes lands at the depth a drain the user
-typed lands at; its own file holds the reason and ADR 0043 the cap behind it.
+closing summary. **`dror-adr-resume`, `dror-adr-sweep` and `dror-interview`
+are the three that drive forked skills without forking themselves** — eight
+skills carry no `context:` line, but the other five drive nothing — so that what
+each invokes — the drain, the ADR loop, the review — lands at the depth it would have
+landed at had the user typed it, and so that the last of them can put its
+questions **and wait** for the answers, which a forked run cannot: a forked
+run's question reaches the user only as its last message, which ends the run
+(ADR 0042). Their own files hold the reasons and
+ADR 0043 the cap behind them.
 Beneath those, `dror-code-review` and `dror-adr-review` spawn a lens
-agent per lens with a refuter under each, `dror-code-repair` fans out per test
-file and `dror-adr-repair` per item; every such agent is given paths and never
+agent per lens and then, once the lenses return, a refuter per merged finding,
+`dror-code-repair` fans out per test
+file, and `dror-adr-repair` and `dror-skill-repair` per item; every such agent
+is given paths and never
 pasted text (ADR 0038). Each file owns its own arrangement and lists what its
 agent must return, and a step is a step either way — see `DELEGATION.md`.
 
@@ -123,7 +136,9 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
 [`LENS-FANOUT.md`](LENS-FANOUT.md),
 [`WORKTREE.md`](WORKTREE.md), [`DELEGATION.md`](DELEGATION.md),
 [`ADR-FILE.md`](ADR-FILE.md), [`DIRECTORY-OVERRIDE.md`](DIRECTORY-OVERRIDE.md),
-[`STEP-AGENT.md`](STEP-AGENT.md), this map, the glossary and the ADRs.
+[`STEP-AGENT.md`](STEP-AGENT.md),
+[`ANTHROPIC-SKILL-RULES.md`](ANTHROPIC-SKILL-RULES.md), this map, the glossary
+and the ADRs.
 
 ## Which of them know your repo's conventions
 
@@ -132,8 +147,10 @@ Two tiers, and each skill says which it is in (ADR 0011):
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
   `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
   `dror-adr-repair`, `dror-skill-repair`, `dror-guide`, `dror-brief-me`, and
-  `dror-skill-vendor-rules`, which is the extreme case — it reads no repo at
-  all, only the shelf file it maintains, so it takes no facts either.
+  `dror-skill-vendor-rules`, which is the extreme case — its subject is the
+  shelf file it maintains rather than your project, so it takes no facts
+  either; in `refresh` mode it also reads this repo's own skill directories,
+  and writes `skill-rules-check.sh` as well as the baseline.
   They name no path and no tracker; whatever a repo
   declares reaches them through the facts. It does not mean free of **git**:
   `dror-code-review`'s scope is the unpushed work and `dror-implement-ticket`'s
@@ -144,10 +161,15 @@ Two tiers, and each skill says which it is in (ADR 0011):
   path `WORKTREE.md` fixes, `dror-show-tickets`, which assumes GitHub issues
   reachable by `gh` and ADRs in a conventional decision directory, `dror-adr-review`,
   which assumes the second of those, `dror-adr-review-repair`, which inherits
-  it from `dror-adr-review` by taking an ADR by number, `dror-skill-review`,
+  it from `dror-adr-review` by taking an ADR by number, `dror-adr-sweep`, which
+  inherits it once more by taking the whole directory `ADR-FILE.md` resolves,
+  `dror-interview`, which inherits from the drain and the review both, by taking
+  an ADR by number and reading its tickets out of the tracker,
+  `dror-skill-review`,
   which assumes skills as directories holding a `SKILL.md`, resolved by the
   rule its own file states, and `dror-skill-review-repair`, which inherits
-  that from `dror-skill-review` by taking a skill by name. In a repo that does
+  that from `dror-skill-review` by taking a skill by name or a document by
+  path. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 
 ## Why these skills exist beside Matt's

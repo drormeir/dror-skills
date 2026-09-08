@@ -1,8 +1,11 @@
 # Which skills the model may invoke
 
-`dror-review-retrospective` and `dror-implement-adr` set
-`disable-model-invocation: true`: they are expensive, they are started
-deliberately, and being user-invoked costs no always-loaded description.
+`dror-review-retrospective`, `dror-implement-adr`, `dror-adr-resume`,
+`dror-adr-sweep` and `dror-interview` set
+`disable-model-invocation: true`: they are expensive or outward-acting, they are
+started deliberately, and being user-invoked costs no always-loaded description.
+The last three are also the three that nothing else in the chain invokes — a
+sweep runs the ADR loop, the loop never runs a sweep — which is the test below.
 `dror-internal-shared` sets it for a different reason — it is a shelf and not a
 procedure, and the flag is what keeps a legitimate skill directory out of the
 always-loaded list (ADR 0015). The rest stay model-invocable, so the user can

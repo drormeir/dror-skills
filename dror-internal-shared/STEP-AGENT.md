@@ -27,7 +27,8 @@ direct `Skill` invocation there is untouched by any of this.
 - **Hand the file as an absolute path, never pasted** (ADR 0038). The step's
   `SKILL.md` is a sibling of the driver's own directory; resolve it to an
   absolute path and open the brief with: "Read `<absolute path>` and follow
-  it exactly, as the run it describes."
+  it exactly, as the run it describes." Where a directory override applies,
+  the override sentence takes the top of the brief and this line follows it.
 - **The frontmatter is text to the agent.** Its `context: fork`,
   `background`, `allowed-tools` and description execute nothing when the file
   is read rather than invoked; tell the agent to skip past it and follow the

@@ -26,6 +26,13 @@ caller puts it; and what goes back to the caller is the closing summary.
 This skill is **repo-agnostic**: it names no tracker, no path and no runner of
 its own. Everything about the project in hand arrives through the facts below.
 
+**A directory override arrives as an argument** — "All commands run in `<path>`
+…", handed by a drain-run ticket. Its provenance and the duties it obliges are
+the shelf's, in one copy: `../dror-internal-shared/DIRECTORY-OVERRIDE.md`, read
+whole when the sentence arrives and not otherwise. This skill's own part of the
+contract: every git command in this file runs with `-C <path>`, and every test
+this run writes or runs is written and run under it.
+
 ## How a test is written
 
 `../dror-internal-shared/WRITING-TESTS.md` — the shelf beside this skill — holds the
@@ -62,8 +69,12 @@ numbering the other `dror-*` skills use for the same ticket. Read
 `## What to build` too: it names the module the tests belong to. A ticket with
 no criteria stops here — say so.
 
-Fetch it every run. The body changes as boxes are ticked, so a cached copy is
-stale exactly when it matters.
+Fetch it here. The fork leaves this run no earlier copy, so this fetch is the
+only reading of the body it gets, and steps 7 to 9 write that copy back in one
+edit at the end of the run. A run whose number does not resolve stops here
+too — a fetch that exits non-zero and hands back no body is the same state
+arriving another way. Say so and stop: the criteria are the test list, so
+nothing after this step has an input.
 
 ## Step 2 — find what is already covered
 
@@ -101,8 +112,9 @@ Split what is left:
   skill can produce: a green box against a test that proves something else.
   Every other criterion carries on while the question is open.
 
-Show this split and the seams you intend to test at **before** writing tests,
-unless the user has already said to go ahead.
+Show this split and the seams you intend to test at, then stop: write no test
+until the user says to go ahead. Neither the showing nor the stop is owed where
+the invocation has already said to go ahead.
 
 ## Step 4 — one criterion, one slice
 

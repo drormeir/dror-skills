@@ -105,3 +105,31 @@ path escape hatch is its whole answer.
 The multi-hit stop gets a case that is ordinary rather than a mistake: contexts
 number from one independently, so a multi-context repo really does hold several
 ADR 0007s. Naming them all and asking for a path is still the right answer.
+
+## Second widening: which checkout is searched, before which directory
+
+The rule above answers *which file* and never asked *which tree*, so it read the
+checkout the caller happened to stand in. That is the wrong tree for exactly the
+ADRs these skills are run on. A decision being written is written on its own
+branch, in its own worktree (ADR 0029), and the number is often reserved in the
+default branch by a commit that writes no text — a **zero-byte file**. A
+`/dror-adr-review-repair ADR 18` in geo_sense stopped on the stub check for that
+reason: `docs/adr/0018-parallel-synthetic-lines.md` was 0 bytes in the checkout,
+while the decision it names sat on `adr-18`.
+
+So the search runs **in the ADR's own worktree first**, where one exists, and
+falls back to the caller's checkout when the file is absent there or empty. It is
+one `git worktree list` on the ordinary path, and the fallback keeps every repo
+that never worked an ADR in a worktree behaving exactly as before.
+
+Two consequences worth naming. The checkout that answered is the run's repo from
+then on — its store, its `git` questions, its neighbours — so a report is written
+beside the document it reviewed rather than in the tree that lacked it. And the
+worktree may be occupied: a drain works there under a lock, and this rule takes
+no lock and reads none. Saying which checkout answered is what a reader needs,
+and gating on the lock is ADR 0024's rejected shape.
+
+**Preferring the worktree unconditionally** was rejected in favour of preferring
+it only where it answers: an ADR whose branch was cut before the document was
+written has the text in the checkout and a stub on the branch, which is the same
+failure with the trees swapped. Emptiness is the test both directions agree on.

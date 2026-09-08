@@ -1,6 +1,6 @@
 ---
 name: dror-code-repair
-description: Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. Use when asked to fix the findings in a review report, or in a findings file the user names.
+description: Fix bugs already found, each one red before the fix and green after unless it proves untestable or not reproduced, and close named gaps in test cover. Use when asked to fix the findings in a review report, or in a findings file the user names.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
@@ -77,14 +77,16 @@ when the code already works, and how expensive setup is shared. Read it whole
 before step 1, and pass it to every agent that writes a test. It is not restated
 here.
 
-Two words are this skill's own:
+One word is this skill's own:
 
 - **covered** — a bug that went red and then green.
-- **cover** — a gap in test cover: named behaviour that no test would catch the
-  loss of. Nothing is broken, so nothing is fixed and no test can go red against
-  the tree as it stands. It is closed by the reference's mutation route, which
-  `dror-prove` runs for the same reason on a criterion whose code already works —
-  one machine, two kinds of input.
+
+**cover** is not: the glossary in `../dror-internal-shared/CONTEXT.md` owns it,
+under **Gap in cover**, and it is not restated here. What this file adds is what
+a cover item costs a repair run: no test can go red against the tree
+as it stands, so it is closed by the reference's mutation route, which
+`dror-prove` runs for the same reason on a criterion whose code already works —
+one machine, two kinds of input.
 
 ## The ticket, when there is one
 
@@ -239,6 +241,14 @@ is that run, and repeating it proves nothing. Lint and type-check are cheap and
 run regardless. Paste each command's summary
 output — and for anything that fails, the failing assertion or diagnostic in
 full.
+
+**Where there is no output to paste, name the run instead.** The caller's-own
+branch is only reachable where this run made no code edit at all: a run that
+edited anything has moved the last code change past any suite the caller saw.
+And nothing but the argument reaches a forked run, so that suite's output is
+not in this context. So say which run counted — that this run changed no code,
+and the suite is owed to the last change. That named run is what stands in for
+the pasted full-suite output below.
 
 **A failure a fix introduced is part of this run.** Read it: either the fix is
 wrong and gets corrected, or the old test asserted the buggy behaviour, which is

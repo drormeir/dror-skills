@@ -1,6 +1,6 @@
 # Structure
 
-Twenty-one skills over one way of working, and the shelf they read, listed here
+Twenty-three skills over one way of working, and the shelf they read, listed here
 with them. Every description below is the skill's
 own `description:` line, verbatim, minus its "Use when" trigger clause. This
 file owns the "Reach for it when" voice — the human's index — and nothing else:
@@ -76,10 +76,11 @@ flowchart TD
     ADR["ADR<br/>a decision, written down"]
 
     subgraph sharpen ["STAGE 1 · sharpen the decision — optional, and before any ticket is written"]
+        SW[dror-adr-sweep] -->|"one ADR at a time,<br/>the whole directory"| ARR
         ARR[dror-adr-review-repair]
 
         subgraph adrloop ["converges, up to its cap"]
-            AR[dror-adr-review] -->|"text · hole · echo"| ARP[dror-adr-repair]
+            AR[dror-adr-review] -->|"text · hole · echo · unticketed"| ARP[dror-adr-repair]
             ARP -->|prose written| AR
         end
 
@@ -93,10 +94,11 @@ flowchart TD
     AXES["an ADR is judged against five things<br/>the code it governs · itself<br/>other documents · its tickets · the reader"]
     AXES -.->|only 3 of 10 lenses read code| AR
 
-    AR -.->|"conflict · revisit"| YOU(["your call — nobody repairs these"])
+    AR -.->|"conflict · unstated · revisit"| YOU(["your call — nobody repairs these"])
 
     subgraph build ["STAGE 2 · build it — one ticket at a time"]
         ST[dror-show-tickets] --> IA[dror-implement-adr]
+        DA[dror-interview] -->|"the questions, answered<br/>before the night starts"| IA
         RES[dror-adr-resume] -->|"clears the lock an<br/>interrupted drain left"| IA
         IA -->|"one ticket at a time,<br/>each in an agent of its own"| IT[dror-implement-ticket]
         ST -->|one ticket by hand| IT
@@ -117,6 +119,7 @@ flowchart TD
 
     ADR ==>|"the decision is now trusted"| ST
     AR -->|breach| RP
+    IA -.->|"reads the ADR once,<br/>before its first ticket"| AR
 
     RV -.->|one line per finding| LOG[("refutations.tsv")]
     LOG -.-> RETRO[dror-review-retrospective]
@@ -146,6 +149,13 @@ ADR on trust — the tickets are cut from it, the tests are written against its
 criteria, the review judges the diff by them. A sentence that quietly stopped
 being true becomes a rule broken by somebody following instructions correctly,
 and by then the tickets are wrong too.
+
+**Skipping it is not free either, and the drain is what pays.**
+`dror-implement-adr` reads the ADR once before its first ticket and stops for you
+where two of its tickets cannot both be satisfied — the same finding stage 1
+makes, arriving with a drain waiting on your answer. It is one reading, so a
+conflict that appears mid-drain is not caught; ADR 0051 records what closing that
+would cost.
 
 ## Three pairs, one document type each
 
@@ -181,12 +191,13 @@ the details differ by document type.
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
 | `dror-show-tickets` | You are deciding what to do next, or want to know whether an ADR is finished. Read it before and after the rest. | Show one table of every ticket belonging to an ADR — whether it is closed, ready to close, ready or blocked, whether its code landed, and how many acceptance criteria are ticked. | nothing |
-| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. It is forked, so it says nothing until it finishes: watch the desktop notification it fires per ticket, or `tail -f` its progress log. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one ticket at a time through `dror-implement-ticket`, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. | a worktree at `.claude/adr-wip/adr-<N>` (removed on a clean finish), a branch `adr-<N>`, a push and a close per ticket, the spec issue's close on a clean finish, a drain state file and a progress log |
+| `dror-implement-adr` | A whole ADR is ready and you want to leave it running — many tickets, one branch, no supervision between them. It is forked, so it says nothing until it finishes: watch the desktop notification it fires per ticket, or `tail -f` its progress log. | Work one ADR's ticket list to exhaustion on a branch of its own — a side worktree off the remote head, one ticket at a time through `dror-implement-ticket`, committed ticket by ticket, parking any ticket that raises a question only the user can answer and draining the rest. | a worktree at `.claude/adr-wip/adr-<N>` (removed on a clean finish), a branch `adr-<N>`, a push and a close per ticket, the spec issue's close on a clean finish, a drain state file and a progress log, one ADR review report from the check before its first ticket |
 | `dror-adr-resume` | A drain was interrupted and the next one says the ADR is locked. It is also the safe way to start a drain, since an absent lock costs it one line. | Clear the drain lock an interrupted `dror-implement-adr` left behind, then start the drain again on the same ADR — the holder identified before anything is removed, and a live one left alone. | nothing of its own — it removes the lock, then whatever the drain writes |
+| `dror-interview` | Before leaving a drain to run overnight. It asks everything answerable in advance, one question at a time, so the night is not spent parked on something you could have settled at 9pm. | Ask, one multiple-choice question at a time, everything a drain of this ADR can be expected to stop on — the conflicts between its tickets, the values they decided for you, the criteria that look unwinnable, and the standing permissions — each with a recommendation where the run honestly has one, and room to answer in your own words, and write the answers where `dror-implement-adr` reads them. | a standing answers file the drain reads |
 | `dror-implement-ticket` | One ticket, start to closed, in the current tree. The default entry point — it runs the four below in order. | Take one ticket from unwritten to closed — implement it, prove its criteria, loop review and repair until it converges, prove whatever is still unticked, then commit, push and close it. | code, in one commit, pushed to its branch; then whatever the three below write |
 | `dror-prove` | The code exists and you want to know whether its criteria are actually tested — or you wrote tests by hand and want them audited. | Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. | tests; ticks green boxes; a hand-back log line and an evidence file per criterion it hands back |
 | `dror-code-review` | You want to know what is wrong before pushing, and you want to decide yourself what gets fixed. | Correctness review of the unpushed work — commits not yet on the remote plus the working tree — every finding tool-proven or refuted before it reaches you. Reports the survivors and changes no behaviour. | a review report, its per-criterion verdicts inside |
-| `dror-code-repair` | Findings already exist — in a review report, or in a findings file you wrote from what a colleague or a conversation named — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after, and close named gaps in test cover. | code and tests; unticks a red box |
+| `dror-code-repair` | Findings already exist — in a review report, or in a findings file you wrote from what a colleague or a conversation named — and you want them fixed with a failing test each. | Fix bugs already found, each one red before the fix and green after unless it proves untestable or not reproduced, and close named gaps in test cover. | code and tests; unticks a red box |
 | `dror-code-review-repair` | Same as `dror-code-review`, but you want the fixing done too and do not want to be asked between rounds. Costs several times a single review. | Loop review and repair over the unpushed work until it converges — `dror-code-review`, then `dror-code-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
 
 ## Above the chain
@@ -197,12 +208,13 @@ finding refuted before it reaches you — and a loop over the two, as below.
 
 | Skill | Reach for it when | Description | Writes |
 |---|---|---|---|
-| `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against itself, its tickets and the code it governs — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
-| `dror-adr-repair` | An ADR review returned `text`, `hole` or `echo` findings and you want the documents corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, and no decision rewritten. | prose, wherever an `echo` says the rule is read — the ADR, the conventions doc, the glossary, a docstring |
+| `dror-adr-review` | Before trusting an old decision — the tree has moved under it, or you are about to write tickets against it. | Review one ADR document against itself, its tickets, the other documents that decide or repeat its rules, the reader who acts on it, and the code it governs — every finding refuted before it reaches you. Reports the survivors and edits no text. | a review report |
+| `dror-adr-repair` | An ADR review returned `text`, `hole`, `echo` or `unticketed` findings and you want the documents corrected without the decision being rewritten. | Repair an ADR's text from findings already made — every corrected sentence grounded in the code it describes, no decision rewritten, and the tickets its own edits left stale corrected in the tracker. | prose, wherever the rule is read — the ADR, the conventions doc, the glossary, a docstring; a drafted ticket, filed only on your yes; an existing ticket's criteria its own writing made stale |
 | `dror-adr-review-repair` | Same as `dror-adr-review`, but you want the correcting done too and do not want to be asked between rounds — the usual way to sharpen an ADR before implementing it. | Loop ADR review and repair over one decision document until it converges — `dror-adr-review`, then `dror-adr-repair` on what survived, round after round while a round is still owed. | whatever its two steps write |
+| `dror-adr-sweep` | The whole decision directory needs sharpening before anyone builds — many ADRs, one phase, and every question they raise collected in one file instead of seventeen transcripts. It says what it will spend before it spends it, it can be stopped and resumed between documents, and it stays quiet: a table on screen, the questions in the report. | Sharpen every ADR in a repo as one pre-implementation phase — `dror-adr-review-repair` over each decision in turn, one at a time in number order, under one phase tag, with every question the loops left written to one phase report and only a table on screen. | whatever its members write, plus a phase report and a state file |
 
-Findings divide by **kind** — six of them — because different hands fix them:
-the routing for all six lives in
+Findings divide by **kind** — eight of them — because different hands fix them:
+the routing for all of them lives in
 [`dror-internal-shared/DROR-SKILLS.md`](dror-internal-shared/DROR-SKILLS.md),
 the definitions in [`dror-adr-review/LENSES.md`](dror-adr-review/LENSES.md)'s
 preamble.
@@ -228,7 +240,7 @@ routing lives in
 |---|---|---|
 | `dror-review-retrospective` | After twenty-odd findings have accumulated and reviews start feeling noisy. Not after one bad run — one run's kills say nothing. | Read the review logs across runs and say what the lenses are getting wrong and what the rounds are worth — which lens produces false positives, which recurring assumption causes them, what a later round caught that an earlier one had in front of it, and what a round costs. Reports and stops. |
 | `dror-internal-project-facts` | Rarely by hand — to see what the skills believe your repo declares, or to refresh it after changing your test setup. | Return this repo's domain vocabulary, verification commands, test layout, declared scope and issue convention. |
-| `dror-skill-vendor-rules` | By hand, bare, when you want to know whether the guide moved and to be offered the refresh; on a weekly timer with `check`, which never offers anything. | Check whether the published guide behind the skill reviews' vendor baseline has been re-uploaded since that baseline was distilled, and re-distil it on request. Called bare it reports and then offers the refresh; called with check it only reports; called with refresh it rewrites the baseline and its stamp, unstaged, and never commits. |
+| `dror-skill-vendor-rules` | By hand, bare, when you want to know whether the guide moved and to be offered the refresh; on a weekly timer with `check`, which never offers anything. | Check whether the published guide behind the skill reviews' vendor baseline has been re-uploaded since that baseline was distilled, and re-distil it on request. Called bare it reports and then offers the refresh; called with check it only reports; called with refresh it rewrites the baseline and its stamp and reconciles the check script beside it, unstaged, and never commits. |
 | `dror-internal-shared` | Read it as documentation — the test-writing rules, the report store's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, the glossary, or the reasoning behind why a skill behaves as it does. | Reference material the `dror-*` skills read — the test-writing rules, the report store's rules, the lens fan-out's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the glossary, the map and the decision record. A shelf, read by the skills that run. |
 
 The `dror-internal-` prefix means **another skill runs it, not you**.
@@ -240,9 +252,12 @@ only on a miss; `shared` is a shelf of documents those skills read as they work.
 
 Every skill in the chain runs in a context of its own: its frontmatter forks it,
 so the conversation you invoke it from never reaches it and its working context
-never reaches you — only its closing summary does. `dror-adr-resume` is the one
-exception, and its own file says why. Two habits keep the bill
-lower still. Invoke a chain skill right after `/clear`, since the session that
+never reaches you — only its closing summary does. `dror-adr-resume`,
+`dror-adr-sweep` and `dror-interview` are the three exceptions, each so that
+what it invokes lands at the depth it would have landed at had you typed it —
+and, for the last, so that it can ask you anything at all; their own files say
+why.
+Two habits keep the bill lower still. Invoke a chain skill right after `/clear`, since the session that
 receives the summary pays for whatever it already holds on every turn until
 then. And for a run nobody is watching — a drain, an overnight loop — start it
 from a terminal instead: `claude -p "/dror-implement-adr 12" --permission-mode
@@ -285,7 +300,9 @@ One writer per direction, because a tick is a claim about evidence:
 
 - **Repo-agnostic** — `dror-internal-project-facts`, `dror-implement-ticket`,
   `dror-prove`, `dror-code-repair`, `dror-code-review`, `dror-code-review-repair`,
-  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`, `dror-brief-me`.
+  `dror-adr-repair`, `dror-skill-repair`, `dror-guide`, `dror-brief-me`, and
+  `dror-skill-vendor-rules`, whose subject is the shelf file it maintains
+  rather than your project.
   They name no path and no tracker; whatever a repo declares reaches them
   through the facts.
 - **Convention-bound** — `dror-show-tickets` and `dror-implement-adr` assume
@@ -293,10 +310,14 @@ One writer per direction, because a tick is a claim about evidence:
   invoking the drain, plus the lock path the shelf's `WORKTREE.md` fixes;
   `dror-show-tickets`, `dror-implement-adr`,
   `dror-adr-review` and `dror-adr-review-repair` assume ADRs in a conventional
-  decision directory, resolved by the shelf's `ADR-FILE.md`; `dror-skill-review`
-  assumes skills as directories holding a `SKILL.md`, resolved by the rule its
-  own file states, and reads any other Markdown file it is pointed at as a
-  document instead, and `dror-skill-review-repair` inherits both from it by
+  decision directory, resolved by the shelf's `ADR-FILE.md`, `dror-adr-sweep`
+  inherits that by sweeping the directory the same file resolves, and
+  `dror-interview` inherits from both the drain and the ADR review by taking an
+  ADR by number and reading its tickets;
+  `dror-skill-review`
+  assumes skills as directories holding a `SKILL.md`, and resolves any other
+  path it is pointed at by the three-way rule its own file states, and
+  `dror-skill-review-repair` inherits both from it by
   taking a skill by name or a document by path. In a repo that does
   neither, they say so and stop; a path named explicitly is always honoured.
 

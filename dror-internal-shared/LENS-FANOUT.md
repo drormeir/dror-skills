@@ -1,15 +1,16 @@
-# The lens fan-out: models, boundaries, what comes back, and merging
+# The fan-out: models, boundaries, what comes back, merging and refuting
 
-The rules every `dror-*` review obeys once it has chosen its lenses and is about
-to launch them. They live here, owned by the shelf and belonging to none of the
-three reviews: one copy, so sharpening a rule sharpens every run that obeys it.
-Read this file whole before launching a batch; do not restate it in the calling
-skill.
+The rules every `dror-*` review obeys from the moment it has chosen its lenses
+to the refuters it puts under what they found. They live here, owned by the
+shelf and belonging to none of the three reviews: one copy, so sharpening a rule
+sharpens every run that obeys it. Read this file whole before launching a batch;
+do not restate it in the calling skill.
 
 What is **not** here is anything about **which** lenses a review has, what each
-one reads, or how its findings are keyed. The pool, the per-lens read
-assignments, the grouping key a merge uses and the closed kind vocabulary all
-belong to the review that owns them, and each states its own.
+one reads, what it hands a refuter, or how its findings are keyed. The pool, the
+per-lens read assignments, the refuter's own inputs, the grouping key a merge
+uses and the closed kind vocabulary all belong to the review that owns them, and
+each states its own.
 
 ## The models
 
@@ -65,3 +66,17 @@ and each states which pairs of its own kinds are **not** duplicates: two
 readings of one disagreement stay separate through the merge and let the
 refutations decide, because collapsing them here would pick the winner before
 anyone looked.
+
+## The refute fan-out
+
+**Every merged finding faces a refuter, and the list is never cut.** Hand each
+one to a single independent agent, all launched in parallel — one refuter per
+finding, however many survived the merge, with **no cap**. What each refuter is
+*given* is the review's own, and each states it.
+
+Every suspect is checked. Cutting the list here would put unchecked suspicions
+in the report, and a reader cannot tell an unchecked finding from a confirmed
+one. The cost is controlled before
+this point, not here — by whatever lens count the review caps for itself, the
+read boundary above, and lenses that kill their own weak findings rather than
+passing them on (ADR 0003).

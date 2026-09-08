@@ -55,5 +55,7 @@ the user invokes `brief` after this, `brief` wins and this shape stops.
 This is not `dror-guide` either. That one walks the user through steps they are
 about to perform. This one hands them a decision they have not yet made.
 
+## Then continue the work
+
 Acknowledge in at most one sentence, then continue the work already in
 progress.

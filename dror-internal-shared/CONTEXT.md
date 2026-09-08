@@ -84,7 +84,7 @@ condensed pointer, and that file owns the term.
 ## Findings about an ADR
 
 The kinds `dror-adr-review` returns — `text`, `hole`, `breach`, `conflict`,
-`revisit`, `echo`, `unticketed` — minted and defined in its own `LENSES.md` preamble, the
+`revisit`, `echo`, `unticketed`, `unstated` — minted and defined in its own `LENSES.md` preamble, the
 text pasted into every lens agent's prompt; this entry is the condensed
 pointer, and that file owns them. They are separate words because each names a
 different hand as the one that fixes it, and
@@ -92,14 +92,13 @@ different hand as the one that fixes it, and
 
 ## Findings about a skill
 
-The kinds `dror-skill-review` returns, minted and defined in its own
-`LENSES.md` — this entry is the condensed pointer, and that file owns them.
-Four are repaired by `dror-skill-repair`: `text`, `hole` and `echo` carry the
-meanings the entry above points at, with the skill as the document, and
-**`sprawl`** — this pool's own word — is a rule, tunable or vocabulary living
-in more places than its owner, drifted or not, collapsed to a pointer rather
-than corrected. A
-`conflict` between two owners waits for the user.
+The kinds `dror-skill-review` returns — `text`, `hole`, `sprawl`, `echo`,
+`conflict` — minted and defined in its own `LENSES.md` preamble, the text
+pasted into every lens agent's prompt; this entry is the condensed pointer, and
+that file owns them. `text`, `hole` and `echo` carry the meanings the entry
+above points at, with the skill as the document; **`sprawl`** is this pool's own
+word, and `LENSES.md` is where to read what it means. Four are repaired by
+`dror-skill-repair`. A `conflict` between two owners waits for the user.
 
 ## Evidence for a document
 
@@ -155,6 +154,11 @@ and that file owns it.
   mark of a killed session. No run takes one over on its own; `dror-adr-resume`
   is the user asking for it by name, and the only thing that removes a lock it
   did not take.
+- **Self lock** — an ADR lock holding the pid of the session reading it: the mark
+  of a run interrupted in this same session, since the pid is the session's and
+  outlives every run inside it. Reported and cleared like a stale one, and
+  neither is taken over without the user, because two runs at once in one session
+  wear that pid too (`WORKTREE.md`).
 - **Guard** — one condition a project must satisfy before a worktree may sit
   inside it: `.claude/` gitignored, pytest's `norecursedirs` naming it, mypy's
   `exclude` covering it. A guard that does not hold stops the run.
@@ -170,9 +174,18 @@ and that file owns it.
   forked run's text returns only at the end (ADR 0042), so this is the only way
   to watch a drain while it works — `tail -f` it.
 - **Round outcome** — `picked` when a ticket is taken, rewritten to `finished`,
-  `skipped` or `stopped` when its round ends. An entry left at `picked` is an
-  interrupted round, and it is the only thing that distinguishes one from a
+  `skipped`, `parked` or `stopped` when its round ends. An entry left at `picked`
+  is an interrupted round, and it is the only thing that distinguishes one from a
   completed ticket (ADR 0031).
+- **Parked ticket** — one the drain set aside because it raised a question only
+  the user can answer, together with everything waiting on it. The drain works
+  the rest of the list and reports the question; nothing is guessed and nothing
+  is built on it (ADR 0054).
+- **Standing answers** — `interview-<ADR>.md` in the user's checkout's store,
+  written by `dror-interview` and edited by hand: the answers to the
+  questions a drain of that ADR can be expected to meet. A drain applies one
+  where it plainly settles the question in front of it, quotes the file in its
+  log, and parks the ticket where it does not.
 - **Directory override** — `dror-implement-adr` §0a's sentence, "All commands
   run in `<path>` …", carried verbatim into every prompt a drain hands down.
   Prose to every agent that obeys it; an argument to `dror-code-review` and
@@ -181,11 +194,14 @@ and that file owns it.
   the harness's spawn-depth cap — which strips an agent at the cap of its
   spawn tool and silently drops a forked skill's arguments (ADR 0043). The
   duties an obeying fork honours are `DIRECTORY-OVERRIDE.md`'s, on the shelf.
-- **Step agent** — a spawned agent given another dror skill's file to follow,
-  the carrier `dror-code-review-repair` and the drain's fold use in place of a
-  `Skill` fork, which can arrive without its arguments when made from inside
-  a fork (ADR 0044). How one is spawned and what its brief opens with are
-  `STEP-AGENT.md`'s, on the shelf.
+- **Step agent** — a spawned agent given another dror skill's file to follow.
+  It is the carrier **every** skill-to-skill hand-off in this repo uses, in
+  place of a `Skill` fork, which can arrive without its arguments when made from
+  inside a fork (ADR 0044, ADR 0055, ADR 0056, ADR 0059). No list of its users
+  is kept here: `carrier-check.sh` enforces the rule and its exemption list is
+  empty on purpose, so an enumeration would only fall behind the next hand-off.
+  How one is spawned and what its brief opens with are `STEP-AGENT.md`'s, on the
+  shelf.
 
 ## The stores
 
@@ -219,6 +235,15 @@ These words are the same in every `dror-*` run.
   (ADR 0021). `Run:` and `Round:` sit beside it and say **who** wrote the file,
   which is what tells a reader its own run's second write from another run's
   first.
+- **Phase report** — `adr-sweep-report-<tag>.md` in the store: what a
+  `dror-adr-sweep` run's members left for somebody else — the conflicts,
+  revisits, ungrounded items, breaches and unfiled ticket drafts of the whole
+  set, collected by kind and appended as each member ends. It is where those go
+  instead of on screen, which is what keeps a long sweep quiet (ADR 0052).
+- **Phase state file** — `adr-sweep.json` in the store: where a `dror-adr-sweep`
+  run has got to over a decision directory — the set, the phase tag, and each
+  member's state and ending word. A current position, not a history, like the
+  drain's (ADR 0052).
 - **Refutation log** — `~/.claude/dror-skills/refutations.tsv`, outside any repo: one
   line per merged finding, appended by every review and never rewritten. Its
   `summary` is what a finding *claimed*; why it died is in the report the
@@ -247,9 +272,9 @@ These words are the same in every `dror-*` run.
 - **Finding id** — `<head>-<tag>-r<k>-<n>`: the short commit a report was
   written at, the run's tag, the round, and the finding's number
   in it. The one key joining a report, the refutation log and the repair log;
-  the report carries no lens and a `file:line` moves. Three older shapes are in
-  the logs — `<head>-<tag>-<hhmm>-<n>`, `<head>-<hhmm>-<n>` and `<head>-<n>` — so
-  an id is matched **whole** and never split into parts (ADR 0050).
+  the report carries no lens and a `file:line` moves. Older shapes are in the
+  logs beside this one, so an id is matched **whole** and never split into parts
+  (ADR 0050).
 - **Run tag** — a clock reading minted once per review run, by the recipe
   `REPORT-STORE.md` owns. Names the *run* in a report's front matter and in
   `runs.tsv`. It is not the report's file name,
@@ -257,4 +282,6 @@ These words are the same in every `dror-*` run.
   instead, as `dror-code-review-repair` does with `review-report-<tag>-r<n>.md`,
   `dror-adr-review-repair` with `adr-review-report-<n>-<tag>-r<k>.md` and
   `dror-skill-review-repair` with `skill-review-report-<name>-<tag>-r<k>.md`,
-  one file per round (ADR 0041).
+  one file per round (ADR 0041). `dror-implement-adr` mints one for the drain and
+  names the ADR check it runs before its first ticket the same way, at round 1
+  (ADR 0051).

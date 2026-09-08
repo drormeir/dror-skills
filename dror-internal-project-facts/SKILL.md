@@ -27,10 +27,10 @@ skill carries knowledge of none.
 
 ## The store
 
-`<repo>/.claude/dror-skills/` is where `dror-*` skills keep what they learn about the
-repo. `.claude/` is the project's own directory for agent material, so nothing
-is written outside it. The store is disposable — every value in it is
-re-derivable, and deleting it costs one re-gather.
+Where the store lives, how its directory is created and that it is disposable
+are the shelf's rule (`../dror-internal-shared/REPORT-STORE.md`, "The store"),
+stated there once; why it sits under `.claude/` is ADR 0002. What this skill
+writes there is `facts.md`.
 
 `facts.md` holds the five facts and ends with a **stamp**: every file the facts
 were read from, each with its size and its `cksum` checksum, then `facts.md`'s
@@ -106,9 +106,13 @@ than an absent one.
 only the five facts and the stamp need to come back — read into the caller's
 own context, a large `CLAUDE.md` is paid for again by every later agent prompt.
 The subagent does steps 2 and 3 whole: it gathers, writes `facts.md` with its
-stamp, and returns the five facts. The caller takes them as held and goes on;
-it does not read the rule files or the store again. A hit never needs this —
-step 1 opens no rule file.
+stamp, and returns the five facts. **Point, never paste** (ADR 0038): it is
+given the absolute path `${CLAUDE_SKILL_DIR}/SKILL.md` and told that step 2,
+"What earns a line" and step 3 of that file are what it runs. It reads them
+there, so the cap, the stamp format and the what-earns-a-line test reach it
+whole; a prompt that paraphrases them loses one. The caller takes them as held
+and goes on; it does not read the rule files or the store again. A hit never
+needs this — step 1 opens no rule file.
 
 ## What earns a line
 
@@ -140,7 +144,7 @@ of the thing, the command. A rule that takes a paragraph to state is a pointer.
 
 Write `<repo>/.claude/dror-skills/facts.md`: the five facts under five headings, then
 the stamp — every file read in step 2 with the size and checksum from one
-`cksum` over them. Create the directory when it is absent. Where `cksum` is
+`cksum` over them. Where `cksum` is
 absent, stamp size and mtime and note that in the file, so the next run knows
 which rule it is comparing under.
 

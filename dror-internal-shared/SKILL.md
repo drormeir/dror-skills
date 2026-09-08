@@ -34,6 +34,17 @@ that sharpening a rule sharpens every run that obeys it.
   must satisfy before one may sit inside it, what is symlinked in, the preflight
   that proves the environment, and how a later run adopts what it finds. Read
   whole by the drains that create or resume one.
+- [`DIRECTORY-OVERRIDE.md`](DIRECTORY-OVERRIDE.md) — what the sentence "All
+  commands run in `<path>` …" obliges a run handed it to do: where its commands
+  run, what `<repo>` means, what every agent it spawns is given, and why the
+  injected facts block is void. Read whole when that sentence arrives and not
+  otherwise — a direct run has no override and skips it. Which of a skill's
+  commands the duties reach is each obeying skill's own list.
+- [`STEP-AGENT.md`](STEP-AGENT.md) — the carrier for a run that must invoke
+  another dror skill and cannot trust a `Skill` fork to deliver its arguments:
+  how the agent is spawned and what its prompt must open with. Read whole by
+  the loops and folds that drive a step this way, before the step is spawned.
+  When the carrier applies is each driving skill's own.
 - [`DELEGATION.md`](DELEGATION.md) — what a sub-skill's closing contract means to
   its caller, and the shape a delegating step must have: it ends on a named next
   action, and the sub-skill's own stop is never edited to suit it. Read whole at
@@ -49,13 +60,20 @@ that sharpening a rule sharpens every run that obeys it.
   stamped with the `ETag` of the upload they were read off, and closing with the
   places this repo diverges on purpose. It is prose for a person deciding what
   the rules are; nothing at run time reads it, and only
-  `dror-skill-vendor-rules` in `refresh` mode rewrites it. Two scripts sit beside it, each owning one half of the work:
+  `dror-skill-vendor-rules` in `refresh` mode rewrites it. Two scripts serve it, each owning one half of the work:
   [`skill-rules-check.sh`](skill-rules-check.sh) takes a skill directory and
   prints one `BREACH:` line per rule broken — it enforces them, so it is where
   their numerals live (ADR 0049) — and
   [`anthropic-stamp.sh`](anthropic-stamp.sh) compares the stamp against what the
   source serves now and prints one `VENDOR:` line. The rules file owns the URL,
   the `ETag` and the rules in prose.
+- [`carrier-check.sh`](carrier-check.sh) — the house rule the other two do not
+  own: no skill invokes another skill with `Skill` from inside a forked context
+  (ADR 0057). Takes a skill directory, prints one `BREACH:` line per offending
+  invocation or `CLEAN`, and holds the exempt caller→target pairs with the
+  decision granting each. `dror-skill-review` runs it beside
+  `skill-rules-check.sh`; the two are separate because they answer to separate
+  owners — what Anthropic publishes, and what this repo decided.
 - [`CONTEXT.md`](CONTEXT.md) — the glossary. One entry per word these skills use.
 - [`DROR-SKILLS.md`](DROR-SKILLS.md) — the map: what each skill is for and how
   they chain.

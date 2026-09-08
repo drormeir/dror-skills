@@ -69,9 +69,10 @@ the diff does not touch is not this run's business. A criterion the diff
 the criterion's number — which sorts with the latent hazards: it is neither a
 bug in what was written nor a gap in cover.
 
-**Nothing is written to the tracker here — no box, and no comment.** Ticking
-belongs to `dror-prove`, which holds the criterion-to-test mapping, and unticking
-to `dror-code-repair`, which watches a test go red. This run's per-criterion verdicts
+**Nothing is written to the tracker here — no box, and no comment.** Which skill
+moves a box in which direction, and why, is owned by
+`../dror-internal-shared/DROR-SKILLS.md` §Who may move a checkbox and is not
+restated here. This run's per-criterion verdicts
 — one line per criterion, `met` / `unmet` / `not touched by this diff` — go in
 the **report**, in a section of their own, so the report carries the judgement
 and the boxes carry the evidence. The ticket is read and never written.
@@ -191,7 +192,10 @@ below, which is told not to re-report what it holds. These findings enter the
 report as confirmed bugs under the reserved lens name `tool`, and the pass is
 not a lens: it appears in none of the three lens columns. A facts
 block whose verification commands are unstated skips the pass, and the report
-says so.
+says so. A stated command that cannot be executed — the tool absent, a crash, a
+timeout, a non-zero exit carrying no diagnostic — is the same state arriving
+another way: the pass is skipped for that command, and the report names it and
+what it did rather than calling the commands unstated.
 
 **Cut the caller boundary once, by command.** Every lens is capped at the
 changed files plus their direct callers, and a lens made to find those callers
@@ -237,9 +241,10 @@ wider diff makes each lens dig deeper, not multiply. Where more than five
 qualify, keep the ones whose concerns this diff most obviously raises and say in
 the report which were dropped, so a reader knows what was not looked at.
 
-**The models, the read boundary, what came back and the merge are the shelf's**:
-`../dror-internal-shared/LENS-FANOUT.md` holds them in one copy for all three
-reviews. Read it whole before launching the batch. It is not restated here.
+**The models, the read boundary, what came back, the merge and the refute
+fan-out are the shelf's**: `../dror-internal-shared/LENS-FANOUT.md` holds them
+in one copy for all three reviews. Read it whole before launching the batch. It
+is not restated here.
 
 **What this run gives each lens, inside that boundary.** The changed files, and
 the direct callers of what the diff touches.
@@ -247,9 +252,8 @@ the direct callers of what the diff touches.
 **The key this review groups by**, in the merge the shelf describes, is the
 finding's `file:line` and its failure scenario.
 
-**Refute.** Hand each merged finding to one independent agent, all launched in
-parallel — one refuter per finding, however many survived the merge, with **no
-cap**. Each is given: its finding; the path of the store's `facts.md`; the path
+**Refute**, on the shelf's fan-out terms. **What this run gives each refuter**:
+its finding; the path of the store's `facts.md`; the path
 of a **slice file** holding the diff hunks touching its finding's files — not
 the whole diff, since a refuter judges one `file:line` against the live tree
 and the full diff read once per refuter is the run's dominant token cost; the
@@ -275,12 +279,6 @@ awk -v f='<path as it appears after b/>' \
 The capture is the one the lenses read, so the slice is the same diff they
 saw; and the hunks never pass through this context, which is the point.
 
-Every suspect is checked: cutting the list here would put unchecked suspicions
-in the report, which is the one thing this step exists to prevent, and a reader
-cannot tell an unchecked finding from a confirmed one. The cost is controlled
-before this point, not here — fewer lenses, a tighter read boundary, and lenses
-that kill their own weak findings rather than passing them on.
-
 Survivors are the report.
 
 ## Write the report down
@@ -297,13 +295,14 @@ where that name came from a caller, as the reference says, and written to
 whatever path the claim printed. It is the run's record, and later work in this repo reads it
 instead of deriving the same findings again.
 
-Front matter first: **the ticket this report is for** — `Ticket: <n>`, or
-`Ticket: none` for a review of no ticket — then the base the diff was taken
+Front matter first: **the ticket this report is for** — `Ticket: <n>`, the
+identity line — then the base the diff was taken
 against and how it was chosen
 (upstream merge base, the remote default branch's merge base, or `HEAD` for a
 repo with no usable remote ref), the commit
 `HEAD` was at, the time this report was written (`date +%H%M`, the same call the
-log's date comes from), **this run's tag**, **what the concurrency check saw**,
+log's date comes from), **this run's tag**, **this run's round**, **what the
+concurrency check saw**,
 the changed paths reviewed, and — where the caller
 narrowed the scope — that scope as it was given, with the count of changed files
 it left out. Both commits are
@@ -330,8 +329,10 @@ claims went in, and a claim inserted above a survivor has moved it. The project
 facts stay in `facts.md`, where they already are.
 
 **Every finding carries an id**, survivors and kills alike, minted by the
-reference's rule from the front matter's commit, this run's tag, the report's own
-time and the finding's number. Number the kills on from the survivors, in the
+reference's rule from the commit `HEAD` was at — the front matter records that
+and the base the diff was taken against, and this is the one the recipe calls
+`<head>` — this run's tag, this run's round
+and the finding's number. Number the kills on from the survivors, in the
 order `## Refuted` lists them, so every merged finding has one and the two
 sections never mint the same id twice.
 
@@ -462,10 +463,13 @@ decide whether to spend a repair at all.
 
 Then stop and wait.
 
-Done when the tool pass has run or been skipped as unstated, every lens has
+Done when the tool pass has run or been skipped with the report saying why, every lens has
 returned, the findings have been merged, every merged
 finding has faced a refuter, the claims the refutations called for are written,
-the repair-or-not line is on screen,
+the repair-or-not line is on screen, the report file this run wrote is named
+there, what the concurrency check saw is on screen and in that file's front
+matter, — where the caller narrowed the scope — what the narrowing left out is
+on screen too,
 this run's report
 file holds the survivors, the refuted and — where a ticket was named — the
 per-criterion verdicts, every merged and every `tool` finding has a line in

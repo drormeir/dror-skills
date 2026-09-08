@@ -116,15 +116,13 @@ Before anything is written, ask three questions and report all three:
 
 **`<base>` is `dror-code-review`'s base, found `dror-code-review`'s way**, because a
 disagreement here reports work the review will not see, or stops a run over work
-that is already pushed. So: `git rev-parse --abbrev-ref
---symbolic-full-name @{upstream}` and count from `git merge-base @{upstream}
-HEAD` where there is one; where there is **no** upstream — which does not mean
-nothing is pushed, only that this branch tracks nothing — try
-`git merge-base origin/HEAD HEAD`, then `origin/main` or `origin/master` where
-`origin/HEAD` is unset. Only a repo with no usable remote ref at all has nothing
-to count against, and there every commit is unpushed by definition: say that is
-the case rather than reporting a number. Name which of the three you used, since
-step 3 will name it again and the two must agree.
+that is already pushed. Find it the way `../dror-code-review/SKILL.md` §Review
+"Find the base" says, and count from what it gives you. Its last case ends
+differently here: it falls back to `HEAD` as a review scope, but a repo with no
+usable remote ref at all has nothing to count against, and there every commit is
+unpushed by definition — say that is the case rather than reporting a number.
+Name which base you used, since step 3 will name it again and the two must
+agree.
 
 - **The project's full suite**, in its quiet form, over the tree as found — the
   **baseline**. A caller may hand this step a green run instead: the command,
@@ -210,7 +208,9 @@ write without one — are yours to write; the criteria list is not.
 
 ## 2. Prove
 
-Invoke the `dror-prove` skill for this ticket:
+Spawn the prove agent — `dror-prove`'s file, by the shelf's carrier
+(`../dror-internal-shared/STEP-AGENT.md`), with §0a's sentence at the top of
+its brief where this run holds one:
 
 > Prove ticket `<N>`: one test per acceptance criterion, each seen to fail before
 > it counts, and tick only the boxes whose tests went green. Go ahead without
@@ -219,9 +219,27 @@ Invoke the `dror-prove` skill for this ticket:
 > and a criterion the full suite will settle later (the verification gate) is
 > left unticked with its Note naming the run it waits on.
 
+**It rides an agent, not a fork** (ADR 0044, ADR 0056). `dror-prove` carries
+`context: fork` of its own, and a fork made from inside this forked run can
+arrive without its arguments — silently, at no depth that can be computed
+(ADR 0043). What its arguments carry is the ticket number and, under a drain,
+§0a's sentence: a bare fork has no ticket to prove and stops, but one that kept
+the ticket and lost the sentence writes tests into the session's checkout
+instead of the worktree. `dror-prove` spawns nothing of its own, so the swap
+costs no depth.
+
+**Read the agent's returned toplevel before anything else it says.** The
+carrier requires `git rev-parse --show-toplevel` as the agent's first line. A
+toplevel that is not this run's tree means the proving happened somewhere else:
+no box it ticked can be trusted and no test it wrote is where this run will
+commit from. **End the run there**, say which tree came back and which was
+expected, and tick nothing — a caller reading this run's summary needs to learn
+it from the summary rather than from a later step's confusion.
+
 **The waiver is deliberate and it is narrow.** `dror-prove` shows its
-classification and waits, "unless the user has already said to go ahead" — and
-here they have, by asking for a run this file promises will not stop. What is
+classification and stops for a go-ahead, and owes neither the showing nor the
+stop "where the invocation has already said to go ahead" — and here it has, by
+asking for a run this file promises will not stop. What is
 *not* waived is the question it asks about a criterion that reads two ways: that
 one still stops, and rightly, because guessing produces a green box against a
 test proving something else. It should rarely fire, since step 1 already ends
@@ -235,11 +253,15 @@ not finished, and nothing but step 3 will find what the implementation got wrong
 
 ## 3. Loop review and repair
 
-Invoke the `dror-code-review-repair` skill. It runs `dror-code-review` and `dror-code-repair` as
+Spawn the loop agent — `dror-code-review-repair`'s file, by the shelf's carrier
+(`../dror-internal-shared/STEP-AGENT.md`). It runs `dror-code-review` and `dror-code-repair` as
 rounds until the work converges, judges each round itself, and stops on its own
-cap — none of which is this file's business any more.
+cap — none of which is this file's business any more. It rides an agent rather
+than a `Skill` fork for the reason every other step here does (ADR 0044,
+ADR 0059): a fork made from inside this forked run can arrive without its
+arguments, and this run's arguments are the ticket and the tree.
 
-**Under a directory override, fold the loop in instead of invoking it.** A
+**Under a directory override, fold the loop in instead of spawning it.** A
 drain run's arguments carry §0a's sentence — "All commands run in `<path>` …"
 — and one fork below this run is the harness's spawn-depth cap, which delivers
 a fork invoked from there with no arguments at all (ADR 0043): a forked loop
@@ -253,15 +275,12 @@ says — as spawned agents given the step files, by the shelf's
 arguments. Carry the override sentence into each of those briefs, as it
 instructs. The loop file's closing summary becomes this step's result rather
 than a returned one, and its stop is its own (DELEGATION.md) — this step's
-named next action below still ends the step. Without the sentence, invoke the
-skill as ever. Either way, the prompt:
+named next action below still ends the step. Without the sentence, spawn the
+agent as above. Either way, the prompt:
 
 > Review and repair the unpushed work for ticket `<N>`. **A `dror-prove` follows
-> this loop**, so pass the ticket number down to every round's review and every
-> round's repair: a criterion the diff claims and misses is an `unmet criterion`
-> finding, and a box whose test a repair sees go red is unticked by it. **Cap the
-> loop at three rounds.** Report which boxes moved, so the prove that follows
-> knows its list. **This is a chain run: notify nothing.**
+> this loop.** **Cap the loop at three rounds.** Report which boxes moved, so the
+> prove that follows knows its list. **This is a chain run: notify nothing.**
 >
 > The tree is dirty **because this run wrote it** — the implementation for this
 > ticket, and the tests a prove wrote for its criteria. That is the work you are

@@ -1,5 +1,11 @@
 # A loop's step rides an agent, not a fork
 
+> **The deferrals at the end are closed.** ADR 0055 took the two loops,
+> ADR 0056 two chain steps, and ADR 0059 the last two hand-offs; nothing in
+> this repo now forks a skill from inside a fork. The decision below is
+> unchanged and general — only its closing list of what was left for later has
+> been overtaken.
+
 `dror-code-review-repair` used to invoke `dror-code-review` and `dror-code-repair` as the
 `context: fork` skills they are, and unfork them only under a directory
 override (ADR 0043's fold). The fork carrier failed outside the drain too:

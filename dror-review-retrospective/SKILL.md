@@ -28,9 +28,10 @@ writes (ADR 0045).
 Tab-separated; the columns are whatever its own header row names — the shelf's
 `REPORT-STORE.md` owns the schema and this skill assumes none of it, so the log
 stays self-describing if the schema grows. The columns
-read here are `date`, `repo`, `lens`, `path`, `verdict`, `claim`, `summary`,
-`round`, `subject` and `run_tag`; a header missing one of those makes the
-questions that need it unanswerable, which is said rather than guessed around.
+read here are `date`, `repo`, `lens`, `path`, `kind`, `verdict`, `claim`,
+`summary`, `round`, `subject` and `run_tag`; a header missing one of those makes
+the questions that need it unanswerable, which is said rather than guessed
+around.
 
 **`round`, `subject` and `run_tag` arrived late and most rows predate them**
 (ADR 0041).
@@ -86,11 +87,14 @@ itself, against other documents, against the ticket set, or against the reader. 
 to do with each other, so ranking `coherence` against `claims` measures the axis
 and not the lens. Group the ADR pool by axis before comparing anything within
 it, and say which axis a rate belongs to whenever you print one. The log written before this rule
-carries five rows under `spec`. `verdict` is `survived`, `refuted` or `unverified`. Every
-merged finding faces a refuter, so the only line here that never faced one is a
-`tool` row. `claim` says
-whether a claim comment was written where the refutation turned on an invisible
-invariant.
+carries five rows under `spec`.
+
+A kill is a `verdict` of `refuted`, which is what the refuted-over-total rates
+below count; what else that column may hold is the store reference's to say
+(`../dror-internal-shared/REPORT-STORE.md`, "The logs"). Every merged finding
+faces a refuter, so the only line here that never faced one is a `tool` row.
+`claim` says whether a claim comment was written where the refutation turned on
+an invisible invariant.
 
 ## The two files beside it
 
@@ -111,19 +115,33 @@ review run is worth in wall-clock.
 the report's id, carrying that run's outcome word. **Join on the whole string and
 never on its parts** — the store reference's rule
 (`../dror-internal-shared/REPORT-STORE.md`, "The finding id"), stated there once
-with the shapes that make splitting wrong. A **survivor** whose outcome is
-`Couldn't reproduce` or `Ruled out`
-is a finding that passed a lens and a refuter and was still wrong: it is a false
-positive the review scored as a success, and it belongs in question 1's numbers
-beside the refuted ones, named as the different thing it is. Rows with no id sit
-this question out.
+with the shapes that make splitting wrong. A **survivor** whose outcome word
+says the finding was never a defect is a finding that passed a lens and a
+refuter and was still wrong: it is a false positive the review scored as a
+success, and it belongs in question 1's numbers beside the refuted ones, named
+as the different thing it is. **Which words those are follows from the pool**,
+the same disjoint naming that keeps the pools apart everywhere else here: each
+repair skill states its own outcome vocabulary in its own file
+(`../dror-internal-shared/REPORT-STORE.md`, "The logs"), so read
+`../dror-code-repair/SKILL.md` for a code-pool row,
+`../dror-adr-repair/SKILL.md` for an ADR-pool row and
+`../dror-skill-repair/SKILL.md` for a skill-pool row — the pool being the one
+the joined finding's `lens` names, since `repairs.tsv` carries no pool of its
+own. Rows with no id sit this question out.
 
 **An id that appears twice is a collision, not a repeat, and it is reported
-rather than counted.** Two findings under one key are two different defects whose
-outcomes cannot be told apart; the pair predates the tag and is bounded by it, so
-say how many you found and drop them from the join. Counting one of them would
-attribute a repair's answer to the wrong finding, and averaging them would invent
-a third.
+rather than counted.** Two rows under one key cannot be told apart, so say how
+many you found and drop them from the join. Counting one of them would attribute
+a repair's answer to the wrong finding, and averaging them would invent a third.
+
+**Do not read the count as a legacy artifact.** A collision was once a pair of
+distinct findings that shared a key before the tag widened it, and bounded by
+that. It is no longer only that: two repair runs dispatched at one report write
+the same round's ids twice, with different outcomes and different `files_edited`,
+and `~/.claude/dror-skills/repairs.tsv` holds such a pair from 2026-09-07. Those
+are one finding recorded twice, not two findings sharing a key, and nothing
+stops another pair being written tomorrow. So the count is a signal about the
+runs, not a residue of an old id shape — report it as one, and name the ids.
 
 A missing log ends the run: say there is nothing to read yet and stop. A log
 with fewer than about twenty findings in it ends the run the same way — the
@@ -297,9 +315,10 @@ the one drain that measured both showed the count does not predict duration.
 
 Report it beside the buckets above and never instead of them. A round that is
 cheap and finds bucket-three defects is a round to keep whatever it costs; an
-expensive round that finds only bucket one is the case for a lower cap. Rows
-with `-` took no reading and are excluded from the mean rather than counted as
-zero, and the count excluded is stated — and the rows left out for carrying no
+expensive round that finds only bucket one is the case for a lower cap. Which
+rows a `-` leaves out of the mean is the store reference's to say
+(`../dror-internal-shared/REPORT-STORE.md`, "The logs"); the count excluded is
+stated here — and the rows left out for carrying no
 `round` are counted and stated separately, since no clock reading and no round
 index are different exclusions.
 

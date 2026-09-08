@@ -26,8 +26,9 @@ against, what a review judges, and what a closed ticket means.
 | Skill | Question it answers |
 |---|---|
 | `dror-show-tickets` | Which tickets does ADR N have, what blocks what, what landed? |
-| `dror-implement-adr` | Work one ADR's ready tickets to exhaustion, on a branch of its own |
+| `dror-implement-adr` | Work one ADR's ticket list to exhaustion, on a branch of its own |
 | `dror-adr-resume` | Whose is the lock an interrupted drain left, and start the drain again where it is nobody's |
+| `dror-interview` | Answer, up front, everything the drain would otherwise stop to ask |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order |
 | `dror-prove` | Does every criterion have a test that bites? |
 | `dror-code-review` | What is wrong with the unpushed work? |
@@ -37,6 +38,14 @@ against, what a review judges, and what a closed ticket means.
 Above the chain, `dror-adr-review` and `dror-adr-repair` ask whether the decision
 deserved the trust the chain gives it, and `dror-adr-review-repair` loops the two
 over one ADR the way `dror-code-review-repair` loops the pair below.
+`dror-adr-sweep` runs that loop over every ADR in the decision directory, one at a
+time, as the phase before any ticket is worked.
+
+Before leaving a drain to run overnight, `dror-interview` asks — one
+multiple-choice question at a time — everything that drain can be expected to
+stop on, and writes the answers where it reads them. A question it cannot answer
+from that file parks the one ticket it was about, and the drain works the rest of
+the night.
 
 **Reach for them before you write tickets against an ADR**, not after. Everything
 downstream takes the decision on trust — the tickets are cut from it, the tests

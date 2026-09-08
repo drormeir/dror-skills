@@ -7,8 +7,10 @@ it. Read this file whole before writing or reading a report; do not restate it i
 the calling skill.
 
 What is **not** here is any report's own contents. Which findings a report holds,
-in what order, under what headings, and which columns its skill appends to a log
-belong to the skill that writes them.
+in what order and under what headings belong to the skill that writes them, as do
+the **values** it puts in a log's columns — its `kind`, its `outcome` vocabulary,
+what it may write in `concurrent` or `production`. The columns themselves are
+here, in one copy, for every log below (ADR 0026).
 
 ## The store
 
@@ -67,10 +69,14 @@ bare `review-report.md` holding another ticket's report is the same situation
 wearing the default name — keep your own findings, take a name of your own, and
 say on screen which file they went to and why.
 
-**A caller-named path is claimed before anything is written to it**: run
+**The run that writes the report claims the path, and only that run**: run
 [`claim-path.sh`](claim-path.sh), the script beside this file, in its
 `next-free` mode with the path after it, and write the report to the path it
-prints. It creates the file empty and prints either the path asked for
+prints. **A caller that names a path does not claim it.** Naming and claiming
+are different acts, and a caller that does both leaves an empty file at the
+name it announced and forces the writer aside to a `-<k>` the caller never
+hears about — which is the one outcome the announcement existed to prevent.
+Three such empty files sat in this repo's own store before the rule said this. It creates the file empty and prints either the path asked for
 or the same name with a `-<k>` before the extension, and of two writers reaching
 for one path exactly one wins, decided by the kernel rather than by a clock
 reading or a look-then-write. Where it printed a path other than the one asked

@@ -33,13 +33,14 @@ takes an ADR by number and reads the lock path that skill's worktree rules fix.
 
 ## 0. This run does not fork, and that is deliberate
 
-Every other skill the user runs to work the chain carries `context: fork`
-(ADR 0036). This one does not, because it would spend a whole level of the
-harness's spawn-depth cap on four commands: forked, the drain it invokes would
-sit one level deeper than it does today, and ADR 0043 — which owns that cap and
-its arithmetic — ends on the rule this file obeys, that **the chain gains no
-depth**. A drain invoked from here must land exactly where a drain the user typed
-lands.
+Most skills the user runs to work the chain carry `context: fork` (ADR 0036).
+This one does not, because it would spend a whole level of the harness's
+spawn-depth cap on four commands: forked, the drain it invokes would sit one
+level deeper than it does today, and ADR 0043 — which owns that cap and its
+arithmetic — ends on the rule this file obeys, that **the chain gains no depth**.
+A drain invoked from here must land exactly where a drain the user typed lands.
+`dror-adr-sweep` and `dror-interview` do not fork either, and both cite this
+skill as their precedent.
 
 What a fork would have bought is not worth that. This run reads one small file
 and runs three commands; it keeps no working context worth isolating, and the
@@ -73,7 +74,7 @@ host, as `claim-path.sh` wrote them.
 
 ## 2. Say who holds it, before anything is removed
 
-Two questions, two commands, and their answers decide everything below:
+Three questions, three commands, and their answers decide everything below:
 
 ```
 ps -o comm= -p <the lock's pid>
@@ -90,24 +91,34 @@ the case that looks identical:
 echo "$PPID"
 ```
 
+**Three of the four answers below are states
+`../dror-internal-shared/claim-path.sh` defines** — `self`, `live` and `stale`
+are its words, and this skill only reads them. It cannot ask the script for one:
+the script has no inspect mode, the state exists only as a side effect of losing
+a claim, and a call would take a lock this run does not want. So the two commands
+above that name a pid make the script's own comparison by hand. The host is this
+skill's own question, asked nowhere else: no `HELD:` line carries it.
+
 Four answers, and only two of them clear the lock:
 
 - **The lock's host is not this one.** A pid on this machine says nothing about a
   process on another, so nothing here can tell a dead drain from a running one.
   **Stop**, name the host and the pid, and hand the user the release command from
   WORKTREE.md, for them to run once they know.
-- **The pid is this session's own.** Then the claim was made by this very process
-  — an earlier drain in this session, interrupted — and it is not running now,
-  because this session is running this skill instead and a drain blocks the
-  session it runs in. **Clear it.** This is the case the whole skill is for, and
-  it is the one `claim-path.sh` must call live: it asks only whether some
-  `claude` wears that pid, and one does — us.
-- **The pid is another live `claude`.** Another session is draining this ADR
-  right now. **Stop**, name the pid and the time from the lock, and say that the
-  other session is the one to stop or wait for. This is not an offer to override,
-  for WORKTREE.md's reason: the second drain would commit into the first's tree.
-- **No process wears the pid, or it is not `claude`.** The stale holder — a
-  killed session, or a machine that died. **Clear it.**
+- **The pid is this session's own — the script's `self`.** Then the claim was
+  made by this very process, most often an earlier drain in this session,
+  interrupted. It could also be a second drain still working: both wear the
+  session's pid, and `self` cannot separate them — WORKTREE.md owns that blind
+  spot and this file does not close it. **Clear it.** This is the case the whole
+  skill is for: the script stops the drain that meets it, because clearing a lock
+  is the user's word to give, and invoking this skill is that word.
+- **The pid is another live `claude` — the script's `live`.** Another session is
+  draining this ADR right now. **Stop**, name the pid and the time from the lock,
+  and say that the other session is the one to stop or wait for. This is not an
+  offer to override, for WORKTREE.md's reason: the second drain would commit into
+  the first's tree.
+- **No live `claude` wears the pid — the script's `stale`.** A killed session, or
+  a machine that died. **Clear it.**
 
 **Say which of the four it was, in one line, before acting on it.** A lock
 removed without that line is indistinguishable from a lock that was never there,
@@ -144,9 +155,11 @@ unedited** — the stop or the table, the worktree, the log path, all of it. It 
 the drain's account of the drain, and re-wording it is how a reader loses track
 of which layer said what.
 
-Where §2 stopped the run, that line is the whole reply, followed by the release
-command as the user would type it. Nothing about tickets, and no drain summary:
-none ran.
+Where §2 stopped the run, that line is the whole reply, and §2's two stops do not
+end the same way. On the host mismatch it is followed by the release command as
+the user would type it. On a live holder it is not: handing the command over is
+the override that branch refuses. Nothing about tickets either way, and no drain
+summary: none ran.
 
 Done when the holder was named, a lock was removed only in the two cases that
 allow it, the drain was invoked wherever the lock was cleared or absent, and its

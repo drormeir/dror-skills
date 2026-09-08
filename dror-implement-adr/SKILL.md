@@ -1,6 +1,6 @@
 ---
 name: dror-implement-adr
-description: Work one ADR's ticket list to exhaustion on a branch of its own - a side worktree off the remote head, one ticket at a time through dror-implement-ticket, committed ticket by ticket, stopping for the user the moment a ticket raises a question only they can answer. Use when the user names an ADR number and asks to implement it, drain it, or work its remaining tickets.
+description: Work one ADR's ticket list to exhaustion on a branch of its own - a side worktree off the remote head, one ticket at a time through dror-implement-ticket, committed ticket by ticket, parking any ticket that raises a question only the user can answer and draining the rest. Use when the user names an ADR number and asks to implement it, drain it, or work its remaining tickets.
 disable-model-invocation: true
 context: fork
 background: false
@@ -10,8 +10,9 @@ background: false
 
 One ADR goes in. The skill prepares a working directory of its own, then works
 the ADR's ticket graph one ticket at a time until nothing is left that can be
-worked on — or until a ticket raises a question that is the user's to answer, and
-then it stops and asks (§3a).
+worked on. A ticket that raises a question only the user can answer is **parked**
+— it and whatever waits on it leave the list, and the drain works the rest; a
+condition that makes the whole run unsafe stops it (§3a).
 
 It owns no implementation. It is `dror-show-tickets` for the map and
 `dror-implement-ticket` for the work, plus the isolation, the loop and the
@@ -156,6 +157,30 @@ and its work in the wrong one would still pass — but it converts a silent defa
 into a claim on the record, made by the only party that could see, and a wrong
 answer is caught at the first ticket rather than at the merge.
 
+## 0b. Read the standing answers, where there are any
+
+`<the user's checkout>/.claude/dror-skills/interview-<N>.md`, written by
+`dror-interview` before this run and edited by the user since. Read it once,
+here, and say in one line how many answers it holds — or that there is no file,
+which is the ordinary case and not a failure.
+
+**What it settles**, and nothing else: the four standing permissions §3a would
+otherwise put to the user — a dirty tree, an open blocker, a ticket still
+**owed** at its cap, a criterion that cannot honestly be implemented — and the
+questions that run's review raised about this ADR's tickets, each with the user's
+answer beside it. An answer is applied where the question the drain meets is the
+question the file answers, and **the file is quoted in the log when it is
+applied**: a permission exercised silently is one nobody can audit afterwards.
+
+**It never widens the three that end a drain whatever it says** — the red
+baseline, a ticket run that was in the wrong tree, a dirty tree holding somebody
+else's work. §3a owns those, and no file overrides them.
+
+**An answer that does not fit the question is no answer.** The file is prose
+written days earlier; where what it says does not plainly settle what the drain
+is looking at, treat the question as unanswered and park the ticket by §3a. A
+stretched answer is the drain deciding what to build.
+
 ## 1. The project facts warm themselves
 
 **Do not invoke `dror-internal-project-facts` on its own.**
@@ -206,6 +231,13 @@ would answer a question the table has already answered: `Blocked by #NN` and
 **topological order** of it, and a loop that works one ticket to completion
 before starting the next satisfies every dependency by construction. No round can
 uncover a blocker the first scan did not show, because no round can create one.
+
+**The ADR check below is not a rescan either**, and the distinction is worth
+keeping straight: it reads the ticket *bodies* against the decision and against
+each other, which is a question about what the criteria say, while the table
+answers what is ready and what blocks what. It never adds a node, removes one or
+reorders the list — where it finds something, the run stops — and it runs once,
+beside the scan rather than inside the loop.
 
 ### Build the work list, once
 
@@ -282,6 +314,11 @@ and ask, rather than reporting a drained ADR with an undecided ticket in it. A r
 whose status this skill genuinely cannot read is a stop the same way, at the
 moment the list is built rather than at the end.
 
+**The finished list goes to the progress log.** Append it here, once, in the
+order the sort produced, before the first round starts — logged and not
+notified, as the preflight's lines are. The progress log paragraph below owns
+the path and where the entry sits among the rest.
+
 ### What an earlier session left, if anything
 
 **A virgin ADR pays one line for this section.** Three questions, from the calls
@@ -326,19 +363,20 @@ words in that sentence are what keeps it honest:
 
 - **Worked.** A skipped round takes seconds and is not a sample of anything;
   averaging it in halves the estimate and the drain then runs twice as long as
-  it promised. Skips are excluded from the mean, and so are stalls — a ticket
-  that stopped early spent less than one that finished. Where a round was
-  skipped or stalled, that line's ETA carries `(from <k> worked)` so the
-  reader can see how thin the mean is.
+  it promised. Skips are excluded from the mean, and so are stalls and parks —
+  a ticket that stopped early, or that was parked on a question, spent less
+  than one that finished. Where a round was skipped, stalled or parked, that
+  line's ETA carries `(from <k> worked)` so the reader can see how thin the
+  mean is.
 - **Mean, not a trend.** Tickets differ by more than any curve fitted to three
   of them can predict, so take the plain mean and do not weight the recent
   ones. The `~` is doing real work in that line.
 
 **One worked round is not an estimate.** Print `ETA — one sample` rather than
 a number, and start estimating at the second. And where every round so far was
-skipped or stalled, there is no mean at all: print `ETA — none yet`, never a
-number derived from the elapsed time divided by rounds, which is the same
-mistake with the arithmetic hidden.
+skipped, stalled or parked, there is no mean at all: print `ETA — none yet`,
+never a number derived from the elapsed time divided by rounds, which is the
+same mistake with the arithmetic hidden.
 
 The estimate assumes every remaining ticket is worked. Some will be skipped,
 so the ETA is an upper bound rather than a guess — worth saying once, in the
@@ -346,13 +384,19 @@ summary, not on every line.
 
 ### The ticket runs in its own context
 
-Step 4 invokes `dror-implement-ticket` once per ticket, and that skill's own
-frontmatter forks it (ADR 0036): the run happens in an agent of its own and
-only its closing summary lands here. Nothing in this file spawns it — the
-arrangement ADR 0035 chose is now the sub-skill's to provide, and what this
-step writes is the invocation's argument. Steps 5, 6 and 7
+Step 4 **spawns** `dror-implement-ticket` once per ticket — its file, by the
+shelf's carrier (`../dror-internal-shared/STEP-AGENT.md`) — and only that
+agent's closing summary lands here. Steps 5, 6 and 7
 stay here, in this context, because they are git and tracker questions this skill
 asks for itself and the answers are what §Present is built from.
+
+**Spawning is what ADR 0035 built, and this step has come back to it**
+(ADR 0059). ADR 0036 replaced the spawn with a `Skill` fork because the ticket
+skill's own `context: fork` gave the same boundary for nothing; ADRs 0043 and
+0044 then found that a fork made from inside a fork can arrive without its
+arguments at all. The boundary was never the doubtful half — the delivery was.
+An agent given the file provides both, and what this step writes is that agent's
+brief rather than an invocation's argument.
 
 **Why.** A ticket run is the whole chain — an implementation, two proves, a
 review-repair loop at the cap `dror-implement-ticket` names, and sometimes a
@@ -412,6 +456,95 @@ every blocker before anything that waits on it. A direct
 `dror-implement-ticket` run is untouched and still asks for itself, which is
 what that skill's own file says and what DELEGATION.md forbids editing it for.
 
+### The ADR is read once, before the first ticket
+
+**A criterion can be unwinnable before its ticket is ever picked.** The tickets
+were cut from one decision and are read one at a time, so two of them can ask for
+opposite things and each still read correctly on its own: one ticket lands the
+thing another ticket's criterion forbids, and that ticket then spends a whole
+implementation, a review-repair loop and a settling loop on a box that could
+never have been ticked. Nothing in the ticket chain can see it —
+`dror-implement-ticket` is given one number and judges one contract — and the
+lens that can, `dror-adr-review`'s `tickets`, reads the whole set at once. **It
+is answerable from the bodies alone, before any of them is implemented**, which
+is why one reading buys most of it.
+
+**When.** Once, after §3's list is built and before the first ticket is picked.
+Two things skip it: **an empty work list**, and **an ADR whose spec row said
+`No tickets yet`**, which §3 has already ended the run on. Say the skip in one
+line rather than passing over it silently.
+
+**What it costs.** One `dror-adr-review` per drain — a lens fan-out with a
+refuter under every finding, minutes against an ADR's hours. Bounded, and paid
+at the one moment when nothing has been built to misattribute it to.
+
+**What it therefore does not catch**, said here because a check that runs once
+looks like a check that runs always: a conflict that **appears after the drain
+starts**. A ticket run may amend a body, a criterion may be written against work
+that landed in this drain, and the user may edit the tracker mid-run — and none
+of those is read again. Catching them needs the check between every pair of
+tickets, which is one review per worked ticket, and that price was refused
+(ADR 0051 holds the limitation and what it would cost to close). What is left is
+the case the incident was: two tickets that disagreed from the moment they were
+written.
+
+**What is run.** Spawn the review agent — `dror-adr-review`'s file, by the
+shelf's carrier (`../dror-internal-shared/STEP-AGENT.md`) — with §0a's sentence
+at the top of its brief, and name its report path so a resumed drain's check
+cannot overwrite an earlier one's:
+
+> `<worktree>/.claude/dror-skills/adr-review-report-<N>-<tag>-r1.md`
+
+`<tag>` is this drain's tag, minted by the store's recipe here and written to the
+state file. Tell the review that tag and round 1, so its finding ids and its log
+rows carry them.
+
+**It rides an agent, not a fork** (ADR 0044, ADR 0056). `dror-adr-review`
+carries `context: fork` of its own, and a fork made from inside this forked run
+can arrive without its arguments — silently, and at no depth that can be
+computed: the sessions on record disagree about where the drop happens (ADR
+0043). **The nesting is under the cap** — `dror-implement-adr` (0) →
+`dror-adr-review` (1) → its lenses and refuters (2) — so no fold is needed here,
+and that is the only thing a level count settles: a fold buys a level, and the
+carrier buys delivery. Here the
+arguments carry §0a's sentence, so a bare fork would review the session's
+checkout rather than the worktree — the drain's own incident, one level up.
+The agent's first returned line is its toplevel, and **it is read before any of
+what follows**: a toplevel that is not the worktree means the check ran
+somewhere else, none of its findings count, and §3a owns what happens next. The
+fan-out is unchanged — the
+review still spawns its lenses and refuters one level below the agent, where
+they are leaves.
+
+**What comes back, and what this skill does with it.** Only one kind moves the
+drain:
+
+- A **`conflict` naming a ticket on the work list** is what the check is for.
+  Where §0b's answers file settles it, apply the answer and say so. Otherwise
+  **park both tickets it names** by §3a, with the criteria quoted as the review
+  returned them: either of the two may be the one that gives way, so neither can
+  be worked until somebody says which. It is a call about what should be built,
+  which is the user's, and answering it here would be the loop's own interest in
+  getting started deciding it.
+- **Every other survivor is recorded and acted on by nobody here.** Write the
+  kinds and the report path into the state file, name them in §Present, and start
+  the loop. This drain repairs no document: an ADR's prose is sharpened by
+  `/dror-adr-review-repair` before the tickets are worked, and a document edit
+  made inside a branch of implementation work lands the decision and the code it
+  governs in one diff. Which hand each of those kinds goes to is
+  `../dror-internal-shared/DROR-SKILLS.md` — the shelf beside this skill —
+  §Above the chain's to state, and none of them is this drain's.
+- **No report at all** — the review's own answer for a stub or superseded ADR,
+  one sentence and no lenses — is one line and on to the first ticket. It is not
+  a stop and not a failure; an ADR that is a stub had no criteria to protect.
+
+The review writes its report and stops, and **that stop is the review's, not this
+run's** — the shelf's `DELEGATION.md` owns what that means, and a written report
+is exactly the deliverable's shape that reads as a finished turn. So this check's
+named next action, both branches concrete: **immediately after the review
+returns, and in the same turn, either park what its conflicts name by §3a, or
+take the first ticket off the list at step 1.**
+
 ### Then, each round
 
 1. Take the next ticket off the list. Empty: the loop is done — go to §4.
@@ -428,6 +561,10 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    count, which includes the ones the graph excluded. Neither number is computed
    from anything new: the list, what remains of it and the attempted set are
    already in hand, and already written to the state file at step 3.
+
+   `elapsed <so far>` obeys §The clock and the ETA: on round 1 the field is
+   dropped from this line altogether rather than printed as `elapsed 0m`, and
+   it appears from round 2 on.
 
    This line is not decoration and it is not optional. A round is one
    `dror-implement-ticket` run — hours, not minutes — and §Present's table does
@@ -458,10 +595,11 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    entry's `outcome` set to `picked`**, before the work starts, not after. Step 7
    rewrites that one word when the round ends; until it does, the entry says a
    ticket was taken and never finished, which is exactly what it means.
-4. **Invoke the ticket**, by the section above: `dror-implement-ticket` with
-   that number, its argument opening with §0a's sentence and asking for the
-   facts that section lists; the fork is the skill's own.
-   "In the worktree" is not a place this skill can put it, and for a forked
+4. **Spawn the ticket agent**, by the section above: `dror-implement-ticket`'s
+   file, by the shelf's carrier, with
+   that number, its brief opening with §0a's sentence and asking for the
+   facts that section lists.
+   "In the worktree" is not a place this skill can put it, and for a spawned
    agent that sentence is the only thing that puts it there at all: the agent
    starts in the session's primary working directory whatever this skill did,
    and that run's own step 0 then asks `git status` and `git merge-base`
@@ -526,7 +664,7 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
      unpushed on a verdict of **owed** is unpushed on purpose: the hand-back
      command it returned is `/dror-code-review` over the unpushed work, and a push
      here would leave that command an empty diff to read. Leave it, and let
-     step 6 stop the drain with the command and the push both in the user's
+     step 6 park the ticket with the command and the push both in the user's
      hands.
    - **A green full suite before the commit.** The chain's rule is that the
      suite is owed to the last code change, and a run that stopped early may
@@ -547,13 +685,10 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
      for you — stage by path, never `git add -A`, or the drain's bookkeeping
      lands in the branch's history.
    - **Name the ticket, never with a closing keyword.** `Closes #N`, `Fixes #N`,
-     `Resolves #N` are not references — where the tracker reads commit messages
-     they *are* the close, performed by the push, whatever the boxes say. The
-     ticket does get closed — by the ticket run's step 8, or by step 7 here —
-     and that is exactly why the keyword must not do it: those two read the
-     boxes, the gate and the push first, while a keyword closes the moment this
-     branch reaches the default one, silently, long after anyone is reading, and
-     with none of the three checked. Write `#N` or `for #N`.
+     `Resolves #N` are not references — `dror-implement-ticket`'s step 6 owns
+     that rule and its reason. Write `#N` or `for #N`. The one thing to add
+     here: the close the keyword would pre-empt is step 7's as well as the
+     ticket run's step 8.
 
    **What the push settles, and why nothing after it reviews.** `dror-code-review`
    takes its scope from `git merge-base @{upstream} HEAD`, so once the ticket is
@@ -583,16 +718,16 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
      call to make later, on the branch, which is what the branch outliving the
      run is for.
    - **owed** — the ticket run reached its cap with a case for continuing still
-     live, and **the drain stops**: a ticket not converging after that many
+     live, and **the ticket parks**: a ticket not converging after that many
      rounds does not get another one built on top of it. Name the ticket, say
      what its last round found, carry its hand-back command verbatim, and go to
      §3a. The work is committed and, by the ticket run's own step 7,
      **unpushed** — which is what keeps that command live: `dror-code-review` reads
      the unpushed work, and a push would empty it. Step 5 above leaves it that
-     way, and §3a hands the user the command and the push together.
+     way, and §Present hands the user the command and the push together.
 
    **An owed whose ground is *a criterion only the user can settle* is the same
-   stop for a different reason** — no round can move it, and the answer is the
+   park for a different reason** — no round can move it, and the answer is the
    user's. It goes to §3a with that ground named, not with a command to run.
 7. **Read the ticket's state, and close it only where the ticket run could not.**
    The close is `dror-implement-ticket`'s own step 8, made against three
@@ -623,8 +758,8 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    `unproven` and `partial` do not tick, so they hold the ticket open on their
    own, which is the check that matters rather than the gesture.
 
-   **Rewrite this round's `outcome`** from `picked` to `finished`, `skipped` or
-   `stopped`, in the same write as the counts below. This is the round's only
+   **Rewrite this round's `outcome`** from `picked` to `finished`, `skipped`,
+   `parked` or `stopped`, in the same write as the counts below. This is the round's only
    claim to have ended, and a resumed run reads nothing else for it — a round
    that reports on screen and never rewrites the word is a round the next session
    will correctly treat as interrupted.
@@ -642,12 +777,13 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    lines — notified, appended to the progress log and printed, as at step 1:**
 
    ```
-   [ADR <N>] <done>/<total> done · <left> left · <stalled> stalled · #<ticket> <verdict>
+   [ADR <N>] <done>/<total> done · <left> left · <parked> parked · <stalled> stalled · #<ticket> <verdict>
    [ADR <N>] #<ticket> took <d> · elapsed <total so far> · ETA ~<estimate> for <left> left
    ```
 
    `<done>` counts the rounds that finished — worked or skipped — `<left>` is
-   what remains on the list, and `<stalled>` counts the rounds whose `outcome`
+   what remains on the list, `<parked>` counts the rounds whose `outcome` reads
+   `parked`, and `<stalled>` counts the rounds whose `outcome`
    reads `stopped`. A stop ends a session, so a count above one is only ever
    read out of the state file a resumed run inherited; a `finished` round whose
    ticket stayed open still counts as done — the round did its work, and the
@@ -665,33 +801,39 @@ what that skill's own file says and what DELEGATION.md forbids editing it for.
    claims a precision it does not have.
 
    The ETA obeys §The clock and the ETA: a plain mean of **worked** rounds
-   only, `(from <k> worked)` where any round was skipped or stalled, and
-   `ETA — one sample` / `ETA — none yet` where there is no mean to take.
+   only, `(from <k> worked)` where any round was skipped, stalled or parked, and
+   `ETA — one sample` / `ETA — none yet` where there is no mean to take. Those
+   two carry the word `ETA` themselves, so each replaces the whole
+   `ETA ~<estimate>` segment rather than filling `<estimate>` — the tilde goes
+   with it.
 
    A stop at §3a prints this line too, before §3a's three lines: the last thing
    on screen should say how much of the ADR the stop leaves untouched.
 
 Termination: every round takes one ticket off the list and none puts one back,
-and the extra review rounds inside a ticket are capped at two. The list is built
-once and only shrinks.
+and the review rounds inside a ticket are bounded by the cap
+`dror-implement-ticket` names. The list is built once and only shrinks.
 
 **The notification.** The one channel a forked run has to a user who is not
 reading a file. `notify-send` is fired once as a ticket is picked, once as its
-round closes, and once where §3a stops the run:
+round closes, once where §3a stops the run, and once where a question parks a
+ticket and the drain carries on:
 
 ```
 notify-send "ADR <N> · ticket <i>/<total>" "#<ticket> starting"
 notify-send "ADR <N> · <done>/<total> done" "#<ticket> <verdict> · <left> left · ETA ~<estimate>"
 notify-send -u critical "ADR <N> stopped — needs you" "#<ticket>: <the question, in one line>"
+notify-send "ADR <N> · #<ticket> parked" "<the question, in one line> · drain carrying on"
 ```
 
-Fire the last one **before** §3a's own lines, so the desktop says a drain is
-waiting at the moment it starts waiting rather than after the summary is
-composed.
+Fire the `-u critical` one **before** §3a's own lines, so the desktop says a
+drain is waiting at the moment it starts waiting rather than after the summary
+is composed. The parked one fires where §3a's parking says it does.
 
 `<estimate>` obeys §The clock and the ETA, exactly as the printed line does —
-the same mean, and the same `one sample` / `none yet` words where there is no
-mean to take. Never a number invented for the notification.
+the same mean, and the same `ETA — one sample` / `ETA — none yet` strings where
+there is no mean to take, each replacing the whole `ETA ~<estimate>` segment
+rather than filling `<estimate>`. Never a number invented for the notification.
 
 **Why this and not the printed line.** A forked skill delivers only its final
 message (ADR 0042), so every progress line this run prints is written where
@@ -706,17 +848,17 @@ a cosmetic channel. Ignore the exit status, never make a round depend on it, and
 say nothing about it on screen — the progress log below is the record, and this
 is only the tap on the shoulder.
 
-**Three, and not one per step.** A notification per sub-skill would be a
+**Four, and not one per step.** A notification per sub-skill would be a
 notification every few minutes for hours, which is how a user learns to dismiss
 them without reading. The ticket boundary is the granularity the user asked for,
 and the stop is the only one that must interrupt — hence `-u critical` on that
 one alone.
 
 **The progress log.** `<worktree>/.claude/dror-skills/drain-<ADR>.log`, plain
-text, one line appended as each is composed: step 1's starting line and step 7's
-two closing lines, verbatim, plus the work list once when §3 builds it and
-§3a's three lines where a stop ends the run. Nothing else — it is a progress
-log and not a second report.
+text, one line appended as each is composed: §0's four preflight lines first,
+then the work list once when §3 builds it, then per round step 1's starting
+line and step 7's two closing lines, verbatim, and §3a's three lines where a
+stop ends the run. Nothing else — it is a progress log and not a second report.
 
 **It exists because this run has no other channel to the user.** A forked skill
 returns its closing summary and nothing before it (ADR 0042), so a drain that
@@ -742,14 +884,25 @@ So write it to `<worktree>/.claude/dror-skills/drain-<ADR>.json` each round: the
 ADR, **the worktree path and the branch**, the work list as built, what remains
 of it, the attempted and skipped
 numbers, one line per round saying what happened, **the run's start and each
-round's start and end in epoch seconds**, and — where §3a ended the run —
-**which ticket stopped it and what was asked**. Read it at the start of a run for
-the attempted and skipped numbers, the stopped ticket, and the earlier rounds'
-durations that the ETA's mean is built from.
+round's start and end in epoch seconds**, **the drain's review tag and the ADR
+check — its report path and the survivors' kinds** — and — where §3a ended the
+run — **what stopped it and what was asked**. Read it at the start of a
+run for the attempted and skipped numbers, the stopped ticket, and the earlier
+rounds' durations that the ETA's mean is built from.
+
+**Only one of §3a's stops names a ticket.** A dirty tree is found at a ticket's
+step 0 and belongs to that number. The other four do not: a red baseline and a
+wrong toplevel from the ADR check both happen before any round exists, and a
+cycle, an unreadable status row and an empty list beside a `Needs your call` row
+are about the list rather than about one node. Where the stop names no ticket,
+write what stopped it in that field and leave no round entry — there is no round
+to carry an `outcome`, and inventing one records a ticket that was never taken.
 
 **Every round entry carries an `outcome`, and it is written twice.** `picked`
 when the ticket is taken, in the same write that adds it to `attempted`; then
-rewritten in place to `finished`, `skipped` or `stopped` when the round ends.
+rewritten in place to `finished`, `skipped`, `parked` or `stopped` when the round
+ends. A `parked` entry carries **the question, verbatim** beside it — it is the
+only record of what the drain wanted to know, and §Present is built from it.
 Both writes matter and neither is the other's substitute: the first is what makes
 a dead session's ticket recoverable, and the second is the only thing that
 distinguishes a ticket this drain completed from one it was interrupted in the
@@ -763,55 +916,114 @@ holds no history worth protecting — losing it costs one re-attempted ticket, a
 below.
 
 **What a resumed run does with this file** — the fresh scan, the stopped ticket
-picked first, an owed stop waiting on the push — **is `RESUME.md`'s to say.**
+picked first, an owed park waiting on the push — **is `RESUME.md`'s to say.**
 What the file carries across is what the tracker cannot say: which numbers this
 drain already tried, and which question it stopped on.
 
 Like every store in this chain it is disposable: unreadable is a miss, never an
 error, and the cost of losing it is re-attempting a stalled ticket once.
 
-## 3a. Stop for the user's judgement
+## 3a. Park the ticket, or stop the run
 
-A round that **stopped** rather than finished ends the drain, and the user is
-asked — and so does a red baseline at §0, before any round exists.
-`dror-implement-ticket` refusing on an open blocker, refusing on a tree it
-found dirty or red, ending on a criterion it could not honestly implement, a
-returned toplevel that is not the worktree, a ticket
-still **owed** at its cap or owed on a criterion only the user can settle, a
-`Needs your call` row that is all the ADR has left,
-a `dror-show-tickets` row whose status this skill cannot read at all — each of
-those is a call about *what should be built*, and this loop's judgement is only
-about *what to build next*. **Unreadable is the test in that last one**, not
-unpickable: a status the table minted and this skill simply does not act on is
-step 2's business and never a stop.
+**A question about one ticket parks that ticket. A condition about the tree or
+the run stops everything.** That line is the whole of this section's shape, and
+it is what lets a drain run overnight: a question raised at 3am costs the ticket
+it was about and the tickets waiting behind it, not the twenty hours that were
+left.
 
-**Two of them are the user's to override, and offering the override is this
-skill's** — the dirty tree and the open blocker. `dror-implement-ticket` offers
-them itself when a user runs it directly; step 4's agent cannot, so it returns
-the question and this is where it is put. Say what the ticket found, say that
-proceeding over it is available, and stop. An override given here costs a fresh
-run of that ticket rather than a continuation of the stopped one, which is what
-§3's fork section says the arrangement costs and the one place it is paid.
+**Parking one.** Set the ticket aside exactly as §3's sort sets aside a node that
+is not workable here — the ticket, and everything downstream of it, off the list
+— write its round's `outcome` as `parked` with the question verbatim in the state
+file, fire the notification, log the three lines, and **take the next ticket off
+the list**. Nothing is guessed and nothing is built on the question: a parked
+ticket's work is whatever was already committed under its number, and its
+question travels to §Present.
 
-**Fire the critical notification first**, by §The notification's third line,
-before the bookkeeping below and before the three lines are composed. A drain
-stops because it needs an answer, and the minutes spent committing and writing
-the state file are minutes the user could already have been reading the
-question. This is the one notification that is allowed to interrupt, and the
-only moment in a drain where the difference is worth anything.
+**Four questions park only where the standing answers do not settle them**:
+a dirty tree at a ticket's step 0, an open blocker, a ticket still **owed** at
+its cap, and a criterion the ticket run could not honestly implement. Where the
+answers file settles one, it is not a question at all — apply the answer, quote
+the file in the log, and carry on. These are §0b's four, and §0b's bound is why
+the list stops there.
 
-**Do not carry on to the next `Ready` ticket.** Continuing costs the user the one
-thing the stop is worth: an answer given now applies to a tree with one ticket of
-work in it, while the same answer given after four more tickets applies to a tree
-whose later work was written against the guess. So: finish the ticket's
-bookkeeping — commit **whatever this run wrote to the tree** and nothing else
-(the store stays out, as at step 5), push it — except a commit whose verdict is
-**owed**, which step 5 left unpushed so its hand-back command still has a diff to
-read, and which the user pushes after running it — write the state file, then say in three lines what stopped, on which ticket, and what
-the choice is. Then stop, and wait. Resuming is a fresh run of this skill; the
-state file makes it cheap.
+**A fifth parks whatever the answers file says.** A package the shared venv does
+not have parks its ticket unconditionally: no standing answer waives it, and none
+can, because the rule it breaks is not a permission this drain holds —
+`../dror-internal-shared/WORKTREE.md` forbids the install outright, in the user's
+own symlinked venv. Do not read an answer that merely bears on the ticket — a
+library this ADR chose, say — as settling it. ADR 0058 rejected asking this one
+up front for that reason: an answers file cannot carry it.
 
-**A stop on a criterion carries its check up with it.** Where the ticket run
+**The conditions that stop the run** are the ones no answer makes safe, and they
+end the drain where they are found:
+
+- a **red baseline** at §0, before any round exists — every later ticket would be
+  worked around a failure that is already there;
+- a ticket run, or the ADR check before the first ticket, whose **returned
+  toplevel is not the worktree** — this skill does not know what that agent read
+  or wrote or where, so it can neither commit nor carry on honestly, and a check
+  that ran somewhere else has not run;
+- a **dirty tree holding work that is not this run's** — committing it puts
+  somebody else's changes under this ADR's number, and every later ticket refuses
+  on it anyway;
+- a **cycle** in the ticket graph, and a row whose status this skill cannot read
+  at all — both are about the list rather than about one ticket, so there is no
+  single node to park;
+- an ADR whose list is **empty while a `Needs your call` row stands**, which is
+  §3's rule and not a round's.
+
+**A drain that parked everything still ends properly.** Where parking empties the
+list, the run finishes at §4 with no round `finished` — the branch is pushed, the
+spec stays open, the worktree stands, and §Present is a page of questions. That
+is the correct outcome of a night whose every ticket needed the user, and it is
+not a failure to report as one.
+
+**Why parking rather than stopping**, and what it costs: ADR 0054. The cost is
+real and is named there — a parked ticket's answer arrives against a tree that
+has moved on, since later tickets were worked after it.
+
+## The bookkeeping, for a park and for a stop alike
+
+Every question above — parked or stopping — is a call about *what should be
+built*, and this loop's judgement is only about *what to build next*. That is why
+none of them is answered here on the ticket's behalf, and why parking is not a
+softer form of answering: a parked ticket is one nobody has decided about yet.
+**Unreadable is the test for a status row**, not unpickable: a status the table
+minted and this skill simply does not act on is step 2's business and neither a
+park nor a stop.
+
+**The two overridable ones are the user's, and putting them is this skill's** —
+the dirty tree and the open blocker. `dror-implement-ticket` offers the override
+itself when a user runs it directly; step 4's agent cannot, so it returns the
+question and this is where it goes: to §0b's answers file where that settles it,
+and to a park where it does not. An override answered later costs a fresh run of
+that ticket rather than a continuation of the stopped one, which is what §3's
+fork section says the arrangement costs and the one place it is paid.
+
+**Fire the notification first**, by §The notification, before the bookkeeping
+below. A stop takes the critical one — the drain is over and the user is the only
+thing that can restart it. A **park takes the ordinary one**: the drain is still
+working, and a night of critical alerts is a night of alerts nobody reads.
+
+**Finish the ticket's bookkeeping either way** — commit **whatever this run wrote
+to the tree** and nothing else (the store stays out, as at step 5), push it —
+except a commit whose verdict is **owed**, which step 5 left unpushed so its
+hand-back command still has a diff to read, and which the user pushes after
+running it — and write the state file with the round's `outcome` and the question
+verbatim. A stop then says in three lines what ended the run, on which ticket
+where one was taken, and
+what the choice is, and waits; a park says the same three lines to the log and
+takes the next ticket. **A stop that took no ticket has no bookkeeping to
+finish**: nothing was written to the tree, no round entry exists, and the three
+lines name what stopped it in the ticket's place.
+
+**What a park costs, and it is not nothing.** An answer given now applies to a
+tree with one ticket of work in it; the same answer given in the morning applies
+to a tree that has ten more tickets in it, and the parked ticket may need
+rewriting against them. That is the trade ADR 0054 makes deliberately, and the
+alternative it was measured against is a machine that did nothing all night.
+
+**A parked or stopped criterion carries its check up with it.** Where the ticket run
 hands back a `noted` or a `partial`, `dror-prove` owes that criterion a
 re-runnable command, a named population and a recommendation — its §Notes
 somebody else must act on. Put the command and the recommendation in those three
@@ -856,9 +1068,11 @@ the worktree it names as standing.
 ## 4. Finish the branch, close the spec, merge nothing
 
 Everything in this section is a **clean finish's** work — the work list emptied
-with no round `stopped`. A run that ended at §3a did its own bookkeeping there
-and never arrives here: it leaves the spec open, and it leaves an **owed**
-commit unpushed on purpose.
+with no round `stopped`. A run that parked tickets reaches it too, and finds its
+conditions unmet: parked children are open children, so the spec stays open and
+the worktree stands, and a ticket parked on a verdict of **owed** leaves its
+commit unpushed on purpose. A run that ended at §3a did its own bookkeeping
+there and never arrives here: it leaves the spec open.
 
 ### The branch is committed and pushed, and this is where that is proved
 
@@ -882,7 +1096,7 @@ The spec issue closes here, and only on conditions read fresh from the tracker
 rather than from this run's memory of what it did:
 
 - Every round in the state file reads `finished` or `skipped`, and none
-  `stopped`.
+  `parked` or `stopped`.
 - **Every child of the spec is `CLOSED`** — `gh issue view <N> --json state` per
   ticket of §2's table, asked now. Not the closes step 7 recorded: a ticket left
   open on its gate, one the graph set aside as not workable here, one skipped
@@ -974,18 +1188,23 @@ of the shape below. It is the shelf's stop, said once: which ADR, who holds it,
 and what the user does about it. Everything the shape below reports on is work
 this run deliberately did not do.
 
-A run that ended at §3a opens with the stop, in three lines: which ticket, the
-question, and that the rest of the ADR is untouched and waiting. Where the
-stop has clearing steps — an owed hand-back's command, the push — they come
+**The questions come first, whatever else the run did.** A run that ended at
+§3a opens with the stop, in three lines: which ticket — or, where the stop took
+no ticket, what stopped it: the red baseline, the ADR check's wrong toplevel,
+the cycle, the unreadable row, the empty list — the question, and that the
+rest of the ADR is untouched and waiting. A run that **parked** tickets opens
+with those instead — one numbered question per parked ticket, its number, the
+question verbatim from the state file, and what is stranded behind it. Where a
+question has clearing steps — an owed hand-back's command, the push — they come
 next as a bare numbered list of commands, verbatim, nothing between them. No
 paragraph defends the stop, rehearses what was not done, or explains the
-override that was not offered — the stop's three lines are its whole case. A
-summary that opens with the tickets that went well and buries the question at
-the bottom is how a run that needed an answer gets read as a run that
-finished.
+override that was not offered. A summary that opens with the tickets that went
+well and buries the questions at the bottom is how a night's work gets read as a
+night that needed nothing — which is the one thing this summary must never
+say.
 
 Then the table, one row per work-list ticket: number, title, whether it
-finished, stalled or was skipped (the why in a word or two), criteria proven
+finished, parked, stalled or was skipped (the why in a word or two), criteria proven
 of how many, the round verdict — the word the ticket run returned, as it gave
 it, with the report tag where its step 5 ran a settling loop — and how long it
 took. The per-round detail belongs to the ticket's own summary and stays
@@ -995,8 +1214,13 @@ track of which layer said what.
 Then single lines, one each and only where it applies:
 
 - Tickets off the list: blocked and behind what, **blocked behind a stall**,
-  or **waiting on the user's call** — the last is the one row the reader can
-  clear themselves.
+  **blocked behind a parked ticket**, or **waiting on the user's call** — the
+  last two are the rows the reader can clear themselves, by answering above.
+- The standing answers: the file §0b read, how many of its answers this run
+  applied, and which. Where there was no file, the one line saying so, and that
+  `/dror-interview <N>` is what writes one before the next run.
+- The ADR check: that it ran, and what it left for somebody else — the kinds and
+  the report path, never the findings themselves. Where it was skipped, why.
 - The spec issue: closed, or the children it still awaits.
 - Worktree path and branch, and removed or the one §4a condition that kept it.
 - The lock: released. Where it was not, the path, so the user can clear it.
@@ -1009,14 +1233,19 @@ Then single lines, one each and only where it applies:
 
 Then the one sentence that matters: what is left to do on this ADR, and stop.
 
-Done when the work list is empty, or §3a stopped the run and its question is on
-screen; and every
+Done when the work list is empty or §3a stopped the run; every parked ticket's
+question and every stop's question is on screen, numbered, above everything
+else; and every
 delegated prompt named the worktree as the directory its
 commands run in, every commit this skill pushed was made over a tree a full
 suite had seen — except a stall's partial commit, which §3a names as partial —
-every attempted ticket has a commit and a pushed state, the
+every attempted ticket has a commit and a pushed state — except the two §3a
+stops that commit nothing, a ticket refused on a tree that was already dirty
+and one whose returned toplevel was not the worktree — the
 state file matches what happened, the branch is clean and level with its
-upstream, the spec issue is closed where §4's conditions held and otherwise
+upstream — except on a park whose verdict is **owed**, where one commit is
+left unpushed on purpose, the branch is one ahead, and that push is the user's
+— the spec issue is closed where §4's conditions held and otherwise
 named with the children it awaits, nothing is merged, the worktree is removed
 where every one of §4a's conditions held and otherwise named as standing with
 the condition that kept it, the lock this run took is released, and that summary

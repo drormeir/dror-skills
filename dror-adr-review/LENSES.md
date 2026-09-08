@@ -45,11 +45,13 @@ Every finding carries:
   satisfy a rule that is not yours;
 - the **kind** — `text` (the document is wrong, or is acted on wrongly), `hole`
   (the document is missing something it must carry), `breach` (the code breaks a
-  rule the document states), `conflict` (two decisions disagree), `echo` (a copy
+  rule the document states), `conflict` (two decisions disagree — or two tickets
+  cut from one do), `echo` (a copy
   of the rule elsewhere has drifted — only the `echoes` lens mints this one),
   `unticketed` (the ADR decides something no ticket asks for — only the
-  `tickets` lens mints this one), `revisit` (nothing is wrong and what the
-  decision predicted has not held);
+  `tickets` lens mints this one), `unstated` (a ticket decides something the ADR
+  never decided — the same lens, the same subject, the other direction),
+  `revisit` (nothing is wrong and what the decision predicted has not held);
 - **what would make it true**: the corrected fact and the evidence for it. Not
   the replacement prose — writing that is the repair's job.
 
@@ -125,7 +127,10 @@ The document's job is to make a later reader able to act without re-arguing.
 - **Two decisions in one document**, where the second was smuggled in beside the
   first and nothing outside this file records it. Say which sentence carries it.
 - A decision stated so vaguely that two readers implement it differently. Give
-  the two readings; that is what makes it a finding rather than a preference.
+  the two readings **and what each one would produce** — the file each writes,
+  the rows each prints, the value each computes; that is what makes it a finding
+  rather than a preference, and two readings that produce the same thing are a
+  preference.
   Where the vagueness is in the *wording* rather than in what was decided, it is
   `misreading`'s — this bullet is for a decision that was never taken sharply
   enough to write down, which no rewording fixes.
@@ -222,6 +227,32 @@ and the set was found before you were spawned. Do not shell out for more.
   from was amended away, or another ADR took the question over.
 - A criterion the ADR's decision makes **impossible or already true**. Both mean
   the ticket was written against an older reading.
+- A criterion that **fixes a concrete value the ADR never fixed** — a number, a
+  key name, a path, a default, an order, a formula. The ticket is not wrong and
+  the document is not wrong; a decision was simply taken by whoever wrote the
+  ticket, and it is recorded nowhere a later reader will look. Quote the
+  criterion, quote the nearest ADR sentence on the same subject or say the
+  document is silent, and say **what was decided that the ADR never decided**.
+  The kind is `unstated`.
+
+  **It is the mirror of `unticketed` and not a `conflict`.** Nothing disagrees
+  here — that is what makes it easy to miss and what makes it worth raising: a
+  contradiction gets caught the first time somebody reads the two together,
+  while a filled silence reads as agreement from every angle.
+
+  **A value is not a decision merely for being concrete.** A test's fixture, a
+  variable name, an example path, a message's wording, an implementation's own
+  arrangement — the ADR is silent on those by design, and the same guard the
+  `misreading` lens spells out applies here word for word: ask what a **later
+  decision** would be made wrongly for want of this sentence. A threshold
+  everything downstream is sized against is one; the name of a helper is not.
+- A criterion **another ticket of this same ADR has already made false** — one
+  ticket is asked to build the thing a second ticket's criterion forbids, or to
+  leave standing what it requires. The two were cut from one decision and read
+  correctly one at a time; only side by side is either wrong. Quote both
+  criteria with their numbers, say which ticket lands first, and raise it as
+  `conflict`: which of the two gives way is the user's, exactly as with two
+  decisions that disagree.
 
 **A criterion's checkbox is part of the body, and it sets what a finding
 means** — not whether the work is done, which stays another skill's table, but
@@ -240,12 +271,20 @@ records a decision the ADR never took — is `conflict` too, and the user choose
 which side wins.
 
 **An absence has no direction**, so that paragraph is not about it: it weighs
-two texts that both exist. A rule with no ticket at all is `unticketed`, and
-nothing about the document is wrong.
+two texts that both exist. A rule with no ticket at all is `unticketed`, a value
+with no ADR sentence behind it is `unstated`, and in neither is anything that
+was written wrong.
+
+**Two tickets are read against each other only as written**, which is what keeps
+the bullet above inside this lens. What one ticket *asks for* is in its body; what
+its implementation *did* is in the tree, and reading that is the code axis's and
+not yours. So the finding is that two bodies cannot both be satisfied — never
+that one of them has landed and broken the other.
 
 Never judge a ticket against the code, and never say whether it is done: that is
 `dror-show-tickets`'s table and this lens has no business duplicating it. The
-comparison here is document against ticket, both as written.
+comparison here is document against ticket, and ticket against ticket, always as
+written.
 
 ## outcome — did the decision do what it said it would
 
@@ -303,10 +342,12 @@ you have from the rest of this run. Then:
   ADR is silent on purpose: a decision that named its call site would have to be
   rewritten every time the code moved, which is the drift these documents exist
   to avoid. "This names no site", "this names no reader", "this constant is
-  unattributed", "the resolver is unnamed" — none of those is a finding on its
-  own, and each was refuted repeatedly across five documents and eight days for
-  the same reason. Ask what the reader does wrongly; if you cannot say, there is
-  nothing here.
+  unattributed", "the resolver is unnamed", "this concept names no store", "this
+  screen names no file" — none of those is a finding on its own, and each was
+  refuted repeatedly across five documents and eight days for the same reason.
+  The list is spelled out because this is the class that keeps coming back in a
+  new wording each time: **a missing name is not a defect; a wrong action is.**
+  Ask what the reader does wrongly; if you cannot say, there is nothing here.
 
   What this loses is the genuinely ambiguous rule whose wrong action is real but
   awkward to state in one line. Take the awkward sentence over the drop where
@@ -333,11 +374,26 @@ you have from the rest of this run. Then:
 - **The stale imperative.** An instruction to do something at a path, with a
   command, or through an interface that has moved. It reads as current and it
   cannot be followed.
+- **The arithmetic left in prose.** A formula, a threshold, an ordering or a
+  rounding described in words and never written as an expression — "the newest
+  few", "roughly the mean of the recent ones", "capped at what fits". It is a
+  finding only where the readings **compute different values**: give the two
+  readings, work each one, and put the two answers side by side. Where they land
+  on the same value the sentence is merely wordy, and that is not this lens's
+  business.
 
 **Every finding names the wrong action**, concretely: what a reader does after
 reading this, and what they would have done had it been written sharply. A
 finding that names no wrong action is a style note, and style notes are not this
 skill's business — the ADR's voice is its author's.
+
+**The sharpest form of that is two implementers and two artifacts**, and it is
+the form to reach for wherever the sentence permits it: *this reading writes
+`x.json` under the store and that one writes it beside the repo*; *this reading
+prints three rows and that one prints all of them*. A wrong action stated as
+something a reader would **see on screen or find on disk** is one a refuter can
+settle in a single command, and one the repair knows exactly what to write for.
+Where the two readings differ only in how they sound, there was no finding.
 
 The kind is `text`: the fault is in the document and the repair is a rewording.
 Where the sharper wording would change what is *decided* rather than how it is

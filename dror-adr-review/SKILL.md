@@ -1,6 +1,6 @@
 ---
 name: dror-adr-review
-description: Review one ADR document against itself, its tickets and the code it governs - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names an ADR and asks whether it is still true, still coherent, or still obeyed - most often as a preliminary pass, sharpening the decision before its tickets are implemented.
+description: Review one ADR document against itself, its tickets, the other documents that decide or repeat its rules, the reader who acts on it, and the code it governs - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names an ADR and asks whether it is still true, still coherent, still faithfully copied elsewhere, or still obeyed as meant - most often as a preliminary pass, sharpening the decision before its tickets are implemented.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
@@ -56,6 +56,15 @@ arguments it was invoked with — never the conversation that invoked it.
 Everything the run needs from that conversation arrives as an argument or not
 at all; a question only the user can answer is returned as the result, and the
 caller puts it; and what goes back to the caller is the closing summary.
+
+**A directory override arrives as an argument** — "All commands run in `<path>`
+…", handed by a drain running its check before the first ticket. Its provenance
+and the duties it obliges are the shelf's, in one copy:
+`../dror-internal-shared/DIRECTORY-OVERRIDE.md`, read whole when the sentence
+arrives and not otherwise. This skill's own part of the contract: every git
+command in this file runs with `-C <path>`, the ADR and the code it governs are
+read under it, the report is written under it, and "every agent this run
+spawns" means lens and refuter alike.
 
 ## The project facts
 
@@ -125,13 +134,14 @@ is the one a review sharpens.
 
 [`LENSES.md`](LENSES.md) is a **pool**, not a running order. Choose the ones
 this ADR raises and run each as one agent, all launched in parallel, each given
-the ADR's path, the path of the store's `facts.md`, the paths the ADR names,
-and the path of `LENSES.md` with the name of its lens — it reads that file
-itself, and is told that the preamble and the section headed with its name bind
-it while the other sections are other agents'. Paths, never contents. A
-code-axis lens — `claims`, `breach`, `outcome` — is also given the path of the
-drift log the read above saved: where the tree moved since the decision is
-where its findings live, and a lens that starts there reads less to find them.
+the ADR's path, the path of the store's `facts.md`, and the path of `LENSES.md`
+with the name of its lens — it reads that file itself, and is told that the
+preamble and the section headed with its name bind it while the other sections
+are other agents'. Paths, never contents. A code-axis lens — `claims`,
+`breach`, `outcome` — is also given the paths the ADR names, which are its
+axis's subject, and the path of the drift log the read above saved: where the
+tree moved since the decision is where its findings live, and a lens that
+starts there reads less to find them.
 An empty log is a prior, not a verdict; the lens still works its bullets.
 `neighbours` is given the paths of the sibling documents the read above picked
 — the files in the ADR's own directory whose titles touch its subject. Which
@@ -158,9 +168,15 @@ still agree. `misreading` is the third, wherever the ADR states rules somebody
 will act on — every other lens asks whether the document is true, and that one
 asks whether it will be obeyed as meant, which nothing downstream ever catches.
 
-**The models, the read boundary, what came back and the merge are the shelf's**:
-`../dror-internal-shared/LENS-FANOUT.md` holds them in one copy for all three
-reviews. Read it whole before launching the batch. It is not restated here.
+**Run `date +%s` immediately before launching the batch, and keep the reading.**
+It is the first half of `elapsed_s` in the run log below, and this is the only
+moment it can be taken. A run that launches the lenses without it has no
+duration to write.
+
+**The models, the read boundary, what came back, the merge and the refute
+fan-out are the shelf's**: `../dror-internal-shared/LENS-FANOUT.md` holds them
+in one copy for all three reviews. Read it whole before launching the batch. It
+is not restated here.
 
 **What this run gives each lens, inside that boundary.** A code-axis lens gets
 the ADR, the files it names and their direct callers. A lens on any other axis
@@ -182,45 +198,27 @@ looked.
 
 ## Refute
 
-Hand each merged finding to one independent agent, all launched in parallel —
-one refuter per finding, however many survived the merge, with **no cap**. Each
-is given: its finding; the path of the store's `facts.md`; the ADR's path; and
-the path of [`REFUTING.md`](REFUTING.md), to read whole. Paths, never contents.
-
-Every suspect is checked. Cutting the list here would put unchecked suspicions
-in the report, and a reader cannot tell an unchecked finding from a confirmed
-one. The cost is controlled before this point — fewer lenses, a tighter read
-boundary, and lenses that kill their own weak findings rather than passing them
-on.
+Refute on the shelf's fan-out terms. **What this run gives each refuter**: its
+finding; the path of the store's `facts.md`; the ADR's path; and the path of
+[`REFUTING.md`](REFUTING.md), to read whole. Paths, never contents.
 
 Survivors are the report.
 
 ## The kinds
 
-Every survivor carries exactly one. The seven values — `text`, `hole`, `breach`,
-`conflict`, `echo`, `unticketed`, `revisit` — and what each **means** are minted in
+Every survivor carries exactly one. The eight values — `text`, `hole`, `breach`,
+`conflict`, `echo`, `unticketed`, `unstated`, `revisit` — and what each **means** are minted in
 [`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens agent's
 prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section by
 section. Neither is restated here.
 
-What this file adds is the part neither carries: the kind is what decides
-**whose work it is next**.
+The kind is also what decides **whose work it is next**, and that routing is
+owned by `../dror-internal-shared/DROR-SKILLS.md`, the shelf beside this skill.
+Read it there; it is not restated here either.
 
-- `text`, `hole`, `echo` and `unticketed` go to `dror-adr-repair`. A `hole` only
-  where the missing sentence can be **grounded** — an alternative nobody
-  recorded is not one this skill invents; an `echo` in **every** copy the
-  finding names, at once. An `unticketed` is the one of the four that ends in no
-  edited sentence: what the repair writes for it is a ticket body, filed only on
-  the user's yes.
-- `breach` goes to `dror-code-repair` untouched. The document is fine; this is a
-  bug report that happens to have been found by reading a document, and naming
-  it here and fixing it there is the same split as everywhere else in this
-  chain.
-- `conflict` and `revisit`: **nobody repairs either without the user.** Which
-  side of a conflict is right is a decision, and a skill that picks one has
-  written an ADR nobody approved. A `revisit` has no wrong sentence to correct
-  at all — it is the strongest reason to reopen a decision and the one nobody
-  checks — and whether to reopen is the user's.
+What this file adds is one condition of its own: a `hole` goes to
+`dror-adr-repair` only where the missing sentence can be **grounded** — an
+alternative nobody recorded is not one this skill invents.
 
 A finding a refuter could not settle says so on its line and keeps its kind.
 
@@ -233,8 +231,8 @@ it. It is not restated here.
 
 Number the survivors: `conflict` first — it is the kind that blocks
 somebody — then `breach` in the order of the damage a violation does, then
-`text`, then `hole`, then `unticketed`, then `echo`, then `revisit` last, which
-is the only kind that asks for nothing to be fixed. Save them under the name the reference gives — claimed
+`text`, then `hole`, then `unticketed`, then `unstated`, then `echo`, then
+`revisit` last, which is the only kind that asks for nothing to be fixed. Save them under the name the reference gives — claimed
 first where that name came from a caller, as the reference says, and written to
 whatever path the claim printed. It is a separate file from the code review's on purpose: a code
 review and an ADR review are started for different reasons and neither should be
@@ -255,8 +253,10 @@ it does not, the reference says under its finding-id rule.
 
 Then one section per finding, numbered as on screen, each with:
 
-- its **id**, minted by the reference's rule from the front matter's commit, this
-  run's tag, this run's round and the finding's number;
+- its **id**, minted by the reference's rule from the commit `HEAD` was at —
+  the front matter records both, and this is the one the recipe calls `<head>`,
+  not the commit the ADR last moved at — this run's tag, this run's round and
+  the finding's number;
 - the **ADR line or quoted sentence** it is about, and **what it was judged
   against**, in the form its axis takes: a `file:line` in the code, the other
   passage of this document with its line number, the other document's own
@@ -272,7 +272,13 @@ Then one section per finding, numbered as on screen, each with:
 - for an `unticketed` — **what is missing**: the ADR's rule quoted, the ticket
   numbers the refuter read and found not to carry it, and whether it belongs on
   one of them or needs a ticket of its own. Not the ticket body; drafting that is
-  the repair's, for the same reason.
+  the repair's, for the same reason;
+- for an `unstated` — **what was decided that the document never decided**: the
+  criterion quoted with its ticket number, the nearest ADR sentence on the same
+  subject or the word `silent`, the value itself, and whether the ticket is open
+  or has already shipped it. Not a sentence for the ADR to adopt: adopting it is
+  a decision and the decision is the user's, so a drafted one would read as this
+  run having taken it.
 
 **A finding is about fifteen lines.** This file is read start to finish by a
 repair run and by you tomorrow, so it carries what is needed to act and not the
@@ -298,7 +304,7 @@ One tab-separated line per finding — the columns and their order are the store
 reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
 values: `path` is **the ADR's repo-relative path**, which is what this run
 reviewed, even for a `breach` whose evidence sits in code; `kind` is `text /
-hole / breach / conflict / revisit / echo / unticketed`; `claim` is always `no` — this skill
+hole / breach / conflict / revisit / echo / unticketed / unstated`; `claim` is always `no` — this skill
 writes no claim comments, and the column stays so the pools share one
 schema; `subject` is **the ADR's number**, the same one the identity line
 carries; `round` is the round a looping caller named, or `-`; and `run_tag` is
@@ -343,15 +349,23 @@ is `-` where the check above found every launched lens returned — never
 `unchecked`, since this skill runs that check; `concurrent` is **`unchecked`**, or
 the tags a caller told this run it saw, joined by `+`; `round` and `subject` are
 the same values the finding log's section above gives them; and `elapsed_s` is
-the difference between a `date +%s` read immediately before the lenses are
-launched and one read as this line is written, or `-` where the first reading
-was not taken.
+the difference between the two clock readings, or `-` where the first was not
+taken.
 
 **Never `-` here.** In `dror-code-review`'s rows that value means *a check ran and saw
 nobody*; this skill runs no check of its own, and writing `-` would put "looked
 and found none" and "never looked" under one value in one column. `unchecked` is
 the honest word, and a caller that did look — `dror-adr-review-repair` does, once
 before its first round — passes what it saw, which is then written instead.
+
+**`elapsed_s` needs two readings, and the first one is easy to miss.** The
+`## Run the lenses` step above orders it; the second is read as this line is
+written, and the difference goes in the column. The first reading is taken at
+the lenses rather than at the top of the run: everything before them is reading
+the ADR, and what this column is for is the cost of the fan-out and the
+refuters under it. A run that reached this point without the first reading
+writes `-` and does not reconstruct one — a duration invented from a report's
+timestamp would be a different quantity wearing this column's name.
 
 One line per review that ran lenses, whether it found anything or not — a run
 that produced no findings is exactly the run the log cannot see, and the only one
@@ -362,10 +376,10 @@ none, and the log exists to give a lens its denominator.
 ## Present
 
 Show the same numbered list, in that order, each line naming its kind. Under it,
-say in one sentence which findings are this chain's next work and whose: the
-`text`, `hole`, `echo` and `unticketed` ones go to `dror-adr-repair`, the `breach` ones to
-`dror-code-repair`, and a `conflict` or a `revisit` waits for the user — the first
-because somebody must choose, the second because nothing is broken.
+say in one sentence which findings are this chain's next work and whose. Route
+each kind the way `../dror-internal-shared/DROR-SKILLS.md` routes it, and give a
+kind the user keeps the reason that file gives it. The routing is not restated
+here.
 
 Name the report file this run wrote, since a repair run has to be pointed at it
 and only this run knows which name it took, and say this run's tag once.

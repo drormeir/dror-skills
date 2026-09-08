@@ -3,7 +3,7 @@
 The shared rule for turning what the caller said — a number, or a path — into
 the one file a run then reads. It lives here, owned by the shelf and belonging
 to none of the callers: one copy, so widening what resolves widens every skill
-that takes an ADR by number. Read this section before the first command that
+that takes an ADR by number. Read this file whole before the first command that
 needs a path; do not restate the pattern in the calling skill.
 
 Why the rule is loose where it is loose, and strict where it is strict, is
@@ -19,6 +19,39 @@ A caller who names a path has already answered the question. Open it, whatever
 the layout, and run no search — this is the escape hatch for every repo whose
 decisions live somewhere this file does not describe, and it is never overridden
 by a failed search.
+
+## Then the ADR's own worktree, before the checkout you are standing in
+
+An ADR being worked has a checkout of its own — the worktree and branch
+[`WORKTREE.md`](WORKTREE.md) names, one per ADR — and that is where its text is
+current. The checkout the caller stands in holds whatever was last merged, which
+for a decision still being written is a stub or a placeholder: a number reserved
+by a commit that wrote no decision text leaves a **zero-byte file** there, and a
+run that searched only there reviews an empty document while the decision it was
+asked about sits on the branch.
+
+So, before the rules below are applied to the caller's own checkout, apply them
+**inside that worktree** where one exists — `git worktree list` names it, and its
+absence is the ordinary case and not a failure. Two answers send the search on to
+the caller's checkout: no file there, and a file there that is **empty**, which is
+a reserved number rather than a document. Say which checkout the file came from,
+either way; a finding against a branch's copy and a finding against the merged
+one are not the same finding.
+
+**A run already standing in that worktree is already there**, and this rule costs
+it the one command that says so.
+
+**The checkout the ADR resolved in is the run's repo from then on**: the store it
+writes its report to, the `git` questions it asks about the document, and the
+neighbours it reads are that checkout's, so a report sits beside the document it
+is about. What that store is called is [`REPORT-STORE.md`](REPORT-STORE.md)'s;
+this rule only fixes which checkout it is in.
+
+**A worktree is a live tree, and this rule says nothing about who else is in
+it.** A drain may be working there right now — the lock beside the directory is
+its own question, and nothing here takes or reads it. A run that resolves into a
+worktree says so on screen and carries the sentence into its summary, which is
+the same report-not-gate answer ADR 0024 gives everywhere else in this chain.
 
 ## A directory the project declares comes next
 
@@ -76,6 +109,26 @@ mistake: each context numbers from one, so `src/billing/docs/adr/0007-*.md` and
 `src/catalog/docs/adr/0007-*.md` are both real, and neither is the one meant.
 Picking either would run a whole loop against a document nobody named,
 so name every hit and say that a path settles it.
+
+## The directory, asked for on its own
+
+A caller working a whole set — `dror-adr-sweep` is the one that does — asks which
+**directory** holds this repo's decisions rather than which file holds one of
+them. The answer is the same two channels in the same order: the declared
+directory where a project declares one, and otherwise the entries of the list
+above that exist in this repo.
+
+The two edges are the two the number rule already has, and they are answered the
+same way. **None of them exists**: say the repo declares no decision directory,
+name the declaration channels and the path escape hatch, and stop — do not sweep
+a directory nobody offered as a decision home. **Several exist and none is
+declared**: name them all and stop, because a repo with `docs/adr/` beside
+`adr/` is either mid-migration or multi-context, and sweeping either one silently
+leaves a set of decisions unswept.
+
+What is *in* the set, once the directory is known, is the caller's: this file
+says only that a member is a file whose name it would resolve a number to, which
+is what keeps a `README.md`, an index or a template out of one.
 
 ## What this deliberately does not resolve
 

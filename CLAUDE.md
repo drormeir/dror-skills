@@ -31,6 +31,20 @@ Rules — each exists because its violation already produced a defect here:
   everything it needs as arguments — nothing from the conversation reaches it
   (ADR 0036, ADR 0037). An agent it spawns is given paths, never pasted text
   (ADR 0038).
+- A skill starts another skill by **spawning an agent given that skill's file**,
+  never with a `Skill` invocation: a fork made from inside a fork can arrive
+  with no arguments at all, silently, at no depth that can be predicted. The
+  carrier is [`STEP-AGENT.md`](dror-internal-shared/STEP-AGENT.md); the reasons
+  are ADR 0043 and ADR 0044, and ADR 0059 is where the last exception closed. A
+  direct invocation typed by the user is not inside a fork and is untouched by
+  this.
 
 There is no build here; grep is the test suite. After renaming anything, grep
 the repo for the old name.
+
+Two of the rules above are decided by script rather than by reading, and a skill
+review runs both before its lenses: `dror-internal-shared/skill-rules-check.sh`
+for Anthropic's published rules, and `dror-internal-shared/carrier-check.sh` for
+the carrier. Each takes one skill directory and prints `BREACH:` lines or
+`CLEAN`. Run them on a skill you have edited — they are seconds, and they decide
+what no lens should be asked to.

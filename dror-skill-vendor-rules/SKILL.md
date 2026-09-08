@@ -1,9 +1,9 @@
 ---
 name: dror-skill-vendor-rules
-description: Check whether the published guide behind the skill reviews' vendor baseline has been re-uploaded since that baseline was distilled, and re-distil it on request. Called bare it reports and then offers the refresh; called with check it only reports; called with refresh it rewrites the baseline and its stamp, unstaged, and never commits. Use when a weekly check fires, when a skill review said the baseline moved or could not be checked, or when the user asks whether Anthropic's rules for writing skills have changed.
+description: Check whether the published guide behind the skill reviews' vendor baseline has been re-uploaded since that baseline was distilled, and re-distil it on request. Called bare it reports and then offers the refresh; called with check it only reports; called with refresh it rewrites the baseline and its stamp and reconciles the check script beside it, unstaged, and never commits. Use when a weekly check fires, when a skill review said the baseline moved or could not be checked, or when the user asks whether Anthropic's rules for writing skills have changed.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*)
 ---
 
 # dror-skill-vendor-rules
@@ -16,7 +16,7 @@ the source URL and the stamp; the script owns their numerals. Nothing here is
 restated from either.
 
 **A refresh that changes a rule may leave the script behind.** The prose and the
-enforcement are two files, so step 4 below checks them against each other.
+enforcement are two files, so step 5 below checks them against each other.
 
 It has **three modes**, and the argument picks one.
 
@@ -40,8 +40,13 @@ through a person: the word in the argument, or the answer to the question.
 **This run has a context of its own.** The frontmatter forks it (ADR 0036):
 what reaches it is this file, the stamp line below and the mode it was invoked
 with — never the conversation that invoked it. There are no project facts here:
-this skill touches the shelf and no project tree, so nothing about the repo in
-hand is needed or read.
+this run needs none of the five. Check mode touches the shelf and nothing else.
+Refresh mode's step 5 also reads this repo's own skill directories, and what it
+needs from them the script prints.
+
+This skill is **repo-agnostic** (ADR 0011), and the extreme case of it: its
+subject is the shelf file it maintains rather than any project, so it names no
+tracker, no path and no runner of a repo it is pointed at, and takes no facts.
 
 ## The stamp
 
@@ -49,21 +54,20 @@ hand is needed or read.
 
 `anthropic-stamp.sh` printed that line before this text reached you, from the
 URL and the `ETag` the baseline file carries. It reads `VENDOR: current`,
-`VENDOR: moved` or `VENDOR: unknown`, and the three words mean what
-`dror-skill-review`'s own stamp section says they mean; that skill owns the
-reading and this one does not repeat it.
+`VENDOR: moved` or `VENDOR: unknown`. What each of the three words means is
+owned by `dror-skill-review/SKILL.md` §Whether Anthropic's rules are still the
+ones on file, and is not restated here.
 
 ## Check mode
 
 Say which of the three the line was, in one sentence each way:
 
-- `current` — the baseline matches the guide the source serves. Nothing is
-  owed. Say the `last-modified` date the line carried, so a reader knows how
-  old the match is.
-- `moved` — the guide was re-uploaded. Say both `ETag`s and the new
-  `last-modified`, and say in one line that a `refresh` run is what acts on it.
-- `unknown` — no comparison happened. Say the reason the line gave — no
-  network, no `curl`, no `ETag` served — and that nothing is known either way.
+- `current` — say the `last-modified` date the line carried, so a reader knows
+  how old the match is. Nothing else is owed.
+- `moved` — say both `ETag`s and the new `last-modified`, and say in one line
+  that a `refresh` run is what acts on it.
+- `unknown` — say the reason the line gave, in the words it uses, and that
+  nothing is known either way.
 
 **Check mode edits no file**, and that includes the baseline's own stamp: a
 stamp rewritten without the rules under it being re-read would claim a
@@ -94,7 +98,11 @@ the distillation may have missed a rule the guide always carried.
 1. **Fetch the source.** Take the URL from the baseline file. `curl` it into
    the scratchpad; do not read it through a fetch tool's summariser, which
    compresses a thirty-page document into a paragraph and loses every rule this
-   skill exists to carry.
+   skill exists to carry. Where the fetch does not come back with the deck — no
+   network, no `curl`, or a body that is not the document — **stop here**:
+   change no file, restamp nothing, and say which of those it was, in the words
+   the `unknown` line uses. The baseline is left alone, for the reason check
+   mode's no-edit rule gives above.
 2. **Read it whole**, from the scratchpad copy, in page ranges. It is a slide
    deck: the rules sit in short bulleted panels, and a range that skips pages
    skips rules.
@@ -116,21 +124,30 @@ the distillation may have missed a rule the guide always carried.
    wrote: a rule added needs a check, a rule dropped needs its check removed, a
    bound that moved needs its numeral changed **there and not in the prose**.
    Then run it over this repo's own skills —
-   `for d in <repo>/*/; do bash ../dror-internal-shared/skill-rules-check.sh "$d"; done` —
+   `for d in <repo>/*/; do bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh "$d"; done` —
    and read every `BREACH:` line before believing it: the first draft of that
    script produced three false positives, and a check that fires on correct
-   skills is worse than no check.
+   skills is worse than no check. A line that survives that reading is one of
+   two things. Where the **check** is wrong, its test or its numeral is what
+   changes, here in step 5. Where the **skill** is wrong, this run leaves it
+   alone: say the directory and the rule on screen and go on. A skill directory
+   is `dror-skill-review`'s to raise and `dror-skill-repair`'s to fix, and this
+   run's edit set closes below at the two shelf files.
 6. **Restamp.** Write the `ETag` and `last-modified` the fetch returned, and
    today's date as the distillation date. The values go in the baseline file and
    nowhere else.
 7. **Verify.** Run
-   `bash ../dror-internal-shared/anthropic-stamp.sh` and check it now prints
-   `VENDOR: current`. A `moved` line here means the stamp was written wrong, or
-   the source moved again mid-run; say which and fix it before stopping.
+   `bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh` and
+   check it now prints `VENDOR: current`. A `moved` line here means the stamp was written wrong, or
+   the source moved again mid-run; say which and fix it before going on. An
+   `unknown` line means the comparison could not be made at all: say the reason
+   it gave, and leave both files as they stand for the user to read.
 
-**Then stop, with the diff unstaged and uncommitted.** The user reads it. That
-is the whole reason this mode is manual, and a run that commits has removed the
-only review the design relies on.
+**The editing ends here, with the diff unstaged and uncommitted.** The user
+reads it, under `## Present` below, which is where this run ends. That is the
+whole reason this mode is manual, and a run that commits — or that halts before
+putting the changes on screen — has removed the only review the design relies
+on.
 
 ## Present
 
@@ -147,6 +164,7 @@ Then stop and wait.
 
 Done when the source has been read whole, the baseline holds the distilled
 rules with its divergence section intact, `skill-rules-check.sh` enforces
-exactly those rules and comes back clean over this repo's own skills, the stamp
-matches the fetch, `anthropic-stamp.sh` prints `current`, the changes are on
+exactly those rules and every `BREACH:` line it printed over this repo's own
+skills has been read and either fixed in the script or named on screen, the
+stamp matches the fetch, `anthropic-stamp.sh` prints `current`, the changes are on
 screen, and nothing is staged or committed.

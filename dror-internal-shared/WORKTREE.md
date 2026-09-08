@@ -55,10 +55,26 @@ bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh exclusive \
 later; the script says why that pid and not another. **Exit 0 is the only
 answer that may proceed.**
 
+A loss names one of three holders on its `HELD:` line — `live`, `self` or
+`stale` — and only the first of them ends the run flatly.
+
 **A live holder ends the run before anything is touched** — no worktree adopted,
 no ticket picked, no file written. Say which ADR, the pid and the time from the
 `HELD:` line, and that the other session is the one to stop or wait for. This is
 not an offer to override: the second drain would commit into the first's tree.
+
+**A `self` holder is this session's own earlier run**, interrupted before it
+reached an ending and so never releasing what it took. The pid on the lock is
+the session's, not the run's, so it is still alive and still `claude` — which is
+why the script compares it against the caller's rather than asking `ps` alone,
+and why this case would otherwise be reported as the one thing it is not,
+another live session. Nothing is being written into: the run that held it is
+gone, and whatever worktree it left is what §Re-entry adopts. **Report it and
+stop, the same shape as `stale`** — name the lock's path and the one command
+that clears it, say the holder was this session's own interrupted run, and let
+the user say the word. This run still touches nothing, because the clearing is
+theirs: a forked run's question reaches the user only as its last message, which
+ends the run, so it can ask and it cannot then act on the answer (ADR 0042).
 
 **A stale holder is the ordinary end of a killed session**, and the script says
 `stale` when no agent process wears that pid any more. Say so, name the lock's
@@ -66,15 +82,35 @@ path and the one command that clears it, and stop. Taking it over is the user's
 call, because a pid can be stale while the branch it left behind is mid-ticket,
 and only they know whether that session is really gone.
 
+**`self` has one blind spot: two runs at once in one session.** They share the
+pid, so a second drain started while the first is working reads `self` and is
+told an interrupted run left the lock. The `rm` it offers is the sentence that
+saves it: a user who knows the first drain is still going does not run it, and
+the stop is what gives them the chance to say so.
+
+**A per-run token on the lock does not close it**, and the reason is worth
+writing down so nobody spends a day on it. What the reader needs is *liveness* —
+is the run behind this lock still going — and a token is *identity*. A second run
+comparing tokens learns that the holder is not itself, which it already knew from
+the pid, and learns nothing about whether that holder is alive. Liveness is
+answerable for a session because a session **is** a process and `ps` answers for
+it; a run is not a process — every run in a session shares one `claude` — so the
+kernel has nothing to be asked. What is left is a clock: a heartbeat written into
+the lock, and a threshold above which a holder counts as gone. This lock is
+deliberately decided by the kernel rather than by a clock reading, and a drain
+round can take an hour, so any threshold honest enough to be safe is too long to
+be useful. The stop and the named `rm` are the answer instead.
+
 ```
 rm <the user's checkout>/.claude/adr-wip/adr-<N>.lock
 ```
 
 **`dror-adr-resume` is that call made by name.** A user who invokes it on an ADR
 has said the holder is gone; the skill identifies the holder before removing
-anything, refuses a live one and a lock claimed on another host, and then starts
-the drain. It is where the rule above is delegated, and the only thing in this
-chain that removes a lock it did not take.
+anything, clears a `stale` one and a `self` one, refuses a live one and a lock
+claimed on another host, and then starts the drain. It is where the rule above
+is delegated, and the only thing in this chain that removes a lock it did not
+take.
 
 **Release it wherever the run ends**, and that is the same command — a clean
 finish, a stop for the user, a failed guard, a failed preflight. There is no
@@ -179,9 +215,28 @@ checkout it was installed from — the user's — so the worktree's edit to an
 existing module is silently not the code under test. A new module fails loud; a
 changed one tests the wrong tree with everything green. `pip show <package>` says
 which install it is in one command; where it is editable, give the worktree a
-venv of its own, with the project installed from the worktree. A ticket that
-changes the dependency file needs its own venv for a different reason: installing
-into the shared one reaches every other session.
+venv of its own, with the project installed from the worktree. That is the one
+case that earns a private venv — building one is minutes and gigabytes, and the
+symlink is the default everywhere else.
+
+**Nothing installs into a shared venv.** A symlinked venv is the user's own, and
+an install into it reaches their checkout and every other session at once. So no
+run under this file installs a package, upgrades one, or removes one — not to
+make a test pass, not to satisfy an import, not as a step it judges harmless.
+
+**A missing package parks the ticket** (ADR 0054). Where a ticket cannot proceed
+without a package the venv does not have, that is a question only the user can
+answer: say which package, which ticket, and that the venv is shared; park it and
+work the rest of the list. Installing it would be answering that question on the
+user's behalf, in their environment.
+
+**The dependency file is not the signal, and was the wrong thing to watch.** This
+section used to ask, while the worktree was being built, whether the drain's work
+would change the dependency file — a question the run cannot answer, since no
+ticket has been read yet, and the wrong question besides: a package is often
+installed by hand with no file change at all, and the file is often edited
+afterwards, once the choice has proved out. Neither direction predicts the other.
+Forbidding the install at the moment it would happen needs no prediction.
 
 **Inside `.claude/adr-wip/`, a missing venv is no longer an error — it is the
 parent's.** A launcher that finds the virtualenv by walking upward from the
@@ -203,8 +258,8 @@ Four questions, four commands, run **from inside the worktree** and reported as
 one line each:
 
 1. **Which interpreter?** `python -c 'import sys; print(sys.executable)'`. It
-   must be a venv, and the one intended — the parent's for a shared setup, the
-   worktree's own where a ticket earned one.
+   must be a venv, and the one intended — the parent's, symlinked, in the
+   ordinary case, or the worktree's own where an editable install earned it.
 2. **Which tree do imports resolve to?** Import the project's own top-level
    package and print its `__file__`'s directory. **It must be under this
    worktree.** Pointing at the user's checkout is the editable-install failure

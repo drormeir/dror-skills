@@ -3,7 +3,7 @@ name: dror-skill-review
 description: Review one skill, or one shared document the skills read, against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill or a shelf document and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/carrier-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
 ---
 
 # dror-skill-review
@@ -149,10 +149,15 @@ returns (ADR 0038). Then find, in this order:
 
 - **Its date and its commit.** `git log -1 --format='%h %ad' -- <dir>` — when
   the skill last moved. Age is what a reader weighs a survivor against, so it
-  goes in the report.
+  goes in the report. A target that exists only as untracked files still
+  counts, and for it the command comes back empty: the report then says the
+  skill has never been committed, in place of a commit and a date.
 - **What moved around it since.** `git log --oneline <commit>..HEAD` over the
   repo — a skill drifts when its neighbours move, not when it does. Redirect it
   into a scratch file; the `anchors` and `mirrors` lenses are given its path.
+  With no commit there is no range to read: say so on screen and in the report
+  rather than running it with the start empty, which git takes as `HEAD..HEAD`
+  and answers with nothing at exit 0 — indistinguishable from *nothing moved*.
 - **What points at it, and what it points at.** Grep the repo for the skill's
   name, into a second scratch file — its callers, its mirror rows, the shelf
   files that name it. Every lens is given this path too; it is the caller
@@ -169,31 +174,45 @@ log line is owed. **A document is never a stub by this test**, since it carries
 no frontmatter to be all of; an empty document ends the run on the same line
 with `is empty` in place of the reason.
 
-**That line is the only reason this skill ends without a report**, so it is
-what a caller reads to tell an empty skill from a run that broke. A run that
-stops anywhere else has failed, and its silence must not be read as this.
+**That line is the only reason this skill ends without a report once the
+target is resolved and reviewable**, so it is what a caller reads to tell an
+empty skill from a run that broke. Two stops above it also write no report — a
+name that matched nothing, and an ADR handed to `dror-adr-review` — but each
+announces itself on screen as a refusal to review, and neither ever reached a
+target to review. A run that stops anywhere else has failed, and its silence
+must not be read as this.
 
 ## The mechanical pass
 
-Before any lens is launched, run
-`bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh <the resolved directory>`.
-It decides every one of Anthropic's published rules that a tool can decide, and
-prints one `BREACH:` line per rule broken, or `CLEAN`. It takes the directory as
-an argument, which is why it runs here and not as an injection at the top.
+Before any lens is launched, run both of these, each on `<the resolved directory>`:
 
-**It runs for a skill and not for a document.** Every rule it enforces is a
-rule about a `SKILL.md` — a frontmatter field, a directory's shape — and a
-document has none of them, so its verdict on one would be an answer to a
-question nobody asked. A document run says in its report that the pass does not
-apply, which is not the same as `CLEAN`.
+`bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh <the resolved directory>`
+decides every one of Anthropic's published rules that a tool can decide.
 
-**Each `BREACH:` line is a finding that skips the refuter.** The script's own
-output is its proof (ADR 0006), and a model asked to second-guess a string
-comparison can only get it wrong. They carry the reserved lens name **`tool`**,
-ADR 0045's, and their verdict is `survived` by construction. Their kind is
-`text`: the frontmatter or the directory is wrong and the repair corrects it.
+`bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/carrier-check.sh <the resolved directory>`
+decides this repo's own carrier rule — that no skill invokes another skill with
+`Skill` from inside a forked context (ADR 0057). They are two scripts because
+they answer to two owners: the first to what Anthropic publishes, the second to
+a house rule of this repo's.
 
-Redirect the output into a scratch file and give **every** lens its path, with
+Each prints one `BREACH:` line per rule broken, or `CLEAN`. Both take the
+directory as an argument, which is why they run here and not as an injection at
+the top.
+
+**They run for a skill and not for a document.** Every rule they enforce is a
+rule about a `SKILL.md` — a frontmatter field, a directory's shape, an
+invocation in the body — and a document has none of them, so a verdict on one
+would be an answer to a question nobody asked. A document run says in its report
+that the pass does not apply, which is not the same as `CLEAN`.
+
+**Each `BREACH:` line is a finding that skips the refuter**, from either script.
+The script's own output is its proof (ADR 0006), and a model asked to
+second-guess a string comparison can only get it wrong. They carry the reserved
+lens name **`tool`**, ADR 0045's, and their verdict is `survived` by
+construction. Their kind is `text`: the frontmatter, the directory or the
+invocation is wrong and the repair corrects it.
+
+Redirect both outputs into one scratch file and give **every** lens its path, with
 the instruction not to re-report what it holds. `LENSES.md`'s preamble says the
 same thing from the lens's side; this is the input that makes it enforceable.
 
@@ -240,15 +259,22 @@ different arguments, and each states its own.
 run: between them they are the whole question of whether the skill still runs
 and whether it runs as meant.
 
-**The models, the read boundary, what came back and the merge are the shelf's**:
-`../dror-internal-shared/LENS-FANOUT.md` holds them in one copy for all three
-reviews. Read it whole before launching the batch. It is not restated here.
+**Run `date +%s` immediately before launching the batch, and keep the reading.**
+It is the first half of `elapsed_s` in the run log below, and this is the only
+moment it can be taken. A run that launches the lenses without it has no
+duration to write.
 
-**What this run gives each lens, inside that boundary.** Every lens gets the
-skill's directory. Beyond it: `anchors` gets the files the skill points at,
-`ownership` and `mirrors` get the shelf files and index rows the grep capture
-names, `contract` and `execution` get the skill alone, `sequence` gets the skill
-plus any ADR a spawn step's parameters rest on.
+**The models, the read boundary, what came back, the merge and the refute
+fan-out are the shelf's**: `../dror-internal-shared/LENS-FANOUT.md` holds them
+in one copy for all three reviews. Read it whole before launching the batch. It
+is not restated here.
+
+**How far each lens reads, inside that boundary.** The inputs are assigned
+above; this is the cap on what each may open beyond them. `anchors` reads the
+files the skill points at, `ownership` and `mirrors` the shelf files and index
+rows the grep capture names, `contract` and `execution` nothing outside the
+skill's own directory, `sequence` the same plus any ADR a spawn step's
+parameters rest on.
 
 ## Merge
 
@@ -262,16 +288,9 @@ them separate through the merge.
 
 ## Refute
 
-Hand each merged finding to one independent agent, all launched in parallel —
-one refuter per finding, however many survived the merge, with **no cap**. Each
-is given: its finding; the path of the store's `facts.md`; the skill's
-directory path; and the path of [`REFUTING.md`](REFUTING.md), to read whole.
-Paths, never contents.
-
-Every suspect is checked. Cutting the list here would put unchecked suspicions
-in the report, and a reader cannot tell an unchecked finding from a confirmed
-one. The cost is controlled before this point — a tighter read boundary, and
-lenses that kill their own weak findings rather than passing them on.
+Refute on the shelf's fan-out terms. **What this run gives each refuter**: its
+finding; the path of the store's `facts.md`; the skill's directory path; and the
+path of [`REFUTING.md`](REFUTING.md), to read whole. Paths, never contents.
 
 Survivors are the report.
 
@@ -317,7 +336,8 @@ another kind of run's findings.
 Front matter first: **what this report is for** — the identity line the
 reference gives, `Skill: <name>` or `Document: <path>` — with its resolved
 directory or file; the commit `HEAD` was at; the
-commit and date the skill itself last moved; the time this report was written
+commit and date the skill itself last moved, or that it has never been
+committed; the time this report was written
 (`date +%H%M`, the same call the log's date comes from); **this run's
 tag**, minted by the store's recipe unless the caller gave one; and the
 `VENDOR:` line this run was given, quoted verbatim, so a reader of the report
@@ -325,8 +345,10 @@ alone can tell which baseline the `tool` breaches rest on.
 
 Then one section per finding, numbered as on screen, each with:
 
-- its **id**, minted by the reference's rule from the front matter's commit,
-  this run's tag, this run's round and the finding's number;
+- its **id**, minted by the reference's rule from the commit `HEAD` was at —
+  the front matter carries two, and this is the one the recipe calls `<head>`,
+  not the commit the skill last moved at — this run's tag, this run's round and
+  the finding's number;
 - the **skill line or quoted sentence** it is about, and **what it was judged
   against**, in the form its axis takes: the file or command that contradicts
   it, the other passage of the same skill, the shelf file or index row with its

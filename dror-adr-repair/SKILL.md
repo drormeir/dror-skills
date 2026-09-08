@@ -1,6 +1,6 @@
 ---
 name: dror-adr-repair
-description: Repair an ADR's text from findings already made - every corrected sentence grounded in the code it describes, and no decision rewritten. Use when asked to fix an ADR review's findings, or to bring a named decision document back in line with the tree.
+description: Repair an ADR's text from findings already made - every corrected sentence grounded in the code it describes, no decision rewritten, and the tickets its own edits left stale corrected in the tracker. Use when asked to fix an ADR review's findings, or to bring a named decision document back in line with the tree.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
@@ -144,7 +144,13 @@ site still violates the rule, quote it, and carry it as work for `dror-code-repa
 Nothing is written for it. A `revisit` item stops here too, and for the opposite
 reason: nothing is wrong, so there is no sentence to correct — re-read the two
 numbers it carries, confirm they still read that way, and carry it to the report
-as a question for the user.
+as a question for the user. An `unstated` item stops here as well. The sentence
+that would close it is sitting in the ticket, so writing it in adopts a decision
+— confirm the criterion still fixes the value, quote it beside the ADR's nearest
+sentence on the subject or its silence, and carry it to the report as a question
+for the user. **A value that has already shipped does not turn it into an item to
+write**: the code settling it is what makes the item grounded, not what makes it
+repairable.
 
 ### Fan out, one agent per item
 
@@ -152,17 +158,24 @@ This step is read-only, so it parallelizes cleanly: spawn one subagent per item,
 all at once. Each is told: the finding with its quoted sentence and kind, the
 path of the store's `facts.md`, the ADR's path — paths, never their contents
 (ADR 0038) — and that it **writes nothing** — not the ADR, not
-source, not a scratch note in the tree. It returns the corrected fact with its
-evidence, or `ungrounded` with what could not be settled, or `not reproduced`
-with the passage of code that agrees with the document — or, for an
-`unticketed`, the number of the ticket that already carries the work. Filing
-one is nobody's here: an agent that writes nothing writes no issue either.
+source, not a scratch note in the tree. It returns one of the outcomes this step
+ends in, and the brief carries all of them, because this file does not reach the
+agent. Ordinarily that is the corrected fact with its evidence, or `ungrounded`
+with what could not be settled, or `not reproduced` with the passage of code that
+agrees with the document — for an `unticketed`, the number of the ticket that
+already carries the work. **The three kinds that stop at this step return no
+corrected sentence at all**: a `breach` returns the still-violating site with its
+quote, marked as work for `dror-code-repair`; an `unstated` returns the criterion
+beside the ADR's nearest sentence on the subject or its silence; a `revisit`
+returns both numbers, re-read and confirmed to still read that way. The last two
+are questions for the user. Filing a ticket is nobody's here: an agent that
+writes nothing writes no issue either.
 
 Grouping is by item and not by file because every edit lands in one document,
 which is precisely why the *writing* below is not parallelized.
 
 Done when every item is grounded, ungrounded, not reproduced, or carried as a
-`breach` or a `revisit`, with the evidence on screen for each.
+`breach`, an `unstated` or a `revisit`, with the evidence on screen for each.
 
 ## Step 2 — Write
 
@@ -205,8 +218,8 @@ which an agent holding one sentence cannot make.
   body stale, correct it: the smallest edit that makes it match, in the ticket's
   own voice, quoting the ADR's words where the rule is exact. A ticked criterion
   is corrected the same way and the tick is left alone — it records what was
-  built, and this run does not know whether the build still satisfies it; say so
-  beside the edit.
+  built, and this run does not know whether the build still satisfies it. Say so
+  in the note the Report section requires beside every corrected ticket.
 
   **This one edit needs no yes**, and it is the single exception to §A ticket is
   written here and filed only on a yes. Filing creates an issue; this changes an
@@ -284,7 +297,8 @@ skill repo-agnostic. A facts block naming none has nothing to ask about: leave
 the draft in the report and say so.
 
 Done when every grounded item has an edit behind it — a drafted ticket for an
-`unticketed` one — and every other item has a recorded reason it has none.
+`unticketed` one, and nothing at all for an `unstated`, which stopped at step 1 —
+and every other item has a recorded reason it has none.
 
 ## Step 3 — Check
 
@@ -311,8 +325,9 @@ Where the project declares a docs check of its own — a link checker, a
 formatter, a spell pass — run it and paste its output.
 
 The editing ends here, leaving the edited files for the user to read and commit.
-Three things are still owed before the run ends: the report below, the
-`repairs.tsv` append after it, and the review-owed line last.
+Four things are still owed before the run ends: the report below, the mark on
+the report file this run read, the `repairs.tsv` append after that, and the
+review-owed line last.
 
 ## Report
 
@@ -325,13 +340,14 @@ the outcome carries the verdict.
   - `stale` — the document described a tree that has moved.
   - `wrong` — the document was never right.
   - `unclear` — true but readable two ways.
-  - `hole` — something a decision record must carry was missing.
-  - `unticketed` — the ADR decides something no ticket asks for. Not a `hole`:
-    the document is whole and the *work* is missing.
-  - `echo` — the rule is right here and wrong in a copy of it elsewhere.
-  - `breach` — the code violates the document's rule. The document is fine.
-  - `conflict` — two decisions disagree.
-  - `revisit` — nothing is wrong and what the decision predicted has not held.
+
+  Those three are this skill's own split of the review's `text`, and they are
+  owned here. The other seven are the review's — `hole`, `unticketed`, `echo`,
+  `breach`, `conflict`, `unstated` and `revisit` are minted and defined in
+  `../dror-adr-review/LENSES.md`'s preamble, and that file owns them. Read a
+  kind there; do not restate it here, and where a finding's kind and this
+  file's handling of it seem to disagree, the owner's wording is the one that
+  decides which case you are in.
 - **Repair's outcome** — what this run did. Also open; the usual ones:
   - `Corrected (grounded)` — the strong claim: the fact was read out of the tree
     this run, and the sentence now says it. The note carries the `file:line`.
@@ -346,7 +362,9 @@ the outcome carries the verdict.
     the work either way; the number only says it landed.
   - `Left — needs a decision` — repairing it would rewrite what was decided; or
     it is a `revisit` and nothing is broken; or it is an `unticketed` and
-    whether the work is wanted at all is the user's. Names the question the user
+    whether the work is wanted at all is the user's; or it is an `unstated`,
+    where the edit is a paste from the ticket and making it is how this chain
+    would come to decide what the document left open. Names the question the user
     has to answer, and for a `revisit` both numbers.
   - `Left — ungrounded` — nothing in the tree settles it. Names what is missing.
   - `Not reproduced` — the tree agrees with the document. Nothing changed, and
@@ -387,15 +405,24 @@ Below the rows: every copy this run's own writing made stale and then
 synchronised, each named with what it now says, and every **ticket** it corrected
 for the same reason, **by number**, with the criterion quoted before and after —
 they belong to no item, so a row cannot carry them, and a corrected criterion
-nobody names is an outward edit that left no trace. A ticket named here and *not*
-edited says why: a ticked criterion whose build this run cannot vouch for, or a
-facts block with no tracker. Then the other-document hits from step 3, the docs-check output, and
+nobody names is an outward edit that left no trace. Where the criterion was
+**ticked**, the note beside it says the tick was left alone and that this run
+cannot vouch the build still satisfies the corrected wording. That note is where
+step 2's caveat lands, and it is the only place it is written. A ticket named
+here and *not* edited says why: a facts block with no tracker.
+Then the other-document hits from step 3, the docs-check output, and
 every unfiled ticket draft in full — title, parent, what to build, acceptance
 criteria — with the question under it. A draft abbreviated to a row is lost:
-this report is the only place it exists. Then mark the report — **the file this run read**, never the store's
-default name where they differ. Add to every finding this run handled a line
-saying what became of it, and leave the rest of the file as it stands, so a
-later run skips what is already done.
+this report is the only place it exists.
+
+## Mark the report file
+
+Everything above is what goes on screen. This is an **edit on disk**, and it is
+the reason a later round knows which findings are already done.
+
+Open **the file this run read** — never the store's default name where they
+differ — and add to every finding this run handled a line saying what became of
+it. Leave the rest of the file as it stands.
 
 ## Say what became of each finding
 

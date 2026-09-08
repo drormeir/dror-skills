@@ -20,12 +20,21 @@
 #                             same branch while neither could see the other.
 #                             Losing means stop. Creates the file holding the
 #                             claiming session's pid and the moment it claimed,
-#                             and on a loss prints the holder and whether that
-#                             process is still alive.
+#                             and on a loss prints the holder and which of three
+#                             states it is in: `self`, `live` or `stale`.
 #
 # `<pid>` is the *session's* pid, not this script's: pass `$PPID` from the shell
 # of the tool call, which is the agent process and stays the same all run. This
 # script's own parent is that shell and would die with the call.
+#
+# That pid is what makes the three states three rather than two. It outlives
+# every run inside its session, so a lock an interrupted run left behind carries
+# a pid that is still alive and still `claude` — the caller's own. Compared
+# against the caller's pid it reads `self`; matched only against `ps` it would
+# read `live`, and the commonest way a lock is orphaned would name a session
+# that is not there. What the comparison cannot separate is two runs going at
+# once inside one session: both wear that pid, so the second reads `self` too.
+# WORKTREE.md owns what a caller does with each state.
 #
 # Releasing is `rm` — there is no release mode, because a lock is released by
 # the run that holds it and taken over from one that died, and both are the same
@@ -37,8 +46,10 @@
 # path at all and WORKTREE.md owns when a drain takes the lock; neither restates
 # the other.
 #
-# It exits 0 when it claims a path, 3 when `exclusive` lost to a live or dead
-# holder, and 2 on anything else. Unlike the facts stamp, nothing injects this at
+# It exits 0 when it claims a path, 3 when `exclusive` lost to a holder of any
+# of the three states — the claim was lost either way, and which state it was is
+# on the `HELD:` line rather than in the code — and 2 on anything else. Unlike
+# the facts stamp, nothing injects this at
 # load time, so a non-zero exit aborts no skill — and a run that writes its
 # findings nowhere, or drains an ADR another session is draining, is an error
 # rather than a miss.
@@ -84,9 +95,13 @@ if [ "$mode" = exclusive ]; then
 	held=${held#pid=}
 	since=$(grep -m1 '^claimed=' -- "$want" 2>/dev/null)
 	since=${since#claimed=}
-	# Alive is not enough: a pid is reused, so the holder counts as live only
-	# while the process wearing its number is still an agent.
-	if [ -n "$held" ] && [ "$(ps -o comm= -p "$held" 2>/dev/null)" = claude ]; then
+	# Our own pid first: a live agent wearing it is us, and asking `ps` about it
+	# answers `claude` whatever became of the run that claimed it.
+	# Alive is not enough either: a pid is reused, so another holder counts as
+	# live only while the process wearing its number is still an agent.
+	if [ -n "$held" ] && [ "$held" = "$pid" ]; then
+		state=self
+	elif [ -n "$held" ] && [ "$(ps -o comm= -p "$held" 2>/dev/null)" = claude ]; then
 		state=live
 	else
 		state=stale

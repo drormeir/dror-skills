@@ -109,7 +109,11 @@ else.** No folded procedure inside them, no second copy of any file; a direct
 run of either is unchanged.
 
 **`dror-adr-review-repair` is untouched.** It has the same nesting shape but
-no drain above it puts it at depth 2, so its forks keep their arguments.
+no drain above it puts it at depth 2, so its forks keep their arguments. What
+keeps that true now that `dror-adr-sweep` runs it once per ADR is that the sweep
+does not fork: a member's loop lands exactly where a loop the user typed lands,
+which is the rule this ADR ends on applied to a new caller rather than an
+exception to it.
 
 **The chain gains no depth.** Any future skill that would fork from depth 2
 inherits this problem, and the fold here — move the smallest context one

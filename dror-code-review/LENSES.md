@@ -17,6 +17,15 @@ Do not re-report what it holds: a finding of yours that restates one of its
 lines dies in this lens, and only what you see *beyond* the diagnostic — the
 deeper defect the tool's line is a symptom of — is yours to raise, saying so.
 
+**Your prompt may carry the ticket's acceptance criteria**, numbered 1..N — what
+the diff was written to satisfy. Behaviour they ask for is a deliberate choice
+and not a defect: a finding of yours that restates a criterion the diff is
+implementing dies in this lens. They are focus and not scope, so the diff is
+still the whole scope and no bullet is skipped because the criteria are silent
+about it. A criterion the diff *claims* and misses is `unmet criterion`, a kind
+minted outside the lenses and never yours to raise. A run given no ticket carries
+no list, and then you work from the diff alone.
+
 Every finding carries a concrete failure scenario and an exact `file:line`.
 **What counts as a failure scenario depends on your lens**, and there are two
 kinds in this pool:

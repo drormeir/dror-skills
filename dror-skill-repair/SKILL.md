@@ -100,21 +100,22 @@ runs fanned out, so the first call after the facts is the fan-out itself.
 
 A code repair proves itself by watching a test go **red** and then **green**.
 There is no such thing for a sentence, and pretending otherwise is how a
-plausible correction ships. So this skill has its own two words, and its own
-answer to what settles a sentence about a skill — a skill is a directory, so
-what that directory holds is evidence here:
+plausible correction ships. Two words stand where red and green stand for
+code: the glossary in `../dror-internal-shared/CONTEXT.md` owns **grounded**
+and **ungrounded**, under **Evidence for a document**, and they are not
+restated here.
 
-- **grounded** — the corrected sentence was read out of the tree as it stands
-  now, and the run can quote the `file:line`, the command output or the
-  directory listing that says it. Every sentence this run writes is grounded.
-- **ungrounded** — nothing in the tree settles it. The sentence is **not
-  written**. What the run produces instead is the question, put to the user.
+What this file adds is the half that glossary hands each repair skill — which
+forms of evidence count. A skill is a directory, so what that directory holds
+is evidence here: a **grounded** sentence can be quoted back as a `file:line`,
+as command output, or as the directory listing that says it.
 
 The report's own evidence is not enough on its own: it was gathered by a
-refuter against a tree that may have moved, and written down in fifteen lines.
-Step 1 re-reads it. That re-reading is the whole of this skill's rigour — and
-this repo's own rule supplies the second half: **grep is the test suite**, so
-every rename this run performs is proved by a grep that comes back empty.
+refuter against a tree that may have moved, and compressed to the finding
+length `../dror-skill-review/SKILL.md` sets. Step 1 re-reads it. That
+re-reading is the whole of this skill's rigour — and this repo's own rule
+supplies the second half: **grep is the test suite**, so every rename this run
+performs is proved by a grep that comes back empty.
 
 ## Step 1 — Ground
 
@@ -141,9 +142,16 @@ This step is read-only, so it parallelizes cleanly: spawn one subagent per
 item, all at once. Each is told: the finding with its quoted sentence and
 kind, the path of the store's `facts.md`, the skill's directory path — paths,
 never their contents (ADR 0038) — and that it **writes nothing**. It returns
-the corrected fact with its evidence, or `ungrounded` with what could not be
-settled, or `not reproduced` with the passage of the tree that agrees with the
-skill.
+one of the outcomes this step ends in, and the brief carries all of them,
+because this file does not reach the agent. Ordinarily that is the corrected
+fact with its evidence, or `ungrounded` with what could not be settled, or
+`not reproduced` with the passage of the tree that agrees with the skill. Two
+kinds fix what that corrected fact is: for a `sprawl` it is **which file owns
+the rule**, read from its header or the repo's conventions; for an `echo`, the
+surviving copy list, each re-read.
+**The one kind that stops at this step returns no corrected sentence at all**:
+a `conflict` returns both passages, quoted and confirmed to still disagree,
+carried as a question for the user.
 
 Grouping is by item and not by file because most edits land in one skill
 directory, which is precisely why the *writing* below is not parallelized.
@@ -211,8 +219,9 @@ Where the repo declares a docs check of its own — a link checker, a formatter
 — run it and paste its output.
 
 The editing ends here, leaving the edited files for the user to read and
-commit. Three things are still owed before the run ends: the report below, the
-`repairs.tsv` append after it, and the review-owed line last.
+commit. Four things are still owed before the run ends: the report below, the
+mark on the report file this run read, the `repairs.tsv` append after that, and
+the review-owed line last.
 
 ## Report
 
@@ -225,10 +234,13 @@ observation; the outcome carries the verdict.
   - `stale` — the skill described a tree that has moved.
   - `wrong` — the skill was never right.
   - `unclear` — true but executed two ways.
-  - `hole` — a question the procedure forces and left unanswered.
-  - `sprawl` — a rule, tunable or vocabulary living beyond its owner.
-  - `echo` — right here, drifted in a copy elsewhere.
-  - `conflict` — two owners, or two skills deciding one question two ways.
+
+  Those three are this skill's own split of the review's `text`, and they are
+  owned here. The other four are the review's — `hole`, `sprawl`, `echo` and
+  `conflict` are minted and defined in `../dror-skill-review/LENSES.md`'s
+  preamble, and that file owns them. Read a kind there; do not restate it
+  here, and where a finding's kind and this file's handling of it seem to
+  disagree, the owner's wording is the one that decides which case you are in.
 - **Repair's outcome** — what this run did. Also open; the usual ones:
   - `Corrected (grounded)` — the strong claim: the fact was read out of the
     tree this run, and the sentence now says it. The note carries the
@@ -270,10 +282,11 @@ Otherwise report the same rows as one line each, in the same order, reading
 — <note>`.
 
 Below the rows: the unclaimed grep hits from step 3 and the docs-check output,
-if any. Then mark the report — **the file this run read**, never the store's
-default name where they differ. Add to every finding this run handled a line
-saying what became of it, and leave the rest of the file as it stands, so a
-later run skips what is already done.
+if any. Everything above is what goes on screen. What follows is an **edit on
+disk**: open **the file this run read** — never the store's default name where
+they differ — and add to every finding this run handled a line saying what
+became of it, leaving the rest of the file as it stands, so a later run skips
+what is already done.
 
 ## Say what became of each finding
 

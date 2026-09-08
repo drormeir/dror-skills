@@ -14,9 +14,8 @@ deliverable.
 Unlike the rest of the `dror-*` chain, this one is **convention-bound** and says
 so rather than pretending otherwise: it assumes ADRs in a conventional decision
 directory, resolved by `../dror-internal-shared/ADR-FILE.md`, and issues in
-GitHub, reachable by
-`gh`. A repo that does neither gets one
-sentence saying which assumption failed, and no table — an inferred table over a
+GitHub, reachable by `gh`. A repo that fails **either** assumption gets one
+sentence saying which one failed, and no table — an inferred table over a
 tracker this skill cannot read would be a guess wearing a table's authority.
 
 ## Step 1 — find the ADR
@@ -27,19 +26,28 @@ untracked file still counts; note that in the closing sentence.
 
 ## Step 2 — find the tickets
 
-Where the repo documents its issue conventions — `docs/agents/issue-tracker.md`
-is one common home — read that if the commands below do not fit.
+Where the repo documents its GitHub issue conventions —
+`docs/agents/issue-tracker.md` is one common home — read that where the commands
+below do not fit its sections or its labels. A tracker that is not GitHub is the
+stop above, not something to adapt to.
 
 1. **The spec issue.** `gh issue list --state all --limit 200 --json number,title,state,body,labels`
    and keep the issue whose body or title names the ADR — its slug, its title, or
-   the string `ADR <NNNN>` / `ADR 0<NN>`. It is the parent and usually carries no
+   the string `ADR <NNNN>` / `ADR 0<NN>`. It is the parent and carries no
    checkboxes.
 
-   **This one call is the whole read**, and `labels` is in it for that reason:
-   with `body`, `state` and `labels` in hand for every issue in the tracker,
-   step 3 has everything it needs and fetches nothing. Dropping the field would
-   cost one `gh` round trip per ticket — a per-ADR price on the one thing here
-   that scales with the ticket count.
+   **More than one issue can name the ADR**, and the match test alone does not
+   pick between them. The children settle it: the candidate the `## Parent`
+   sections of bullet 2 point at is the spec, and which one they point at is in
+   the bodies this call has already fetched. Where they do not settle it — no
+   children, or children split across candidates — name every candidate in one
+   sentence and stop, the answer `ADR-FILE.md` gives for more than one file hit.
+
+   **This one call is the whole read**: with `title`, `body` and `state` in hand
+   for every issue in the tracker, step 3 has everything it needs and fetches
+   nothing. Dropping one of those three would cost one `gh` round trip per
+   ticket — a per-ADR price on the one thing here that scales with the ticket
+   count. No cell below is read off `labels`; it rides along in the one call.
 2. **The children.** An issue whose body opens with a `## Parent` section naming
    the spec's `#number`. Where GitHub sub-issues are enabled, the sub-issues
    endpoint answers the same question — prefer whichever the repo actually uses.
@@ -49,7 +57,7 @@ is one common home — read that if the commands below do not fit.
 
 ## Step 3 — read each ticket
 
-Per issue, from the `body`, `state` and `labels` **step 1 already fetched**. Do
+Per issue, from the `title`, `body` and `state` **step 1 already fetched**. Do
 not re-fetch: `gh issue view <n>` here asks the tracker a question it has just
 answered, once per ticket, and returns the same three fields. Read one only
 where step 1's list could not reach the issue at all — a number outside its
@@ -76,8 +84,8 @@ in the closing sentence.
     every one of them is ticked. The work is done and only the user's close is
     missing, so this outranks the blocker question too: a ticket whose criteria
     are all met is not waiting on anything. **The spec issue reaches this answer
-    through its children instead**, since it usually defines no criteria of its
-    own: an open spec whose every child is CLOSED can close.
+    through its children instead**, since it defines no criteria of its own: an
+    open spec whose every child is CLOSED can close.
   - `Awaiting #NN` — **blocked for closing only**: the work may go on freely,
     but the ticket cannot close until that one does. It says that every
     criterion still unticked belongs to another open ticket, a discovery made
@@ -161,7 +169,9 @@ fact per cell — a cell holding three facts is three columns.
 
 ## After the table
 
-At most two sentences: which ticket to start on, and any mismatch worth naming
-(code landed with zero criteria ticked, a criterion belonging to another
-ticket, an inferred ticket set). Nothing else — no plan, no next steps, no
-offer, unless the user asks.
+At most two sentences: which ticket to start on, every note a step above
+required — an ADR that exists only as an untracked file, a ticket fetched on its
+own because step 1's list could not reach it, an inferred ticket set, an
+inferred `Awaiting` row — and any other mismatch worth naming (code landed with
+zero criteria ticked). Nothing else — no plan, no next steps, no offer, unless
+the user asks.

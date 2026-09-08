@@ -17,9 +17,13 @@ outlive any session (ADR 0031):
 
 1. **The round's own outcome.** Each round entry carries an `outcome` — see the
    state-file section in `SKILL.md` — set to `picked` when the ticket is taken
-   and rewritten to `finished`, `skipped` or `stopped` when the round ends. **A
-   round still reading `picked` is an interrupted round**, whatever `attempted`
-   says. Take its ticket out of `attempted` and put it at the **front** of the
+   and rewritten to `finished`, `skipped`, `parked` or `stopped` when the round
+   ends. **A round still reading `picked` is an interrupted round**, whatever
+   `attempted` says. **A `parked` round is not**: it ended, and it ended on a
+   question. Its ticket is workable again the moment that question is answered,
+   so put it on the list where the sort puts it and carry its question into this
+   run's own account — a resumed drain that silently re-picks a parked ticket
+   asks the user nothing and parks it again. Take its ticket out of `attempted` and put it at the **front** of the
    list, for the same reason §3a's stopped ticket goes first: the session ended
    in the middle of it, and everything after it in the list was planned on the
    assumption it was done.
@@ -74,12 +78,12 @@ drop it from **attempted**, and pick it before anything else — unless the user
 answer was to leave that ticket alone, which is itself an answer and is recorded
 as one.
 
-**An owed stop is resumed only after the user has pushed.** Its answer is the
+**An owed park is resumed only after the user has pushed.** Its answer is the
 hand-back command and then the push, and until both are made the ticket's commit
 sits unpushed in the worktree: a fresh run picks the ticket first, its step 0
-refuses the unpushed commit, step 5 holds it again, and step 6 stops on the same
-word. That is the stop holding, not the drain failing — say so in one line, and
-name the push as what clears it.
+refuses the unpushed commit, step 5 holds it again, and step 6 parks it on the
+same word. That is the park holding, not the drain failing — say so in one line,
+and name the push as what clears it.
 
 ## A dirty tree at start
 

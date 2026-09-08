@@ -15,27 +15,44 @@ on it — and never a step inside a chain. Nothing else — no code is read for
 anything but evidence, no test is written, no skill is redesigned.
 
 This file adds the order, the skill the run starts from and the judgement of
-when to stop, and nothing else. Both steps are invoked as themselves and each
-fetches what it needs. It is **convention-bound** (ADR 0011), inheriting the
-binding from `dror-skill-review`: it takes a skill by name, so it assumes
-skills as directories holding a `SKILL.md`, resolved by the rule
-`dror-skill-review`'s own file states — including the path escape hatch and
-the stop on no match.
+when to stop, and nothing else. Both steps run as spawned agents following
+their own files, and each fetches what it needs. It is **convention-bound**
+(ADR 0011), inheriting the
+binding from `dror-skill-review`: it takes a skill by name or a document by
+path, so it assumes skills as directories holding a `SKILL.md`, resolved by
+the rule `dror-skill-review`'s own file states — including the path escape
+hatch and the stop on no match.
 
 **This run has a context of its own, and so does each of its steps.** The
 frontmatter forks this file (ADR 0036), so what reaches it is this file and its
 arguments — the skill, the focus — never the conversation that invoked it.
-`dror-skill-review` and `dror-skill-repair` are forked the same way, which is
-what "Each step runs in its own context" below rests on.
+`dror-skill-review` and `dror-skill-repair` run apart from it too — as spawned
+agents, per the passage below — which is what "Each step runs in its own
+context" below rests on.
+
+**The steps ride spawned agents, never `Skill` forks** (ADR 0044 for the rule,
+ADR 0055 for this loop). A fork made from inside a forked context can arrive
+without its arguments — silently, and at depths no level count has predicted
+twice the same way (ADR 0043). Here the arguments carry the target itself, so a
+bare fork has nothing to resolve and
+step 1's broken-review branch catches it: this loop loses the round rather
+than believing a wrong answer, which is why it was deferred while the code
+loop's carrier was proved and not why it may stay deferred now. A spawned
+agent given the step's file has never arrived bare. So step 1 and step 3 below
+are driven by the shelf's carrier — `../dror-internal-shared/STEP-AGENT.md`,
+read whole before round 1 — and the prompt each step writes below is that
+agent's brief.
 
 ## What this run is given
 
-**One skill, named as one.** A bare word is easy to misread: `review` is a
-skill, a verb, half of three skill names — and running this loop on the wrong
-one spends every round correcting sentences nobody asked about. So the name
-must arrive as a skill's own — `dror-prove`, a path to its directory — and
-given one that resolves to nothing or to two, ask which was meant. That is the
-one question this skill stops for.
+**One target, named as one: a skill, or a document by path.** A bare word is
+easy to misread: `review` is a skill, a verb, half of three skill names — and
+running this loop on the wrong one spends every round correcting sentences
+nobody asked about. So a skill must arrive as a skill's own name — `dror-prove`,
+a path to its directory — and a document as its path. Which kind the target is
+the target itself says, by `dror-skill-review`'s own rule, and this run does not
+re-derive it. Given a name that resolves to nothing or to two, ask which was
+meant. That is the one question this skill stops for.
 
 A **focus** is optional and free-form: a sentence about why the skill is being
 checked now, a shelf file that moved, a run of it that misbehaved. It is
@@ -63,25 +80,27 @@ line and stop.
 
 ## 0. Know what is already in the tree
 
-**Resolve the name to a directory first**, since every command below needs one
+**Resolve the target to a path first**, since every command below needs one
 and round 1 has not run yet: `dror-skill-review`'s own resolution rule holds,
-and its stop on no match is this run's stop as well.
+and its stop on no match is this run's stop as well. What that path is for a
+skill and for a document is the **unit of review** the same file names
+(`../dror-skill-review/SKILL.md`, "What this skill assumes"), stated there
+once; `<the unit>` below is whichever it gave.
 
-Then read the skill's own state before round 1, and say what you find:
+Then read the target's own state before round 1, and say what you find:
 
-- `git log -1 --format=%h\ %ad --date=short -- <the skill's directory>` — the
-  commit and date the skill last moved.
-- `git status --porcelain <the skill's directory>` — whether it is already
-  dirty.
+- `git log -1 --format=%h\ %ad --date=short -- <the unit>` — the commit and
+  date the target last moved.
+- `git status --porcelain <the unit>` — whether it is already dirty.
 
-**A skill with uncommitted edits already in the tree is a report, not a
+**A target with uncommitted edits already in the tree is a report, not a
 stop.** Somebody is part-way through editing it — possibly the user, possibly
 another run — and every round of this loop will review that work as though the
 review had asked for it. Name it in one line before round 1 and carry the line
 into the summary, so a finding against a sentence the user wrote five minutes
 ago reads as what it is.
 
-**A caller that already knows why the directory is dirty says so**, and then
+**A caller that already knows why the unit is dirty says so**, and then
 this step repeats none of it: take the caller's account and name only what it
 did not cover.
 
@@ -106,11 +125,15 @@ watcher gets between the command and the summary.
 
 ### Each step runs in its own context
 
-Steps 1 and 3 each run in an agent of their own, and nothing here arranges it:
-`dror-skill-review` and `dror-skill-repair` carry `context: fork` in their
-frontmatter (ADR 0036), so invoking either as a skill runs it apart from this
-context and lands only its closing summary here. The prompt each step writes
-below is that invocation's argument — the one thing that reaches the fork. A
+Steps 1 and 3 each run in an agent of their own, and this file arranges it:
+each is a spawned agent given the step's file to follow, by the shelf's
+carrier — never a `Skill` invocation, though both skills carry `context: fork`
+of their own, because a fork made from inside this forked run can arrive
+without its arguments (ADR 0043, ADR 0044). The mechanics — the absolute file
+path, the dead facts injection and its re-run, what the brief opens with — are
+`../dror-internal-shared/STEP-AGENT.md`'s, and only the agent's closing
+summary lands here. The prompt each step writes below is that agent's brief —
+the one thing that reaches it. A
 review that reads a skill's directory, the files it points at and a fan-out of
 refuters, three times over, reads far more than one context should hold, and a
 loop that runs out of window mid-round loses the judgement it exists to make.
@@ -121,13 +144,19 @@ that report. The only things that have to survive a step are the report's path
 and a short summary.
 
 What each agent returns is exactly what step 4 weighs and what the summary
-prints, and nothing else: **from the review** — the report path it wrote, how
+prints, and nothing else — after the toplevel line the carrier requires first,
+which is read before any of it: **from the review** — the report path it wrote, how
 many survivors, their kinds, and its own one-line verdict on **whether a
 repair should follow**; **from the repair** — one line per item (what was
-found, the outcome), which files it edited, and its own one-line answer to
-**whether another review is owed**. From either, one word if a log under
-`~/.claude/dror-skills/` could not be written — neither skill blocks on that,
-so an agent that says nothing is taken to have written its lines.
+found, the outcome), which files it edited, any grep hit its own check found
+that **no finding named** — which arrives below its per-item lines rather than
+in one of them — and its own one-line answer to **whether another review is
+owed**; and **from either** — one word if a log
+under `~/.claude/dror-skills/` could not be written. Silence there is taken to
+mean the lines were written, and that reading is the shelf's rather than this
+loop's guess: a log that cannot be written is one sentence to the user under
+the findings, and nothing blocks on it
+(`../dror-internal-shared/REPORT-STORE.md`, "The logs").
 
 What each agent is **given** is small on purpose: the prompt below and the
 focus paragraph where there is one. Not the previous rounds' transcripts, not
@@ -137,7 +166,14 @@ that a sentence has already been fixed is being asked to trust the very thing
 it is there to check.
 
 Keep in **this** context only the per-round lines, the report paths, the
-conflicts and the word step 4 answered. That is the whole state of the loop.
+conflicts, the ungrounded items, any grep hit a round returned that no finding
+named, any log a round said it could not write, the word step 4 answered, and
+the two notices minted before round 1 — the target's own uncommitted edits, and
+a neighbouring run. That is the whole state of the loop. The log word, the
+unclaimed grep hits and the dirty-target notice are kept because §Present owes
+them, and a round that drops one leaves that clause with nothing to answer
+from. The neighbour line is kept for that reason and because every round's
+review and repair prompts have a slot for it.
 
 ### The run's own report name
 
@@ -154,11 +190,9 @@ document default and suffix it the same way —
 families stay apart for the reason the shelf gives: no run erases another kind
 of run's findings.
 
-**The tag is the run's and the suffix is the round's**, so the loop leaves one
-file per round rather than one file — the same arrangement as the other two
-loops', and ADR 0041's decision ("each round keeps its report") is why: an
-earlier round's grounds are the only evidence of what that round had in front
-of it, and a single overwritten path destroys them as they are made.
+**The tag is the run's and the suffix is the round's.** Why a loop's rounds
+each get a file rather than one is the shelf's rule
+(`../dror-internal-shared/REPORT-STORE.md`, "The store"), stated there once.
 
 **It is what makes two copies of this loop safe in one checkout.** Two runs
 over one skill both reach for `skill-review-report-<name>.md`, and the second
@@ -187,10 +221,10 @@ skills.
 
 ### 1. Review
 
-Invoke the `dror-skill-review` skill, with the focus paragraph where this run
-has one:
+Spawn the review agent — `dror-skill-review`'s file, by the shelf's carrier —
+with the focus paragraph where this run has one:
 
-> Review the skill `<name>`, at `<the directory step 0 resolved>`. Report the
+> Review the skill `<name>`, at `<the path step 0 resolved>`. Report the
 > survivors and edit no text. Write your report to
 > `<repo>/.claude/dror-skills/skill-review-report-<name>-<tag>-r<k>.md` — that
 > name is this run's and overrides the name you would derive. Use `<tag>` as
@@ -201,6 +235,16 @@ has one:
 > being checked now: `<the focus paragraph>` — focus, not scope; read the
 > directory whole.
 
+**Where the target is a document, three of its parts change and nothing else
+does.** The noun is the document at `<the path step 0 resolved>` rather than
+the skill `<name>` — `<name>` is a skill's name and a document run has none,
+so every "this skill" in the paragraph reads "this document". The report is
+the `doc-review-report-<slug>-<tag>-r<k>.md` the naming section above already
+minted. And the closing clause is **read the file whole**, because a
+document's unit is the one file (`../dror-skill-review/SKILL.md`, "What this
+skill assumes"). The tag, the round, the neighbour clause and the focus
+paragraph are the same either way.
+
 It finds and stops, which is what keeps the repair a separate step: the report
 is written before a sentence is changed. **That stop is the review's, not this
 run's** — `../dror-internal-shared/DELEGATION.md`, the shelf beside this
@@ -210,15 +254,35 @@ review's closing stop is **a prohibition against guidance** — the two shapes a
 run ends on by mistake, in DELEGATION.md's words. So this step's named next
 action: **immediately after the review returns, and in the same turn, list
 `<repo>/.claude/dror-skills/` and confirm the file it named is there** — or,
-where it named none, **read what it returned instead**. A review that returned
-`EMPTY SKILL:` reviewed a skill that is frontmatter and no procedure, which
-step 0's `git` questions cannot see coming: that is not an error, so say what
-it said and print §Present's summary. A review that named no report and did
-**not** return that line has broken — it stopped before writing anything, and
-its findings, if any, are lost. Say so plainly, do not read its silence as an
-empty skill, and do not invoke it again in the same round without saying that
-is what you are doing. That call is this step's last move, and it
-is the "path step 1 confirmed it wrote" that step 3 passes on.
+where it named none, **read what it returned instead**. A name the listing does
+not show is the broken review below, not a path to carry on with. A review that
+returned `EMPTY SKILL:` reviewed a skill that is frontmatter and no procedure,
+which step 0's `git` questions cannot see coming: that is not an error, so say
+what it said and print §Present's summary. **A review can also decline the target
+rather than fail on it**: pointed at a numbered decision file it names
+`dror-adr-review` and stops, by its own rule, and that refusal is a sentence on
+screen and no report. Say what it said, name the skill it handed the target to,
+and print §Present's summary — this loop reviews skills and shelf documents, and
+an ADR is neither. **Two returns are a broken review, and one move answers
+both.** One named no report and returned **neither** of those two sentences: it
+stopped before writing anything, and its findings, if any, are lost. The other
+named a report the listing does not show — and since the claim creates the file
+empty before a word of it is written (`../dror-internal-shared/REPORT-STORE.md`,
+"Which name a report takes"), an absent name is one the review never claimed, or
+one whose claim stepped aside to a `-<k>` it did not pass back, so its findings
+are under a name this run does not have, or nowhere. A file that is there but
+empty is not this case; it passes the listing. Say so plainly, do not read the
+silence as an empty skill or a redirect, do not judge step 2 from the survivor
+count the return carried, and **take no substitute** — not the name this run
+minted before round 1, not an earlier round's file, not the store's default
+`skill-review-report-<name>.md`, not a neighbouring `-<k>` the review did not
+name. Do not spawn it again in the same round without saying that is what you
+are doing. Print §Present's summary and end the run there.
+
+The listing is this step's last move in the one branch that reaches it, and
+only a listing that finds the named file yields the "path step 1 confirmed it
+wrote" that step 3 passes on. The three branches above end the run on
+§Present's summary and produce no path at all.
 
 **Confirm the path; do not read the report.** Step 2 judges from the review's
 own returned verdict and survivor list, and the loop's context holds only what
@@ -245,7 +309,7 @@ carries what the count cannot, and a run that repairs against the review's
 
 ### 3. Repair
 
-Invoke the `dror-skill-repair` skill:
+Spawn the repair agent — `dror-skill-repair`'s file, by the shelf's carrier:
 
 > Repair the findings in `<the report file step 1 named>`: every `text`,
 > `hole`, `sprawl` and `echo`, each corrected sentence grounded in the tree as
@@ -271,11 +335,21 @@ repaired files whole afterwards and greps the repo for old spellings. Take its
 `ungrounded` items as they come — they are questions for the user, not work
 for another round.
 
+**A repair that returns broken is not a repair that found nothing.** A
+complete `dror-skill-repair` return carries its per-item report rows and, last,
+its one-word answer on whether another review is owed. A return carrying
+neither has stopped part-way — and because that skill edits before it reports,
+it may have left the skill half-written rather than untouched. Say so plainly,
+name the report file it was given so its findings are not lost, and do not read
+its silence as step 4's **no**: a repair that legitimately repaired nothing
+still returns its rows and still returns the word. Do not spawn it again in
+the same round without saying that is what you are doing.
+
 **The repair's summary is a step's result, not this run's reply**, and a
 rewritten skill is a deliverable's shape (DELEGATION.md). So this step's named
 next action, and it has two branches, both concrete: judge the round at step 4
-and then **either invoke `dror-skill-review` again for the next round, in the
-same turn, or print §Present's summary**. One of those two is how the turn
+and then **either spawn `dror-skill-review`'s agent again for the next round,
+in the same turn, or print §Present's summary**. One of those two is how the turn
 ends; a turn that relays the repair and does neither has stopped mid-round.
 
 ### 4. Judge the round
@@ -360,7 +434,12 @@ repairs and the part a reader will otherwise lose:
   passages the review carried;
 - the **ungrounded** items, each with what could not be settled;
 - any grep hit the repair's own check found that **no finding named** — the
-  signal the next review should run `mirrors`.
+  signal the next review should run `mirrors`;
+- the **dirty-target notice**, where step 0 minted one: the target already
+  carried uncommitted edits before round 1, so a finding against a sentence
+  written minutes ago reads as what it is;
+- the **neighbouring run**, where the concurrency check saw one: its tag and
+  when it was last seen.
 
 Then say the skill is left uncommitted, name every file this run edited — the
 skill's own files, and any index row, map entry or glossary line an `echo`

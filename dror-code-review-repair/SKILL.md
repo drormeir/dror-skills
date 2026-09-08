@@ -3,6 +3,7 @@ name: dror-code-review-repair
 description: Loop review and repair over the unpushed work until it converges - dror-code-review, then dror-code-repair on what survived, round after round while a round is still owed. Use when the user asks to review and fix in one run, or to keep reviewing until nothing is left.
 context: fork
 background: false
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
 ---
 
 # dror-code-review-repair
@@ -13,16 +14,16 @@ least two rounds wherever the first one repaired anything, and up to seven.**
 Nothing else — no implementation, no criteria tests, no `dror-prove`.
 
 This file adds the order, the tree the run starts from and the judgement of when
-to stop, and nothing else. Both steps are invoked as themselves and each fetches
-what it needs. It is **repo-agnostic** — it names no tracker, no path and no
+to stop, and nothing else. Both steps run as spawned agents following their own
+files, and each fetches what it needs. It is **repo-agnostic** — it names no tracker, no path and no
 runner of its own — but it does assume **git**, unconditionally: what it reviews
 is the unpushed commits plus the working tree, narrowed only where the caller
 says so.
 
 **This run has a context of its own, and so does each of its steps.** The
-frontmatter forks this file (ADR 0036), so what reaches it is this file and its
-arguments — the focus, the scope, the cap, the declaration that a prove follows
-— never the conversation that invoked it. `dror-code-review` and `dror-code-repair` run
+frontmatter forks this file (ADR 0036), so what reaches it is this file, the
+facts the line below injects, and its arguments — the focus, the scope, the cap,
+the declaration that a prove follows — never the conversation that invoked it. `dror-code-review` and `dror-code-repair` run
 apart from it too — as spawned agents, per the passage below — which is what
 "Each step runs in its own context" below rests on.
 
@@ -44,6 +45,23 @@ means that directory, and the sentence goes verbatim into every step agent's
 brief, step 1's and step 3's alike — `../dror-internal-shared/DIRECTORY-OVERRIDE.md`
 owns the duties. Without the sentence, `<repo>` is the session's own checkout
 and nothing else changes: the carrier is the same either way.
+
+## The project facts
+
+!`bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh`
+
+The block above is the store's `facts.md`, printed by
+`dror-internal-project-facts/facts.sh` before this text reached you, when its
+stamp matched the tree (ADR 0037). The **issue convention** is the one that
+matters here: it is what says how this repo tracks work, and so how to read the
+ticket the focus may name. A block that begins `MISS:` means the store could not
+answer: invoke the `dror-internal-project-facts` skill — it gathers in a
+subagent, rewrites the store and returns the five facts — and hold what it
+returns as the facts from then on. That skill is a **step of this one**, not a
+hand-off; `../dror-internal-shared/DELEGATION.md` owns what that means, at
+authoring time. Either way, the moment the facts are in hand, **fetch the ticket
+where the focus labelled one, and otherwise ask §0's two questions of the tree,
+in the same turn** — the sections below, in their order, from there.
 
 ## What this run is given
 
@@ -140,11 +158,9 @@ Ask both, and say what they answer:
 - `git rev-list --count <base>..HEAD` — commits ahead of the review's base.
 
 **`<base>` is `dror-code-review`'s base, found `dror-code-review`'s way**, or this run
-names a scope the review will not use: `git rev-parse --abbrev-ref
---symbolic-full-name @{upstream}` and count from `git merge-base @{upstream}
-HEAD` where there is one; with **no** upstream, `git merge-base origin/HEAD HEAD`,
-then `origin/main` or `origin/master` where `origin/HEAD` is unset. A repo with
-no usable remote ref at all has nothing to count against, and there everything is
+names a scope the review will not use: its "Find the base" step works down three
+branches in an order that file owns, and this one does not repeat them. A repo
+with no usable remote ref at all has nothing to count against, and there everything is
 unpushed by definition — say that rather than a number. Name which of the three
 you used; step 1 will name it again and the two must agree.
 
@@ -185,9 +201,11 @@ its own one-line verdict on **whether a repair should follow**; **from the
 repair** — one line per finding (what was found, the outcome), which files it
 edited and whether any of them is **production** code, the verification run's
 summary lines, and its own one-line answer to **whether another review is owed**.
-From either, one word if a log under `~/.claude/dror-skills/` could not be
-written — neither skill blocks on that, so an agent that says nothing is taken to
-have written its lines, and the round is on the record. A step that returns a narrative instead of those facts has to be
+**From either**, one word if a log under `~/.claude/dror-skills/` could not be
+written. Nothing blocks on it — a log that cannot be written is one sentence to
+the user under the findings (`../dror-internal-shared/REPORT-STORE.md`, "The
+logs") — and that sentence is why silence here is taken to mean the lines were
+written, rather than a guess of this loop's. A step that returns a narrative instead of those facts has to be
 asked again, which is the one way this arrangement costs more than it saves.
 
 **That verdict is what step 2 reads**, and it is the review's to give because the
@@ -205,8 +223,10 @@ already been fixed is being asked to trust the very thing it is there to check.
 The current report is the open list, and it is written from the tree as it stands
 now.
 
-Keep in **this** context only the per-round lines, the report paths, and the word
-step 4 answered. That is the whole state of the loop.
+Keep in **this** context only the per-round lines, the report paths, any log a
+round said it could not write, and the word step 4 answered. That is the whole
+state of the loop. The log word is kept because §Present owes it, and a round
+that drops it leaves that clause with nothing to answer from.
 
 ### Say where the loop is, unless a caller says not to
 
@@ -283,7 +303,8 @@ and which nothing but the caller can decide.
 ### 1. Review
 
 Spawn the review agent — `dror-code-review`'s file, by the shelf's carrier — with
-the focus paragraph where this run has one and no ticket number:
+the focus paragraph where this run has one, and the ticket number only where the
+caller said a prove follows:
 
 > Review the unpushed work. Report the survivors and change no behaviour. Write
 > your report to `<repo>/.claude/dror-skills/review-report-<tag>-r<n>.md` — that
@@ -291,7 +312,14 @@ the focus paragraph where this run has one and no ticket number:
 > your run tag, so every round's rows carry it. This is **round
 > `<n>`** of this loop; log it as that round. Scope: `<the scope, or
 > "every unpushed file">`. For context, what this work was meant to do: `<the
-> focus paragraph>` — focus, not scope. No ticket is passed to this run.
+> focus paragraph>` — focus, not scope. `<Where a prove follows: this run is for
+> ticket <N>; do its ticket work. Otherwise: No ticket is passed to this run.>`
+
+**The ticket travels down only where a prove follows**, which §No box moves
+settles above. By default the number stays here and only its substance goes
+down, as the focus paragraph. Step 3's brief reads the caller's declaration the
+same way, so a run cannot pass the number to one step and withhold it from the
+other.
 
 **The round number is passed because the review cannot know it.** Its own file
 says so and writes `-` where nobody names one, so a loop that omits it logs
@@ -313,8 +341,18 @@ report is **a deliverable's shape**, and `dror-code-review`'s closing
 mistake, in DELEGATION.md's words. So this step's named next action: **immediately after the review returns, and in the same turn, list
 `<repo>/.claude/dror-skills/` and confirm the file it named is there** — or,
 where it named none, **say the review wrote no report and print §Present's
-summary**, which is step 2's no-report exit. That call is this step's last move,
-and it is the "path step 1 confirmed it wrote" that step 3 passes on.
+summary**, which is step 2's no-report exit.
+
+**Where it named a path and the listing does not hold it, the review has
+broken.** It stopped before writing anything, and its findings, if any, are
+lost. Say so plainly with the path it named, and **take no substitute** — not
+the store's default `review-report.md`, not an earlier round's file, not the
+nearest report in the listing. Do not read the absence as the empty diff step 2
+calls benign. Do not spawn `dror-code-review`'s agent again in this round. Print
+§Present's summary and end the run there.
+
+The listing is this step's last move, whichever of the three it returns, and it
+is the "path step 1 confirmed it wrote" that step 3 passes on.
 
 **Confirm the path; do not read the report.** Step 2 judges from the review's own
 returned verdict and survivor list, and the loop's context holds only what the
@@ -330,9 +368,11 @@ repair means nothing new to review, so this is the ordinary way a run converges.
 Say so, skip to the summary, and do not invent work to do. The report's
 `## Refuted` section is not the list — those findings were raised and disproved.
 
-**A review that wrote no report at all ends it the same way**, and that is not an
+**A review that named no report at all ends it the same way**, and that is not an
 error: `dror-code-review` writes none when the diff it captured is empty, which a
-narrow scope can produce even on a busy tree. Say which of the two happened.
+narrow scope can produce even on a busy tree. Say which of the two happened. A
+review that named a path it did not write is the third case, and step 1 has
+already ended the run on it.
 
 Otherwise take the review's own verdict on whether a repair should follow. It
 carries what the count cannot — a survivor that is a hazard for a later reader is
@@ -341,13 +381,16 @@ review's "nothing here needs an edit" is inventing work under this loop's name.
 
 ### 3. Repair
 
-Spawn the repair agent — `dror-code-repair`'s file, by the shelf's carrier:
+Spawn the repair agent — `dror-code-repair`'s file, by the shelf's carrier, with
+the ticket number only where the caller said a prove follows:
 
 > Repair the findings in `<the report file step 1 named>`: every confirmed bug
 > and every gap in cover, each red before its fix and green after. For context,
 > what this work was meant to do: `<the focus paragraph>` — a fix must not break
-> it. The other reports in that directory belong to other runs — do not read or
-> touch them. `<Where the concurrency check saw a neighbour: another run is
+> it. `<Where a prove follows: this run is for ticket <N>; do its ticket work.
+> Otherwise: No ticket is passed to this run.>` The other reports in that
+> directory belong to other runs — do not read or touch them.
+> `<Where the concurrency check saw a neighbour: another run is
 > editing this same working tree — …, last seen at … — so a file changing under
 > you, or a test failing in code you did not touch, may be theirs.>`
 
@@ -370,7 +413,11 @@ stops for it.
 `dror-code-repair` runs the project's full suite, lint and type-check as its own gate,
 and the suite is owed to the **last code change** — so a round whose repair
 changed nothing at all owes no rerun, and every other round's evidence is that
-repair's own run. Name the run that counted.
+repair's own run.
+
+**Name the round whose run counted.** A round that reran nothing is backed by an
+earlier round's, and a result that does not say which one has claimed a suite no
+reader can point at.
 
 **The repair's summary is a step's result, not this run's reply**, and an edited
 tree with a green suite behind it is a deliverable's shape (DELEGATION.md). So
@@ -521,8 +568,9 @@ be written. Then stop.
 Done when every round that found survivors has repaired them, every round that
 found none is named as such, the full suite has run over the tree as it finally
 stands **wherever this run changed it** — a run that repaired nothing changed
-nothing and owes no suite — the loop's end is accounted for in one word with its
-grounds, and that summary is on screen with nothing committed.
+nothing and owes no suite — the round whose run counted is named, the loop's end
+is accounted for in one word with its grounds, and that summary is on screen with
+nothing committed.
 
 **The shortest legal run is one round that repairs nothing**: a review, no
 survivors or a verdict that none needs an edit, and a stop. It writes a report or

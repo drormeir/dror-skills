@@ -56,7 +56,8 @@ that touched the tree owes the suite before the commit, by step 3's rule.
 Both of those are steps of the run, and each ends on a shape DELEGATION.md
 names — the loop on **a hand-back command** where it is still owed, the prove on
 **a deliverable's shape**. So each has its named next action: **immediately
-after the loop returns, and in the same turn, invoke `dror-prove` for the boxes
+after the loop returns, and in the same turn, spawn the prove agent — by the
+carrier §2 names — for the boxes
 it unticked, or where it unticked none, fetch the ticket body for step 6's
 count; immediately after that prove returns, run the full suite where it touched
 the tree, then fetch the ticket body for step 6's count.** The still-owed case
