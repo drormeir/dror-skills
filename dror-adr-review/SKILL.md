@@ -99,12 +99,18 @@ when it returns (ADR 0038). Then find, in this order:
 - **Its date and its commit.** `git log -1 --format='%h %ad' -- <path>` — when
   the document last moved. A claim in an ADR nobody has touched in a year is not
   wrong for being old, but the age is what a reader weighs a survivor against,
-  so it goes in the report.
+  so it goes in the report. An ADR that is untracked, or added but not yet
+  committed, still counts as a target, and for it the command comes back empty:
+  the report then says the ADR has never been committed, in place of a commit
+  and a date.
 - **What the code has done since.** `git log --oneline <commit>..HEAD` over the
   paths the ADR names. This is the review's best lead: the drift is where the
   code moved after the decision was written down. Redirect it into a scratch
   file — the code-axis lenses are given its path below, so the lead is spent
-  once and read by everyone it steers.
+  once and read by everyone it steers. With no commit there is no range to read:
+  say so on screen and in the drift log rather than running it with the start
+  empty, which git takes as `HEAD..HEAD` and answers with nothing at exit 0 —
+  indistinguishable from *nothing moved*.
 - **Its neighbours.** The other files in the directory the ADR resolved in — not
   a fixed path, and not the whole repo — by title alone; the
   `neighbours` lens reads the ones that touch the same subject, and nothing else
@@ -206,11 +212,10 @@ Survivors are the report.
 
 ## The kinds
 
-Every survivor carries exactly one. The eight values — `text`, `hole`, `breach`,
-`conflict`, `echo`, `unticketed`, `unstated`, `revisit` — and what each **means** are minted in
-[`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens agent's
-prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section by
-section. Neither is restated here.
+Every survivor carries exactly one. The values and what each **means** are
+minted in [`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens
+agent's prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section
+by section. Neither is restated here.
 
 The kind is also what decides **whose work it is next**, and that routing is
 owned by `../dror-internal-shared/DROR-SKILLS.md`, the shelf beside this skill.
@@ -240,11 +245,12 @@ able to erase the other's findings.
 
 Front matter first: **the ADR this report is for** — `ADR: <n>`, the identity
 line — with its title and path; the commit `HEAD` was at; the commit and date the
-ADR itself last moved; **the time this report was written** (`date +%H%M`, the
-same call the log's date comes from); and **this run's tag**. Both commits are
-recorded because either one moving is what makes a finding stale — a repair run
-reads them to say so; the time and the tag are what the finding id below is built
-from.
+ADR itself last moved, or that it has never been committed where the read above
+found no commit; **the time this report was written** (`date +%H%M`, a call of
+its own — the log's date is the reference's, in its own format); and **this
+run's tag**. Both commits are recorded, where both exist, because either one
+moving is what makes a finding stale — a repair run reads them to say so; the
+time and the tag are what the finding id below is built from.
 
 **Mint a run tag** by the store's recipe — unless the caller gave one, in which
 case that is the tag. It does not change the report's name, which the reference

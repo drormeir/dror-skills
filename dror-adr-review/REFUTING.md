@@ -85,10 +85,11 @@ lens's precision.
 be killed by reading code, so the default rule needs saying differently: it dies
 when the thing is **there** — in this document under another heading, or in a
 neighbouring ADR this one links to — or when the missing sentence cannot be
-**grounded**, meaning nothing in the tree or the document's own reasoning says
-what it would have to say. An alternative nobody recorded is not one the repair
-can invent, so a `hole` that cannot be grounded is refuted here rather than
-passed on as work nobody can do. Say which of the two killed it.
+**grounded** — `../dror-internal-shared/CONTEXT.md` owns that word, under
+**Evidence for a document**, and `dror-adr-repair/SKILL.md` fixes which forms
+of evidence count on this side. An alternative nobody recorded is not one the
+repair can invent, so a `hole` that cannot be grounded is refuted here rather
+than passed on as work nobody can do. Say which of the two killed it.
 
 **`breach`** — the code breaks a rule the document states. It dies unless you
 can stand on all three: the rule is quoted from the ADR and is a rule rather
