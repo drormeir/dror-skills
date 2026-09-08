@@ -150,12 +150,13 @@ never at risk.
 **So the agent is made to answer the question the backstop cannot ask.** §3 step
 4 runs a whole ticket inside a spawned agent, which is exactly the blind spot the
 paragraph above names, and the whole of that ticket's work is on the far side of
-it. The prompt therefore requires `git rev-parse --show-toplevel` as the **first
-line of what that agent returns**, and this skill reads that line before it reads
-anything else. It is not proof — an agent that ran the check in the right place
-and its work in the wrong one would still pass — but it converts a silent default
-into a claim on the record, made by the only party that could see, and a wrong
-answer is caught at the first ticket rather than at the merge.
+it. The **toplevel line the carrier requires first**
+(`../dror-internal-shared/STEP-AGENT.md`) is what covers that far side, and the
+step spawns through the carrier for that reason. It is not proof — an agent
+that ran the check in the right place and its work in the wrong one would still
+pass — but it converts a silent default into a claim on the record, made by the
+only party that could see, and a wrong answer is caught at the first ticket
+rather than at the merge.
 
 ## 0b. Read the standing answers, where there are any
 
@@ -414,7 +415,7 @@ things that were tried against it first, are ADR 0035.
 what §Present relays:
 
 - **The toplevel it ran in**, from `git rev-parse --show-toplevel`, as the first
-  line. §0a says why it is first.
+  line the carrier requires (`../dror-internal-shared/STEP-AGENT.md`).
 - **The commit** — short sha and subject — and whether it was pushed, or the
   reason it was held.
 - **The criteria**: how many are proven of how many, and the number of every box
@@ -490,8 +491,10 @@ written.
 
 **What is run.** Spawn the review agent — `dror-adr-review`'s file, by the
 shelf's carrier (`../dror-internal-shared/STEP-AGENT.md`) — with §0a's sentence
-at the top of its brief, and name its report path so a resumed drain's check
-cannot overwrite an earlier one's:
+at the top of its brief. Then name what it is reviewing: **review ADR `<N>`**,
+this run's one argument, which that review resolves to a file by its own rule.
+And name its report path so a resumed drain's check cannot overwrite an earlier
+one's:
 
 > `<worktree>/.claude/dror-skills/adr-review-report-<N>-<tag>-r1.md`
 
@@ -509,8 +512,8 @@ and that is the only thing a level count settles: a fold buys a level, and the
 carrier buys delivery. Here the
 arguments carry §0a's sentence, so a bare fork would review the session's
 checkout rather than the worktree — the drain's own incident, one level up.
-The agent's first returned line is its toplevel, and **it is read before any of
-what follows**: a toplevel that is not the worktree means the check ran
+The toplevel line the carrier requires first decides this check before any of
+what follows is read: a toplevel that is not the worktree means the review ran
 somewhere else, none of its findings count, and §3a owns what happens next. The
 fan-out is unchanged — the
 review still spawns its lenses and refuters one level below the agent, where
@@ -615,8 +618,9 @@ take the first ticket off the list at step 1.**
    stop §0 describes. Where §0 carried an out-of-scope failure, its
    name goes on the same line.
 
-   **Read the returned toplevel first, before the rest of the summary.** Anything
-   but the worktree and this round is over: nothing here is committed, closed or
+   **The toplevel line the carrier requires first decides this round**, before
+   the rest of the summary is read. Anything but the worktree and this round is
+   over: nothing here is committed, closed or
    counted — the work is wherever that agent left it and this skill did not watch
    it land — and the drain goes to §3a naming the path that came back. A summary
    that arrives without that line is the same stop; asking again is cheaper than
@@ -890,13 +894,16 @@ run — **what stopped it and what was asked**. Read it at the start of a
 run for the attempted and skipped numbers, the stopped ticket, and the earlier
 rounds' durations that the ETA's mean is built from.
 
-**Only one of §3a's stops names a ticket.** A dirty tree is found at a ticket's
-step 0 and belongs to that number. The other four do not: a red baseline and a
-wrong toplevel from the ADR check both happen before any round exists, and a
-cycle, an unreadable status row and an empty list beside a `Needs your call` row
-are about the list rather than about one node. Where the stop names no ticket,
-write what stopped it in that field and leave no round entry — there is no round
-to carry an `outcome`, and inventing one records a ticket that was never taken.
+**Two of §3a's stops name a ticket.** A dirty tree is found at a ticket's step
+0, and a ticket run's wrong toplevel at that ticket's step 4; both belong to
+that number, and both find the round entry already written at `picked`, which
+they rewrite in place as the paragraph below says. The other five do not: a red
+baseline and the **ADR check's** wrong toplevel both happen before any round
+exists, and a cycle, an unreadable status row and an empty list beside a `Needs
+your call` row are about the list rather than about one node. Where the stop
+names no ticket, write what stopped it in that field and leave no round entry —
+there is no round to carry an `outcome`, and inventing one records a ticket that
+was never taken.
 
 **Every round entry carries an `outcome`, and it is written twice.** `picked`
 when the ticket is taken, in the same write that adds it to `attempted`; then

@@ -1,9 +1,9 @@
 # A drain reads the ADR before its first ticket, and not between them
 
 `dror-implement-adr` runs `dror-adr-review` once, after its work list is built
-and before the first ticket is picked, and stops for the user on a `conflict`
-that names a ticket on that list. It repairs nothing it finds, and it does not
-run the check again.
+and before the first ticket is picked. A `conflict` that names a ticket on that
+list parks both tickets it names, and the drain works the rest of the list
+(ADR 0054). It repairs nothing it finds, and it does not run the check again.
 
 ## The incident
 
@@ -60,7 +60,8 @@ drain reports and does not write (ADR 0020 keeps the two hands apart).
 ## The decision
 
 One check, before the first ticket. A **`conflict` naming a ticket on the work
-list** is a §3a stop, with both criteria quoted. Every other survivor is recorded
+list** parks both tickets it names by §3a, with both criteria quoted, and the
+drain carries on with the rest. Every other survivor is recorded
 in the state file, named in the summary, and left for the hand that owns it — the
 ADR loop for prose, `dror-code-repair` for a `breach`. A review that writes no
 report, which is its answer for a stub or superseded ADR, costs one line.

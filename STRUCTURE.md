@@ -151,9 +151,10 @@ being true becomes a rule broken by somebody following instructions correctly,
 and by then the tickets are wrong too.
 
 **Skipping it is not free either, and the drain is what pays.**
-`dror-implement-adr` reads the ADR once before its first ticket and stops for you
-where two of its tickets cannot both be satisfied — the same finding stage 1
-makes, arriving with a drain waiting on your answer. It is one reading, so a
+`dror-implement-adr` reads the ADR once before its first ticket and parks both
+tickets where two of them cannot both be satisfied — the same finding stage 1
+makes, arriving as a question in the closing summary while the drain works the
+rest of the list. It is one reading, so a
 conflict that appears mid-drain is not caught; ADR 0051 records what closing that
 would cost.
 
