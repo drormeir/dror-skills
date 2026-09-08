@@ -44,12 +44,13 @@ So the line is drawn at the sentence's job:
   schema, an owner — is repaired freely, to whatever the tree says now.
 - A sentence that **designs** — what the skill does, in what order, with what
   budget — is corrected only to what the finding grounds, and where making it
-  true would change the design, the item is left as `Needs a decision`.
+  true would change the design, the item's outcome is `Left — needs a
+  decision`.
 - A **conflict** between two owners is not repaired at all. It goes back to
   the user with both passages quoted.
 
-An item recorded as `Needs a decision` is a finished outcome of this run, not
-a failure of it.
+An item recorded as `Left — needs a decision` is a finished outcome of this
+run, not a failure of it.
 
 ## Start from the written report if there is one
 
@@ -62,10 +63,11 @@ holds the naming, identity, staleness, finding-id and log rules every `dror-*`
 report obeys, in one copy. Read it whole before working from a file. It is not
 restated here.
 
-One thing it says is worth reading twice here: where the report's recorded
-`HEAD` — or the skill's own last commit — has moved, the evidence as well as
-the line numbers came from another state of the tree, so locate each finding
-by the sentence it quotes rather than by the number.
+Two facts of this pool the shelf does not hold. A skill review's report front
+matter carries a **second** commit, the one the skill itself last moved at,
+and it is a staleness signal alongside `HEAD`. And where the shelf says to
+locate a finding by what the code says, a skill review has no code, so the
+handle here is the sentence the finding quotes.
 
 Its `## Refuted` section is **not** the list. Those findings were raised and
 then disproved, and repairing one is editing a true sentence to satisfy a
@@ -140,8 +142,10 @@ the user. Nothing is written for it.
 
 This step is read-only, so it parallelizes cleanly: spawn one subagent per
 item, all at once. Each is told: the finding with its quoted sentence and
-kind, the path of the store's `facts.md`, the skill's directory path — paths,
-never their contents (ADR 0038) — and that it **writes nothing**. It returns
+kind, the path of the store's `facts.md`, the **target's** path — paths, never
+their contents (ADR 0038) — and that it **writes nothing**. The target's path
+is the skill's directory where the target is a skill, and the document's own
+file where it is a shelf document. It returns
 one of the outcomes this step ends in, and the brief carries all of them,
 because this file does not reach the agent. Ordinarily that is the corrected
 fact with its evidence, or `ungrounded` with what could not be settled, or
@@ -178,7 +182,8 @@ make.
 - A **`sprawl`** is collapsed to a pointer: the owner's copy stays, the
   restatement becomes the pointing clause this repo prescribes, and a numeral
   leaves every file that does not enforce it. Never collapse the owner —
-  where step 1 could not say which copy owns, the item is `Needs a decision`.
+  where step 1 could not say which copy owns, the item is `Left — needs a
+  decision`.
 - An **`echo` is repaired in every copy it names**, in one pass, before the
   next item starts. Each copy is corrected in *its own* register: the skill
   keeps its detail, an index row stays one line, a map entry stays a map

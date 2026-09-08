@@ -71,7 +71,7 @@ and the agent that reads it.
 |---|---|---|
 | `dror-skill-vendor-rules` | Has the published guide moved since the vendor baseline was distilled from it — and, where a person says yes, re-distil it | `ANTHROPIC-SKILL-RULES.md` and `skill-rules-check.sh`, unstaged, in `refresh` mode only |
 | `dror-skill-review` | Is this skill still true, still coherent, still executed as meant, still inside Anthropic's published rules? | `skill-review-report-<name>.md` |
-| `dror-skill-repair` | Bring the skill's text, and every drifted copy of it, back in line with the repo | the skill's prose, and any index row, map entry or glossary line an `echo` names |
+| `dror-skill-repair` | Bring the skill's text, and every drifted copy of it, back in line with the repo | the skill's prose, and any index row, map entry, glossary line or sibling's routing sentence an `echo` names |
 | `dror-skill-review-repair` | Loop the two over one skill until it converges, up to a cap of its own — the ADR loop's cap and no round-1 floor, for the same one-document reason | whatever its two steps write |
 
 Its kinds and their routing: `text`, `hole`, `sprawl` and `echo` go to
