@@ -104,14 +104,15 @@ the fan-out itself.
 
 A code repair proves itself by watching a test go **red** and then **green**.
 There is no such thing for a sentence, and pretending otherwise is how a
-plausible correction ships. So this skill's evidence is different in kind, and
-it has its own two words:
+plausible correction ships. Two words stand where red and green stand for
+code: the glossary in `../dror-internal-shared/CONTEXT.md` owns **grounded**
+and **ungrounded**, under **Evidence for a document**, and they are not
+restated here.
 
-- **grounded** — the corrected sentence was read out of the tree as it stands
-  now, and the run can quote the `file:line` or command output that says it.
-  Every sentence this run writes is grounded.
-- **ungrounded** — nothing in the tree settles it. The sentence is **not
-  written**. What the run produces instead is the question, put to the user.
+What this file adds is the half that glossary hands each repair skill — which
+forms of evidence count. An ADR is one file, so what settles a sentence is
+read out of a file or out of a command: a **grounded** sentence can be quoted
+back as a `file:line` or as command output.
 
 The report's own evidence is not enough on its own. It was gathered by a refuter
 in an earlier run against a tree that may have moved, and it was compressed to
