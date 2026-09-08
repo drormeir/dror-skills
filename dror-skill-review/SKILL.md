@@ -38,8 +38,8 @@ rules — settled by a script before any of them runs.
 
 Only one axis reads code-as-such, so **a `file:line` outside the skill's own
 directory is not what a finding owes** — it is what some axes' findings owe.
-Findings are told apart by their **kind**; every kind but `conflict` is
-repaired by `dror-skill-repair`, and a `conflict` waits for the user.
+Findings are told apart by their **kind**, and which kind is whose work next is
+`../dror-internal-shared/DROR-SKILLS.md`'s routing, not restated here.
 
 ## What this skill assumes
 
@@ -296,25 +296,21 @@ Survivors are the report.
 
 ## The kinds
 
-Every survivor carries exactly one. The five values — `text`, `hole`, `sprawl`,
-`echo`, `conflict` — and what each **means** are minted in
-[`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens agent's
-prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section by
-section. Neither is restated here.
+Every survivor carries exactly one. The values and what each **means** are
+minted in [`LENSES.md`](LENSES.md)'s preamble, the text pasted into every lens
+agent's prompt, and what kills each is [`REFUTING.md`](REFUTING.md)'s, section
+by section. Neither is restated here.
 
-What this file adds is the part neither carries: the kind is what decides
-**whose work it is next**.
+The kind is also what decides **whose work it is next**, and that routing is
+owned by `../dror-internal-shared/DROR-SKILLS.md`, the shelf beside this skill.
+Read it there; it is not restated here either.
 
-- `text`, `hole`, `sprawl` and `echo` go to `dror-skill-repair`. A `hole` only
-  where the missing sentence can be **grounded** in the tree or the skill's own
-  reasoning — the shape a delegation `hole` is filled in is
-  `../dror-internal-shared/DELEGATION.md`'s. A `sprawl` is collapsed to a
-  pointer, never synchronised into two copies. An `echo` is repaired in
-  **every** copy the finding names, at once, because the copy that gets read is
-  the one that governs.
-- `conflict`: **nobody repairs it without the user.** Two documents that both
-  declare ownership, or two skills deciding one question two ways — picking a
-  side is deciding.
+What this file adds is two conditions of its own. A `hole` goes to
+`dror-skill-repair` only where the missing sentence can be **grounded** in the
+tree or the skill's own reasoning, and the shape a delegation `hole` is filled
+in is `../dror-internal-shared/DELEGATION.md`'s. An `echo` is repaired in
+**every** copy the finding names, at once, because the copy that gets read is
+the one that governs.
 
 A finding a refuter could not settle says so on its line and keeps its kind.
 
@@ -339,7 +335,8 @@ directory or file; the commit `HEAD` was at; the
 commit and date the skill itself last moved, or that it has never been
 committed; the time this report was written
 (`date +%H%M`, the same call the log's date comes from); **this run's
-tag**, minted by the store's recipe unless the caller gave one; and the
+tag**, minted by the store's recipe unless the caller gave one, and **this
+run's round**, or `-` where no caller named one; and the
 `VENDOR:` line this run was given, quoted verbatim, so a reader of the report
 alone can tell which baseline the `tool` breaches rest on.
 
@@ -387,9 +384,9 @@ values: `path` is **the file the finding's own sentence sits in, repo-relative**
 the unit of review is the whole directory and a log that flattened every finding
 onto `SKILL.md` could not say which file drifted; a finding whose *evidence*
 sits elsewhere still takes the path of the sentence it is about; for a document
-it is that one file, every time; `kind` is
-`text / hole / sprawl / echo /
-conflict`; `claim` is always `no` — this skill writes no claim comments, and
+it is that one file, every time; `kind` is one of the names minted in
+this skill's [`LENSES.md`](LENSES.md) preamble, the set "The kinds" above
+points at; `claim` is always `no` — this skill writes no claim comments, and
 the column stays so the pools share one schema; `subject` is **the skill's
 name**, or **the document's repo-relative path**; `round` is the round a
 looping caller named, or `-`; and `run_tag` is this run's tag.
@@ -430,9 +427,10 @@ give a lens its denominator.
 ## Present
 
 Show the same numbered list, in that order, each line naming its kind. Under
-it, say in one sentence which findings are this chain's next work and whose:
-the `text`, `hole`, `sprawl` and `echo` ones go to `dror-skill-repair`, and a
-`conflict` waits for the user, because somebody must choose.
+it, say in one sentence which findings are this chain's next work and whose.
+Route each kind the way `../dror-internal-shared/DROR-SKILLS.md` routes it, and
+give a kind the user keeps the reason that file gives it. The routing is not
+restated here.
 
 Name the report file this run wrote, since a repair run has to be pointed at
 it and only this run knows which name it took, and say this run's tag once.
@@ -455,6 +453,7 @@ as one whose output did not arrive, the findings have been merged, every merged
 finding has faced a refuter, this run's report file holds the survivors and
 the refuted with an id each, every merged finding has a line in
 `~/.claude/dror-skills/refutations.tsv`, the run has its line in
-`~/.claude/dror-skills/runs.tsv`, the repair-or-not line is on screen, and
-that same list is on screen — with no line of the skill and no line of
-anything else changed.
+`~/.claude/dror-skills/runs.tsv`, the repair-or-not line is on screen,
+that same list is on screen, and the report file's name and this run's tag
+have been said — with no line of the skill and no line of anything else
+changed.

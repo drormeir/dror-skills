@@ -74,8 +74,6 @@ is how the skill is chosen, the flags are how it is run.
   and no step produces, a trigger clause naming a situation the procedure does
   not handle, a body that grew a capability the description does not mention —
   so the skill is never chosen for it.
-- The **`name:`** against the directory's name. They must match, or the two
-  halves of the skill are two skills.
 - The **fork flags**: a skill the user runs to work a chain carries
   `context: fork` and `background: false` and opens by telling its reader the
   conversation does not reach it, and takes everything as arguments (the repo's
