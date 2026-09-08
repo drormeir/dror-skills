@@ -276,6 +276,10 @@ awk -v f='<path as it appears after b/>' \
   >> <scratch dir>/slice-<finding number>.diff
 ```
 
+Remove a `slice-<finding number>.diff` already sitting there first, for the
+reason `callers.txt` is removed above — and here the finding numbers restart
+every round, so a stale slice arrives under another round's finding number.
+
 The capture is the one the lenses read, so the slice is the same diff they
 saw; and the hunks never pass through this context, which is the point.
 

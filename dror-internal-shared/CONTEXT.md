@@ -38,14 +38,15 @@ condensed pointer, and that file owns the term.
 - **Bug** — production code is wrong. A finding already written down, in a
   review report or a findings file; `dror-code-repair` discovers none of its own.
 - **Latent hazard** — code correct today that this diff made fragile, naming the
-  future change that would break it **and the live caller that reaches it now**.
-  Where every path in is clamped, guarded upstream or has no caller, it is not a
-  hazard (ADR 0030).
+  future change that would break it. What qualifies as one, and the live caller
+  it must name, are minted and defined in `dror-code-review/LENSES.md`'s lens
+  preamble, the text pasted into every lens agent's prompt; this entry is the
+  condensed pointer, and that file owns them.
 - **Gap in cover** (also **cover**, as a finding's kind) — named behaviour that
   no test would catch the loss of. Nothing is broken, so nothing is fixed; the
   test alone is the deliverable.
-- **Unmet criterion** — a criterion the diff claims and misses. Neither a bug
-  nor a gap in cover.
+- **Unmet criterion** — a criterion the diff claims and misses. Minted and
+  defined in `dror-code-review/SKILL.md`, and that file owns it.
 - **Tool finding** — whatever a mechanical pass decided before the lenses ran:
   in `dror-code-review`, a lint or type-check diagnostic on a line the diff
   added or changed (ADR 0045); in `dror-skill-review`, a breach of Anthropic's
