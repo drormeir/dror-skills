@@ -10,7 +10,8 @@ One ADR goes in. The run identifies whoever holds that ADR's drain lock, removes
 it where removing it is safe, and then invokes `dror-implement-adr` on the same
 number. It works no ticket of its own and owns no part of the drain.
 
-The ADR number is this skill's one argument. Without it, say so and stop.
+The ADR number is this skill's one argument. Without it, say so and stop — and a
+number named earlier in the session is not it, so say so and stop for that too.
 
 **What it exists for.** A drain that ends by itself — a clean finish, a stop for
 the user, a failed guard — releases its lock on the way out. A drain that is
@@ -42,14 +43,14 @@ A drain invoked from here must land exactly where a drain the user typed lands.
 `dror-adr-sweep` and `dror-interview` do not fork either, and both cite this
 skill as their precedent.
 
-What a fork would have bought is not worth that. This run reads one small file
-and runs three commands; it keeps no working context worth isolating, and the
-drain it starts is forked by its own frontmatter, so the session it was invoked
-from still never reaches the drain.
+What a fork would have bought is not worth that. This run reads two files and
+runs four commands, five where it clears the lock; it keeps no working context
+worth isolating, and the drain it starts is forked by its own frontmatter, so
+the session it was invoked from still never reaches the drain.
 
-**It takes nothing from the conversation all the same.** The ADR number is the
-argument, and a number named earlier in the session is not one — say so and stop,
-exactly as a forked skill would.
+**It takes nothing from the conversation all the same.** Not forking is what
+makes that a rule this file has to state for itself, and it states it where the
+argument is introduced, above.
 
 ## 1. Find the lock
 
