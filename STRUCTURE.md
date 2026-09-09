@@ -131,6 +131,8 @@ flowchart TD
     PF -.-> RV
     PF -.-> RP
     PF -.-> AR
+    PF -.-> ARP
+    PF -.-> RR
 
     SH[["dror-internal-shared<br/>rules, glossary, ADRs"]]
     SH -.-> PV
