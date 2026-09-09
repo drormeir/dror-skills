@@ -459,8 +459,8 @@ Then stop and wait.
 
 Done when every lens this batch launched has returned or is named in the report
 as one whose output did not arrive, the findings have been merged, every merged
-finding has faced a refuter, this run's report file holds the survivors and
-the refuted with an id each, every merged finding has a line in
+finding a lens raised has faced a refuter, this run's report file holds the
+survivors and the refuted with an id each, every merged finding has a line in
 `~/.claude/dror-skills/refutations.tsv`, the run has its line in
 `~/.claude/dror-skills/runs.tsv`, the repair-or-not line is on screen,
 that same list is on screen, and the report file's name and this run's tag
