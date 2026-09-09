@@ -115,11 +115,12 @@ is deciding about their project, not about this machinery.
 
 **Order them so the answers can do the most work**: the questions that can retire
 other questions first — the conflicts between tickets, then the criteria that look
-unwinnable, then the values a ticket decided that the ADR left open — and the four
+unwinnable, then the values a ticket decided that the ADR left open — and the
 standing permissions last, since they apply to whatever survives.
 
-**The standing permissions** are the same four every run, and each is a choice
-between working on and stopping:
+**The standing permissions** are the same every run, and each is a choice
+between working on and stopping. Which they are, and why the list stops where it
+does, the drain's §0b owns:
 
 - **A ticket refuses because the tree is dirty.** Work over it, or stop?
 - **A ticket refuses because a blocker of its is open.** Work it anyway, or stop?
