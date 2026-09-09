@@ -1,6 +1,6 @@
 ---
 name: dror-adr-repair
-description: Repair an ADR's text from findings already made - every corrected sentence grounded in the code it describes, no decision rewritten, and the tickets its own edits left stale corrected in the tracker. Use when asked to fix an ADR review's findings, or to bring a named decision document back in line with the tree.
+description: Repair an ADR's text from findings already made - every corrected sentence grounded in the code it describes, no decision rewritten, a ticket drafted for work the ADR decides but never ticketed and filed in the tracker only on a yes, and the tickets its own edits left stale corrected there too. Use when asked to fix an ADR review's findings, or to bring a named decision document back in line with the tree.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
