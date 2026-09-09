@@ -213,6 +213,14 @@ hands the path of a listing holding every issue's body and state; read your
 bodies from it. Read only the numbers named: the listing is the whole tracker,
 and the set was found before you were spawned. Do not shell out for more.
 
+**A set your prompt marks `inferred` was not found from a spec issue.** No spec
+issue named the ADR, so a contiguous block of numbers whose titles match the
+ADR's sections was taken instead: it can hold an issue that is neither the spec
+nor a child of it, and it can miss a ticket that does belong. Carry the word
+into any finding it touches — an `unticketed` rests on the set being whole, and
+a finding raised against a swept-in issue is raised against a ticket that may
+not be this ADR's at all.
+
 - A **criterion that contradicts a rule the ADR states now** — a different
   threshold, owner, path, default or order. Quote both.
 - A criterion resting on a **name the ADR has since changed**: a module, a path,
