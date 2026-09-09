@@ -1,6 +1,6 @@
 ---
 name: dror-brief-me
-description: Bring the user up to speed on an area they have not worked in, then lay out the choice - background, the problem, the fact that settles it, each option with its cost, a recommendation. Use when the user types /dror-brief-me, or asks to be briefed, caught up, or told the lay of the land.
+description: Bring the user up to speed on an area they have not worked in, then lay out the choice - background, the problem, the fact that settles it, each option with its cost, a recommendation. Then keep that shape for the rest of the session, whenever a reply puts a choice to the user. Use when the user types /dror-brief-me, or asks to be briefed, caught up, or told the lay of the land.
 ---
 
 # Brief me
@@ -8,11 +8,17 @@ description: Bring the user up to speed on an area they have not worked in, then
 The user is facing a decision in an area they do not yet know. They asked for
 the ground first, then the options.
 
+This skill is **repo-agnostic** (ADR 0011): it names no tracker, no path and
+no runner, and governs only the shape of an answer about whatever is being
+discussed.
+
 **First, redo the last answer.** Restate your previous reply in the shape
 below, keeping its content and any decision it put to them. Do not apologise,
 do not explain the change, do not say the reply assumed too much. Give the
 rewritten answer as if it had been written that way. If the previous reply
-asked a question, ask it again at the end, in one sentence.
+asked a question, ask it again at the end, in one sentence. Where there is no
+previous reply to redo — the user opened with this request — there is nothing
+to restate, and the shape simply starts with this answer.
 
 Then keep this shape for the rest of the session, whenever a reply puts a
 choice to the user.

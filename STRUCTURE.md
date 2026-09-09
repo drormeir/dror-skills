@@ -284,7 +284,7 @@ back to you, one changes what Claude can see.
 | Skill | Reach for it when | Description |
 |---|---|---|
 | `dror-guide` | An answer went over your head, or the next thing you must do is a sequence of steps outside the editor. | Answer as a step-by-step guide in plain words, assuming nothing. |
-| `dror-brief-me` | A decision has landed in an area you have never worked in, and you need the ground before the options. | Bring the user up to speed on an area they have not worked in, then lay out the choice — background, the problem, the fact that settles it, each option with its cost, a recommendation. |
+| `dror-brief-me` | A decision has landed in an area you have never worked in, and you need the ground before the options. | Bring the user up to speed on an area they have not worked in, then lay out the choice — background, the problem, the fact that settles it, each option with its cost, a recommendation. Then keep that shape for the rest of the session, whenever a reply puts a choice to the user. |
 | `brief` | The replies have grown into essays and you want them cut back for the rest of the session. | Reset the answering style to terse plain speech — answer first, one or two short sentences, no lists. |
 | `screen-capture` | The problem is something you can see and cannot paste — a GUI, a rendered plot, a dialog behaving oddly. | Capture the user's screen (or a specific monitor / region) to a PNG and view it, so Claude can see what is on screen and guide GUI steps. |
 
