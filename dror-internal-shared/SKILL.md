@@ -1,6 +1,6 @@
 ---
 name: dror-internal-shared
-description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the lens fan-out's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the glossary, the map and the decision record. A shelf, read by the skills that run.
+description: Reference material the dror-* skills read - the test-writing rules, the report store's rules, the lens fan-out's rules, the ADR worktree's rules, the directory-override contract, the step-agent carrier, what a delegated skill's stop means to its caller, how an ADR number resolves to a file, Anthropic's published rules for a skill and their stamp, the house rule that no skill invokes another with Skill from inside a forked context, the house rule that a run signs what it writes, the glossary, the map and the decision record. A shelf, read by the skills that run.
 disable-model-invocation: true
 ---
 
