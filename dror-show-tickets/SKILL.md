@@ -57,10 +57,10 @@ stop above, not something to adapt to.
 
 ## Step 3 — read each ticket
 
-Per issue, from the `title`, `body` and `state` **step 1 already fetched**. Do
+Per issue, from the `title`, `body` and `state` **step 2 already fetched**. Do
 not re-fetch: `gh issue view <n>` here asks the tracker a question it has just
 answered, once per ticket, and returns the same three fields. Read one only
-where step 1's list could not reach the issue at all — a number outside its
+where step 2's list could not reach the issue at all — a number outside its
 limit, or a fallback that named an issue the list did not return — and say so
 in the closing sentence.
 
@@ -126,7 +126,9 @@ in the closing sentence.
 
 Only for tickets whose code could plausibly exist. Cheap checks, in this order:
 
-- `git log --oneline -20` — a commit whose subject matches the ticket title.
+- `git log --oneline -20` — a commit whose subject matches the ticket title. Its
+  commit cell reads that commit's short sha, the field `--oneline` printed
+  first; the subject is already the `Title` cell.
 - The module the ticket names: does the file exist? That is the **Module built**
   cell. Whether anything imports it (`Grep` for its module name) decides the
   **How to see it** cell below, and is never a column of its own — who calls a
@@ -171,7 +173,7 @@ fact per cell — a cell holding three facts is three columns.
 
 At most two sentences: which ticket to start on, every note a step above
 required — an ADR that exists only as an untracked file, a ticket fetched on its
-own because step 1's list could not reach it, an inferred ticket set, an
+own because step 2's list could not reach it, an inferred ticket set, an
 inferred `Awaiting` row — and any other mismatch worth naming (code landed with
 zero criteria ticked). Nothing else — no plan, no next steps, no offer, unless
 the user asks.
