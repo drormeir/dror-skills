@@ -117,12 +117,10 @@ Before anything is written, ask three questions and report all three:
 **`<base>` is `dror-code-review`'s base, found `dror-code-review`'s way**, because a
 disagreement here reports work the review will not see, or stops a run over work
 that is already pushed. Find it the way `../dror-code-review/SKILL.md` §Review
-"Find the base" says, and count from what it gives you. Its last case ends
-differently here: it falls back to `HEAD` as a review scope, but a repo with no
-usable remote ref at all has nothing to count against, and there every commit is
-unpushed by definition — say that is the case rather than reporting a number.
-Name which base you used, since step 3 will name it again and the two must
-agree.
+"Find the base" says, and count from what it gives you; that section owns the
+three branches and what a counting caller does with the last of them, and this
+file repeats none of it. Name which of the three you used, as this step's own
+reading.
 
 - **The project's full suite**, in its quiet form, over the tree as found — the
   **baseline**. A caller may hand this step a green run instead: the command,

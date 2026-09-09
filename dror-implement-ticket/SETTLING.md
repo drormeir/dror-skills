@@ -38,8 +38,9 @@ two rounds**, telling it **this is a chain run, so it notifies nothing** — the
 same way step 3 ran it: invoked as a skill, or folded into this context under
 a directory override (ADR 0043). Not a freehand review-then-repair either way:
 that skill's file owns the round, judges
-it, and carries the account of why the tree is dirty into every round, its run
-tag, and the rule that the full suite is owed to the last code change.
+it, takes the account of why the tree is dirty once at its step 0, carries its
+run tag into every round, and owns the rule that the full suite is owed to the
+last code change.
 
 **An owed-at-cap hand-back is a command, not a description.** Where step 3's loop
 came back with the command that would resume it, run **that** rather than

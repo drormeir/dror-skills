@@ -40,11 +40,13 @@ prompt each step writes below is that agent's brief.
 — §0a's "All commands run in `<path>` …" sentence — `dror-implement-ticket`
 follows this file in its own context (ADR 0043) and drives the same carrier.
 The override binds any run holding the sentence, folded or invoked directly
-with it in the arguments: every command this file makes obeys it, `<repo>`
-means that directory, and the sentence goes verbatim into every step agent's
-brief, step 1's and step 3's alike — `../dror-internal-shared/DIRECTORY-OVERRIDE.md`
-owns the duties. Without the sentence, `<repo>` is the session's own checkout
-and nothing else changes: the carrier is the same either way.
+with it in the arguments. Its provenance and the duties it obliges are the
+shelf's, in one copy: `../dror-internal-shared/DIRECTORY-OVERRIDE.md`, read
+whole when the sentence arrives and not otherwise. This skill's own part of
+the contract: every command this file makes obeys it, and the sentence goes
+verbatim into every step agent's brief, step 1's and step 3's alike. Without
+the sentence, `<repo>` is the session's own checkout and nothing else changes:
+the carrier is the same either way.
 
 ## The project facts
 
@@ -69,10 +71,12 @@ This skill takes a **focus** and a **scope**, both optional. Given neither, it
 reviews and repairs every unpushed file with no context beyond the diff, which is
 the ordinary run.
 
-A caller invoking it as a step of its own chain may also set two things the
-sections below define: a **lower round cap**, and the declaration that a
-**`dror-prove` follows**, which is what lets the ticket travel down to both
-sub-skills. A user asking for a review-and-repair sets neither.
+A caller invoking it as a step of its own chain may also set what the sections
+below define: a **lower round cap**; the declaration that a **`dror-prove`
+follows**, which is what lets the ticket travel down to both sub-skills; the
+declaration that this is a **chain run**, which silences the round
+announcements; and the **account of why the tree is dirty**, which §0 takes
+instead of repeating. A user asking for a review-and-repair sets none of them.
 
 The focus is **free-form**: a ticket number, a path or two, a sentence about what
 the work was meant to do. Whatever arrives, it is carried into every round's
@@ -90,7 +94,12 @@ Only a **ticket** is fetched. Read it the way the **issue convention** fact says
 this repo tracks work, and pass its substance down as the focus paragraph: what
 the work was for, and what it was meant to satisfy. Pass it as *context*, never
 as the sub-skills' ticket argument unless a prove follows — the next section says
-why.
+why. **A number that does not resolve carries on without the ticket and says
+so** — a fetch that exits non-zero, an issue that is not there, one this run
+cannot read. The run is then the no-focus ordinary run above, and the focus
+paragraph is left empty rather than guessed at from the number. Where a prove
+follows the number still travels down, and the sub-skills' own rules answer it
+there.
 
 Any other labelled thing is carried as **text, unfetched**: an ADR number, a
 design note, a file and line. This skill reviews unpushed code and has no
@@ -159,10 +168,14 @@ Ask both, and say what they answer:
 
 **`<base>` is `dror-code-review`'s base, found `dror-code-review`'s way**, or this run
 names a scope the review will not use: its "Find the base" step works down three
-branches in an order that file owns, and this one does not repeat them. A repo
-with no usable remote ref at all has nothing to count against, and there everything is
-unpushed by definition — say that rather than a number. Name which of the three
-you used; step 1 will name it again and the two must agree.
+branches in an order that file owns, and owns what a counting caller does with
+the last of them. Read it there — `../dror-code-review/SKILL.md` §Review "Find
+the base" — and this file repeats none of it. Name which of the three you used,
+as this step's own reading. `dror-code-review` finds its base again in
+its own context and names it there — on its own screen and in its report's front
+matter — and neither channel reaches this run, so there is nothing here to
+compare it against. A branch you could not settle is said out loud rather than
+counted silently.
 
 **Both empty ends the run before it starts.** Nothing unpushed is nothing to
 review, and `dror-code-review` would stop on the empty diff one step later anyway.
@@ -223,10 +236,13 @@ already been fixed is being asked to trust the very thing it is there to check.
 The current report is the open list, and it is written from the tree as it stands
 now.
 
-Keep in **this** context only the per-round lines, the report paths, any log a
-round said it could not write, and the word step 4 answered. That is the whole
-state of the loop. The log word is kept because §Present owes it, and a round
-that drops it leaves that clause with nothing to answer from.
+Keep in **this** context only the per-round lines, the report paths, the
+neighbour line the concurrency check produced, any log a round said it could not
+write, and the word step 4 answered. That is the whole state of the loop. The log
+word is kept because §Present owes it, and a round that drops it leaves that
+clause with nothing to answer from. The neighbour line is kept for the same
+reason: the check that produces it runs once, before round 1, and every round's
+repair is owed it.
 
 ### Say where the loop is, unless a caller says not to
 
@@ -462,14 +478,11 @@ anything at all, round 2 runs — whatever the repair touched, and whatever the
 weighing above would otherwise have said. The word for that round is **owed**,
 with "the round-1 floor" as its grounds, and the loop goes back to step 1.
 
-This is not a judgement about the repair; it is the measured recall of a single
-review pass. One review does not cover a diff of any size: at `8681800` round 1
-returned 4 findings in two files and round 2 returned **15** in two files round 1
-never opened and the repair never touched. At `94cb2b6` round 1's one finding was
-a gap in cover whose repair added a test and edited no production code — the
-textbook **optional**, and a stop — and round 2 then found 9 findings across four
-files nobody had looked at. So rounds 1 and 2 are one review split in two, and
-the convergence judgement below is what governs from round 3 on.
+This is not a judgement about the repair. A single review pass was measured
+missing most of a code diff — round 2 returning findings in files round 1 never
+opened and its repair never touched (ADR 0023). So rounds 1 and 2 are one review
+split in two, and the convergence judgement below is what governs from round 3
+on.
 
 The floor **never overrides the cap**: a caller that named a cap of one gets one
 round, and the floor is reported as unmet rather than taken. It does not apply

@@ -159,6 +159,13 @@ ref at all falls back to `HEAD`, which is the working tree alone. Say which of
 the three bases was used, because they answer different questions and the user
 should not have to guess which they got.
 
+**A caller counting commits against this base has nothing to count in that last
+case.** `HEAD` is the base there, so `git rev-list --count <base>..HEAD` is `0`
+while every commit in the repo is unpushed by definition — the number says the
+opposite of the truth. Say that is the case rather than reporting a number. A
+branch that could not be settled at all is said out loud too, rather than
+counted silently.
+
 **Capture the diff once.** Write `git diff -W <base>` plus every untracked
 source file to a single scratch file, and list the changed paths. `-W` extends
 each hunk to its whole enclosing function, so the context every lens is told to
