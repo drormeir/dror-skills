@@ -11,12 +11,11 @@ run. Nothing about the loop's judgement changes.
 
 `dror-code-review-repair` carries a **round-1 floor**: where round 1 repaired
 anything, round 2 runs whatever the weighing would otherwise have said. Its
-grounds are two measured runs — at `8681800` round 1 returned 4 findings and
-round 2 returned 15 "in two files round 1 never opened and the repair never
-touched"; at `94cb2b6` round 1's single finding was a cover gap and round 2 then
-found 9 across four files nobody had looked at.
+grounds are the measured runs [ADR 0023](0023-two-rounds-are-one-review.md)
+records, where each round 2 returned findings in files round 1 never opened and
+the repair never touched.
 
-Read as written, those two runs say something the floor's own name does not.
+Read as written, those runs say something the floor's own name does not.
 Findings in files **round 1 never opened** are not a review of what the repair
 changed, which is what step 4 says a further round is for. They are a first pass
 that did not cover its diff. If that is the general case, the floor is
