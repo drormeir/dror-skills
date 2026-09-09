@@ -249,9 +249,10 @@ These words are the same in every `dror-*` run.
   first.
 - **Phase report** — `adr-sweep-report-<tag>.md` in the store: what a
   `dror-adr-sweep` run's members left for somebody else — the conflicts,
-  revisits, ungrounded items, breaches and unfiled ticket drafts of the whole
-  set, collected by kind and appended as each member ends. It is where those go
-  instead of on screen, which is what keeps a long sweep quiet (ADR 0052).
+  unstated values, revisits, ungrounded items, breaches and unfiled ticket
+  drafts of the whole set, collected by kind and appended as each member ends.
+  It is where those go instead of on screen, which is what keeps a long sweep
+  quiet (ADR 0052).
 - **Phase state file** — `adr-sweep.json` in the store: where a `dror-adr-sweep`
   run has got to over a decision directory — the set, the phase tag, and each
   member's state and ending word. A current position, not a history, like the

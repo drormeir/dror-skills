@@ -75,8 +75,8 @@ Four optional arguments, and nothing else:
   focus does to a review is `dror-adr-review-repair`'s, which states that rule
   and writes it into the prompt of every review it runs.
 - A **yes to file**, which every member's repair is then told. Filing an issue is
-  an outward action; without the yes the members return ticket drafts and §Present
-  collects them.
+  an outward action; without the yes the members return ticket drafts and §The
+  phase report collects them.
 - **`from ADR <n>`**, which drops every member before that one from the set. The
   ordinary reason is a phase already half done under another name.
 - **`resume`**, which is §The phase state file's question asked outright.
@@ -236,9 +236,9 @@ knows whether its document was left half repaired.
 **A phase that carries on takes the tag from the file**, not a new one, so a
 resumed phase's reports stay one series.
 
-Like every store in this chain it is disposable: unreadable is a miss and never
-an error, and losing it costs the user a re-run of members the summary named as
-done.
+Like every store in this chain it is disposable, by the store's own rule
+(`../dror-internal-shared/REPORT-STORE.md`); losing it costs the user a re-run
+of members the summary named as done.
 
 ## The phase report
 
@@ -293,7 +293,7 @@ turn came before those repairs landed.
 Then say the documents are left uncommitted, and stop.
 
 Done when every member in the set has been worked or named as skipped or as not
-reached, each with its ending word; the phase report holds every member's
-questions, drafts, breaches and ungrounded items; the table is on screen with the
-report's path under it; the phase tag and the state file are named; and nothing
-is committed.
+reached, each worked member with its ending word and each skipped member with its
+reason; the phase report holds every member's questions, drafts, breaches and
+ungrounded items; the table is on screen with the report's path under it; the
+phase tag and the state file are named; and nothing is committed.
