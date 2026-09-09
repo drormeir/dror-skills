@@ -22,8 +22,9 @@ deliverable that brief exempts.
 
 - **One action.** A step with two verbs is two steps.
 - **The exact thing.** The literal command, the literal path, the literal
-  button: `Open ~/.claude/skills in Cursor`, where a vaguer answer would say
-  "pick a working directory".
+  button: `Open ~/.claude/skills in Cursor` — `~/.claude/skills` is the folder
+  your skills live in, and Cursor is a code editor — where a vaguer answer
+  would say "pick a working directory".
 - **Every term explained where it appears.** A step that names a tool, a term
   or a place says in the same breath what it is, in plain words. The user
   follows it with the knowledge they already have.
