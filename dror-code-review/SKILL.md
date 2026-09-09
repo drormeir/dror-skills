@@ -394,12 +394,12 @@ sharing a checkout interleave their rows, and the count would be of neither.
 *claimed*; the `## Refuted` section above holds **why it died**, which is the one
 thing a retrospective needs and cannot reconstruct — a measurement over
 nineteen days could read the ground from about ten kills in a hundred and forty,
-because a summary under eighty characters has no room for it. The report is
-overwritten by the next run of the same thing, so this is not a history and does
-not pretend to be one: it points at a file that is there until the next run on
-that ticket, and gone after. That is still every run whose report is current,
-which is where a retrospective's freshest evidence sits, and a dead path is a
-miss and never an error.
+because a summary held to the store reference's cap has no room for it. The
+report is overwritten by the next run of the same thing, so this is not a
+history and does not pretend to be one: it points at a file that is there until
+the next run on that ticket, and gone after. That is still every run whose
+report is current, which is where a retrospective's freshest evidence sits, and
+a dead path is a miss and never an error.
 
 **The `lens` column is a closed vocabulary**: a section name from `LENSES.md`,
 the reserved `criterion` for an `unmet criterion` finding, which no lens
