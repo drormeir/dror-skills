@@ -123,8 +123,10 @@ the distillation may have missed a rule the guide always carried.
    `../dror-internal-shared/skill-rules-check.sh` against the rules you just
    wrote: a rule added needs a check, a rule dropped needs its check removed, a
    bound that moved needs its numeral changed **there and not in the prose**.
-   Then run it over this repo's own skills —
-   `for d in <repo>/*/; do bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh "$d"; done` —
+   Then run it over this repo's own skills — the directories beside this one,
+   under `${CLAUDE_SKILL_DIR}/..` — one command per directory rather than a
+   loop, so that the frontmatter's grant matches the whole string:
+   `bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh ${CLAUDE_SKILL_DIR}/../<one skill directory>` —
    and read every `BREACH:` line before believing it: the first draft of that
    script produced three false positives, and a check that fires on correct
    skills is worse than no check. A line that survives that reading is one of
@@ -166,5 +168,6 @@ Done when the source has been read whole, the baseline holds the distilled
 rules with its divergence section intact, `skill-rules-check.sh` enforces
 exactly those rules and every `BREACH:` line it printed over this repo's own
 skills has been read and either fixed in the script or named on screen, the
-stamp matches the fetch, `anthropic-stamp.sh` prints `current`, the changes are on
+stamp matches the fetch, `anthropic-stamp.sh` prints `current` — or printed
+`unknown` and the reason it gave is on screen — the changes are on
 screen, and nothing is staged or committed.
