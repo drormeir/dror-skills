@@ -84,6 +84,14 @@ that takes it owes the release on **every** way this run can end, §3a's stop an
 §4a's clean finish alike; the shelf owns both the claim and the release, and this
 skill's endings only have to reach for them.
 
+**Mint this run's tag next, right after the lock**, by the store's recipe
+(`../dror-internal-shared/REPORT-STORE.md`). It and the `$PPID` the lock was
+claimed with are this run's name, and every line it writes anywhere carries both
+— the progress log's prefix, the state file's round entries, and §2b's review
+report. Here, and not at §2b where the review needs it, because §0's own
+preflight lines are written before §2b runs and would otherwise go down
+unsigned. §The writer test is what the name is for.
+
 **Its preflight is a step of this one, not a hand-off.** Run it before the first
 ticket and append its four lines to the progress log; a failure stops the run
 here, which is the whole point of asking at a moment when there is nothing to
@@ -119,6 +127,13 @@ prompt's commands run in, named in its first sentence:
 > the primary working directory; use `git -C <path>` for every git command and
 > read and write files under that path only. Carry this paragraph verbatim
 > into every prompt you hand to another skill or agent.
+
+**Name this run's tag and pid in the same prompt**, as one more sentence beneath
+it, wherever the agent may append to the progress log or the state file: *this
+drain's tag is `<tag>` and its pid is `<pid>`; stamp every line you write there
+with them, and carry this sentence on as you carry the paragraph above.* An
+agent that stamps with a name of its own would sign the drain's own log as a
+stranger — which is the failure §The writer test exists to end.
 
 **This is the whole isolation, and prose is the only thing holding it.** A
 changed working directory is **not inherited by a spawned agent**, and a skill
@@ -498,9 +513,8 @@ one's:
 
 > `<worktree>/.claude/dror-skills/adr-review-report-<N>-<tag>-r1.md`
 
-`<tag>` is this drain's tag, minted by the store's recipe here and written to the
-state file. Tell the review that tag and round 1, so its finding ids and its log
-rows carry them.
+`<tag>` is this drain's tag, minted at §0 and written to the state file. Tell the
+review that tag and round 1, so its finding ids and its log rows carry them.
 
 **It rides an agent, not a fork** (ADR 0044, ADR 0056). `dror-adr-review`
 carries `context: fork` of its own, and a fork made from inside this forked run
@@ -878,6 +892,22 @@ store, so step 5's rule keeps it out of the commit like everything else there,
 and it is disposable in the same way — a line that could not be written is
 never a reason to stop a round.
 
+**Every line says who wrote it**, between the ADR and the text: this run's tag
+and the pid it claimed the lock with.
+
+```
+[ADR 17] [tag 1788947998651446299 pid 119604] ticket 1/8 · #168 · starting
+```
+
+Both come from §0 — the tag minted there, the pid the lock was claimed with —
+and both are constants for the whole run, so this costs one prefix and no
+bookkeeping. Log lines a spawned agent appends carry the tag and
+pid **of the run that spawned it**, handed down in its prompt beside the
+worktree path — a helper writes on the drain's behalf and is not a second
+writer.
+
+It exists for §The writer test below, which cannot be answered without it.
+
 Name its path in §Present, since that is the first moment this run can tell
 anyone anything.
 
@@ -893,6 +923,11 @@ check — its report path and the survivors' kinds** — and — where §3a ende
 run — **what stopped it and what was asked**. Read it at the start of a
 run for the attempted and skipped numbers, the stopped ticket, and the earlier
 rounds' durations that the ETA's mean is built from.
+
+**Each round entry carries `run_tag` and `pid` too**, the same two values as the
+log's prefix, and for the same reason. The file already holds one `run_tag` at
+the top, and that is not enough: a resumed run rewrites the top and inherits the
+rounds, so the top says who wrote it last and nothing says who wrote each round.
 
 **Two of §3a's stops name a ticket.** A dirty tree is found at a ticket's step
 0, and a ticket run's wrong toplevel at that ticket's step 4; both belong to
@@ -929,6 +964,51 @@ drain already tried, and which question it stopped on.
 
 Like every store in this chain it is disposable: unreadable is a miss, never an
 error, and the cost of losing it is re-attempting a stalled ticket once.
+
+## The writer test
+
+A drain that finds writing in its own log or state file it does not remember
+making **must not treat that as another writer.** Compare the stamps:
+
+- **Same tag** — this run's own writing, whatever it remembers. Carry on. Say
+  nothing about it.
+- **Different tag, and `ps` shows that pid still wearing an agent process** —
+  another live drain. This is the one that stops the run, by §3a's shape: name
+  both tags, both pids and the lock path, and touch nothing.
+- **Different tag, dead pid** — a killed run's leavings, the log's ordinary
+  contents. Carry on.
+
+**Memory is not evidence, and this is why the stamps exist.** Three ordinary
+things make a run's own writing unfamiliar to it, and none of them is a second
+writer. A long drain is **compacted**, and the lines it wrote at §0 leave its
+context while staying on disk. A **spawned agent** writes on the run's behalf,
+so the parent truthfully never wrote those lines with its own hands. And a
+**resumed run** inherits a file an earlier run wrote and remembers none of it.
+All three answer "did I write this?" wrongly. All three answer the tag
+comparison correctly.
+
+**The shelf already decides one file this way**, and this is that rule applied to
+the other two: `../dror-internal-shared/REPORT-STORE.md` settles a report path
+found occupied by reading the tag in it — this run's tag is this run's own
+earlier write, another run's tag is another writer. The log and the state file
+were the two stores left deciding it by memory.
+
+**This is not the token `WORKTREE.md` rejects**, and the difference is which
+question is being asked. That passage is about the **lock**, where the question
+is *liveness* — is the holder still going — which identity cannot answer. Here
+the question is *identity*: who wrote this line. A tag answers it exactly, and
+liveness is asked only in the one branch above where the tag has already said
+the writer is somebody else.
+
+**Two writers in one drain is not a stop condition on §3a's list**, and it may
+not be added as one on a run's own judgement. Where the stamps say another live
+drain is here, the stop is the **live-holder** stop `WORKTREE.md` already
+defines — the lock is what that condition is about, and it is answered before
+anything is touched, not twenty minutes in.
+
+*(Written after two ADR 17 drains, 2026-09-09 02:21 and 13:21, stopped without
+working a ticket on a second writer that was in both cases the run itself —
+same tag, same pid, no other session in the repo.)*
 
 ## 3a. Park the ticket, or stop the run
 

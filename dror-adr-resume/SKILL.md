@@ -132,6 +132,12 @@ read, and say the lock is gone. Nothing else is removed: the worktree, the
 branch, the state file and the progress log are all the drain's re-entry to
 judge, and this run touches none of them.
 
+The drain that starts next mints a stamp of its own, so the rounds and log lines
+it inherits carry the dead run's. That is the ordinary shape of a resumed file
+and not a second writer — §The writer test in
+`../dror-implement-adr/SKILL.md` is what reads it, and it is the reason this run
+leaves both files exactly as it found them.
+
 Then, **in the same turn**, invoke the `dror-implement-adr` skill with the ADR
 number as its argument, and nothing else — it takes the branch, the worktree, the
 preflight and the whole ticket list from there, starting with a lock of its own

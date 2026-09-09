@@ -42,6 +42,14 @@ direct `Skill` invocation there is untouched by any of this.
   anything else, and the agent carries it into every agent *it* spawns —
   DIRECTORY-OVERRIDE.md's duties, which the step's own file already points
   at.
+- **Where the agent may write into the driver's own log or state file, the
+  driver's name travels with the brief** — its run tag and the pid it holds its
+  lock with, in one sentence beneath the override, with the instruction to stamp
+  every such line with them and to carry the sentence into every agent it
+  spawns. An agent that signs the driver's log with a name of its own is
+  indistinguishable afterwards from a stranger writing into the same file, which
+  has twice ended a run that had no second writer
+  (`../dror-implement-adr/SKILL.md`, §The writer test).
 - **The first line of the agent's return is its toplevel** — `git rev-parse
   --show-toplevel` from where its commands ran — and the driver reads that
   line before any other: a wrong toplevel means the step worked the wrong

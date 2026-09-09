@@ -72,8 +72,17 @@ that sharpening a rule sharpens every run that obeys it.
   (ADR 0057). Takes a skill directory, prints one `BREACH:` line per offending
   invocation or `CLEAN`, and holds the exempt caller→target pairs with the
   decision granting each. `dror-skill-review` runs it beside
-  `skill-rules-check.sh`; the two are separate because they answer to separate
-  owners — what Anthropic publishes, and what this repo decided.
+  `skill-rules-check.sh` and `stamp-check.sh`; the three are separate because
+  they answer to separate owners — what Anthropic publishes, and two house rules
+  of this repo's. One script per owner.
+- [`stamp-check.sh`](stamp-check.sh) — the second house rule, in two parts: a
+  loop mints its run tag **before** its first round, and a `.log` or `.json`
+  store a run writes names that tag where it is defined. Takes a skill
+  directory, prints one `BREACH:` line per part broken or `CLEAN`.
+  `dror-skill-review` runs it beside the other two. It exists because the drain
+  acquired a progress log in the same commit that gave every other log a
+  `run_tag`, and nine days later two of its runs stopped without working a
+  ticket, each having read its own unsigned lines as another writer's.
 - [`CONTEXT.md`](CONTEXT.md) — the glossary. One entry per word these skills use.
 - [`DROR-SKILLS.md`](DROR-SKILLS.md) — the map: what each skill is for and how
   they chain.

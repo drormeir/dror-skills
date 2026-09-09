@@ -88,6 +88,13 @@ told an interrupted run left the lock. The `rm` it offers is the sentence that
 saves it: a user who knows the first drain is still going does not run it, and
 the stop is what gives them the chance to say so.
 
+**That blind spot is the lock's, and it is answered here or not at all.** A run
+that took the lock and then, mid-work, suspects a second writer from what it
+finds in its own log has not found a lock condition and must not stop as though
+it had — it compares run stamps, by §The writer test in
+`../dror-implement-adr/SKILL.md`. Twice now the suspicion was the run reading
+its own writing.
+
 **A per-run token on the lock does not close it**, and the reason is worth
 writing down so nobody spends a day on it. What the reader needs is *liveness* —
 is the run behind this lock still going — and a token is *identity*. A second run
@@ -95,7 +102,10 @@ comparing tokens learns that the holder is not itself, which it already knew fro
 the pid, and learns nothing about whether that holder is alive. Liveness is
 answerable for a session because a session **is** a process and `ps` answers for
 it; a run is not a process — every run in a session shares one `claude` — so the
-kernel has nothing to be asked. What is left is a clock: a heartbeat written into
+kernel has nothing to be asked. **This says nothing against a token on the log
+lines**, where the question really is identity: see `Run stamp` in
+[`CONTEXT.md`](CONTEXT.md) and §The writer test in
+`../dror-implement-adr/SKILL.md`. What is left is a clock: a heartbeat written into
 the lock, and a threshold above which a holder counts as gone. This lock is
 deliberately decided by the kernel rather than by a clock reading, and a drain
 round can take an hour, so any threshold honest enough to be safe is too long to

@@ -42,9 +42,11 @@ Rules — each exists because its violation already produced a defect here:
 There is no build here; grep is the test suite. After renaming anything, grep
 the repo for the old name.
 
-Two of the rules above are decided by script rather than by reading, and a skill
-review runs both before its lenses: `dror-internal-shared/skill-rules-check.sh`
-for Anthropic's published rules, and `dror-internal-shared/carrier-check.sh` for
-the carrier. Each takes one skill directory and prints `BREACH:` lines or
-`CLEAN`. Run them on a skill you have edited — they are seconds, and they decide
-what no lens should be asked to.
+Three of the rules above are decided by script rather than by reading, and a
+skill review runs all three before its lenses:
+`dror-internal-shared/skill-rules-check.sh` for Anthropic's published rules,
+`dror-internal-shared/carrier-check.sh` for the carrier, and
+`dror-internal-shared/stamp-check.sh` for the run stamp — a loop mints its tag
+before its first round, and a store it writes names that tag. Each takes one
+skill directory and prints `BREACH:` lines or `CLEAN`. Run them on a skill you
+have edited — they are seconds, and they decide what no lens should be asked to.

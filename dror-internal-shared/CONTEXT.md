@@ -49,8 +49,10 @@ condensed pointer, and that file owns the term.
   defined in `dror-code-review/SKILL.md`, and that file owns it.
 - **Tool finding** — whatever a mechanical pass decided before the lenses ran:
   in `dror-code-review`, a lint or type-check diagnostic on a line the diff
-  added or changed (ADR 0045); in `dror-skill-review`, a breach of Anthropic's
-  published rules printed by `skill-rules-check.sh` (ADR 0049). It skips the
+  added or changed (ADR 0045); in `dror-skill-review`, a breach printed by any of
+  its three scripts — Anthropic's published rules by `skill-rules-check.sh`
+  (ADR 0049), the carrier rule by `carrier-check.sh` (ADR 0057), the run stamp by
+  `stamp-check.sh`. It skips the
   refuter — the tool's output is its own proof — and carries the reserved lens
   name `tool`, which spans both pools because it names who decided, not which
   pool asked.
@@ -174,6 +176,15 @@ and that file owns it.
   per-round lines in the order they happened, appended and never rewritten. A
   forked run's text returns only at the end (ADR 0042), so this is the only way
   to watch a drain while it works — `tail -f` it.
+- **Run stamp** — a drain's run tag and the pid it claimed its lock with, carried
+  on every line it appends to its progress log and on every round entry of its
+  state file, and handed down to the agents it spawns so their writes carry it
+  too. It answers one question and only that one: **who wrote this line.** A run
+  that finds writing it does not remember comparing stamps rather than memories
+  is the difference between "my own earlier work" and "another drain is here"
+  (`../dror-implement-adr/SKILL.md`, §The writer test). It is identity and not
+  liveness, which is why the lock refuses the same device for its own purposes
+  ([`WORKTREE.md`](WORKTREE.md), §The lock).
 - **Round outcome** — `picked` when a ticket is taken, rewritten to `finished`,
   `skipped`, `parked` or `stopped` when its round ends. An entry left at `picked`
   is an interrupted round, and it is the only thing that distinguishes one from a

@@ -3,7 +3,7 @@ name: dror-skill-review
 description: Review one skill, or one shared document the skills read, against Anthropic's published rules for a skill, the harness contract, the tree it runs in, itself, the shelf and the agent that reads it - every finding refuted before it reaches you. Reports the survivors and edits no text. Use when the user names a skill or a shelf document and asks what is wrong with it, whether it still matches the repo, or wants it checked before it is edited.
 context: fork
 background: false
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/carrier-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/anthropic-stamp.sh), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/carrier-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/stamp-check.sh:*), Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/claim-path.sh:*)
 ---
 
 # dror-skill-review
@@ -184,18 +184,27 @@ must not be read as this.
 
 ## The mechanical pass
 
-Before any lens is launched, run both of these, each on `<the resolved directory>`:
+Before any lens is launched, run all three of these, each on `<the resolved
+directory>`:
 
 `bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/skill-rules-check.sh <the resolved directory>`
 decides every one of Anthropic's published rules that a tool can decide.
 
 `bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/carrier-check.sh <the resolved directory>`
 decides this repo's own carrier rule — that no skill invokes another skill with
-`Skill` from inside a forked context (ADR 0057). They are two scripts because
-they answer to two owners: the first to what Anthropic publishes, the second to
-a house rule of this repo's.
+`Skill` from inside a forked context (ADR 0057).
 
-Each prints one `BREACH:` line per rule broken, or `CLEAN`. Both take the
+`bash ${CLAUDE_SKILL_DIR}/../dror-internal-shared/stamp-check.sh <the resolved directory>`
+decides the two run-stamp rules — a loop mints its run tag before its first
+round, and a `.log` or `.json` store it writes names that tag where it is
+defined. Both are `CONTEXT.md`'s `Run stamp` term, and the second is the one a
+drain broke twice in a week by reading its own unsigned lines as a stranger's.
+
+They are three scripts because they answer to three owners: the first to what
+Anthropic publishes, the other two to house rules of this repo's — the carrier,
+and the stamp. One script per owner.
+
+Each prints one `BREACH:` line per rule broken, or `CLEAN`. All three take the
 directory as an argument, which is why they run here and not as an injection at
 the top.
 
@@ -205,14 +214,14 @@ invocation in the body — and a document has none of them, so a verdict on one
 would be an answer to a question nobody asked. A document run says in its report
 that the pass does not apply, which is not the same as `CLEAN`.
 
-**Each `BREACH:` line is a finding that skips the refuter**, from either script.
+**Each `BREACH:` line is a finding that skips the refuter**, from any of the three.
 The script's own output is its proof (ADR 0006), and a model asked to
 second-guess a string comparison can only get it wrong. They carry the reserved
 lens name **`tool`**, ADR 0045's, and their verdict is `survived` by
 construction. Their kind is `text`: the frontmatter, the directory or the
 invocation is wrong and the repair corrects it.
 
-Redirect both outputs into one scratch file and give **every** lens its path, with
+Redirect all three outputs into one scratch file and give **every** lens its path, with
 the instruction not to re-report what it holds. `LENSES.md`'s preamble says the
 same thing from the lens's side; this is the input that makes it enforceable.
 

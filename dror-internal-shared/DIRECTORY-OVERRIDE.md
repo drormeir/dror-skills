@@ -31,6 +31,12 @@ Honour it everywhere:
 - `<repo>` in every path means that directory, and the store and the facts are
   that directory's.
 - Every agent the run spawns is given the sentence at the top of its prompt.
+- **A caller's name arrives with it, or it does not.** Where the sentence is
+  followed by the caller's run tag and pid, every line this run appends to that
+  caller's log or state file carries them, unchanged, and the naming sentence
+  goes into every agent this run spawns beside the override. Where no name
+  arrives, write none — an invented one is worse than none, since the caller
+  reads an unfamiliar name as another writer.
 - **The injected facts block is void.** It was printed in the session's
   primary directory, before the argument could be read — disregard it and run
   the same stamp script again with `<path>` as its working directory, treating
