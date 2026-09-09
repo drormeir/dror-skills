@@ -36,7 +36,7 @@ around.
 **`round`, `subject` and `run_tag` arrived late and most rows predate them**
 (ADR 0041).
 A row without them is not a round-1 row and not a ticketless run — it is a row
-written before anyone recorded which round it came from. The two questions below
+written before anyone recorded which round it came from. The questions below
 that need `round` are answered over the rows that carry it, with the count of
 rows they had to leave out stated beside the answer.
 
@@ -315,12 +315,13 @@ the one drain that measured both showed the count does not predict duration.
 
 Report it beside the buckets above and never instead of them. A round that is
 cheap and finds bucket-three defects is a round to keep whatever it costs; an
-expensive round that finds only bucket one is the case for a lower cap. Which
-rows a `-` leaves out of the mean is the store reference's to say
-(`../dror-internal-shared/REPORT-STORE.md`, "The logs"); the count excluded is
-stated here — and the rows left out for carrying no
-`round` are counted and stated separately, since no clock reading and no round
-index are different exclusions.
+expensive round that finds only bucket one is the case for a lower cap.
+
+**State two counts beside the mean.** How many rows a `-` left out of it, and —
+separately — how many rows were left out for carrying no `round`. No clock
+reading and no round index are different exclusions, so neither count stands for
+the other. Which rows a `-` leaves out is the store reference's to say
+(`../dror-internal-shared/REPORT-STORE.md`, "The logs").
 
 **Where the code keeps needing claims.** Group the `claim = yes` lines by
 `path`. A file that repeatedly makes reviewers reach the wrong conclusion is a
@@ -388,5 +389,7 @@ written — this skill reads the log and changes nothing, including the log.
 
 Done when every question above is answered with its counts or named
 unanswerable, the imprecision question carries its own sentence about what it
-cannot see, every proposal quotes the wording it would change and says what
-the narrower wording would no longer catch, and nothing was edited.
+cannot see, the standing trial on hazards states the count raised, the count
+that survived and the survivors' rate and says plainly whether the survivors
+fell with the kills, every proposal quotes the wording it would change and says
+what the narrower wording would no longer catch, and nothing was edited.
