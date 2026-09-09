@@ -1,6 +1,6 @@
 ---
 name: dror-prove
-description: Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts. Use when the user names a ticket number and asks for tests for it, or asks which criteria are covered.
+description: Prove a ticket's acceptance criteria with tests, one test per criterion, each seen to fail before it counts, and write into the ticket body what it is awaiting from another named ticket and what needs the user's call, with a proposed rewording. Use when the user names a ticket number and asks for tests for it, or asks which criteria are covered.
 context: fork
 background: false
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/../dror-internal-project-facts/facts.sh)
@@ -13,8 +13,10 @@ run with **one final verdict** — what its test does against the real code once
 the run is over — and the report says which, for every criterion, with the
 failure that earned it.
 
-The ticket number is this skill's one argument. Without it, say so and stop —
-there is no default ticket and guessing one is worse than stopping.
+The ticket number is this skill's one **required** argument. Without it, say so
+and stop — there is no default ticket and guessing one is worse than stopping.
+The optional ones are below: a directory override, and a go-ahead the
+invocation gives in advance.
 
 **This run has a context of its own.** The frontmatter forks it (ADR 0036):
 what reaches it is this file, the facts the line below injects, and the
@@ -274,8 +276,9 @@ Where the check ran more than a couple of commands, or printed more than a
 screen, write it to **`<repo>/.claude/dror-skills/prove-evidence-<ticket>.md`**
 in the store and name that path in the Note. Tab-separated where the check is a
 table — a file-by-file sweep, a before-and-after count — prose where it is a
-transcript. One file per ticket, appended to across criteria, by the store's own
-naming rule.
+transcript. One file per ticket, appended to across criteria. That name is this
+skill's own: `dror-internal-shared/REPORT-STORE.md` names four defaults and all
+four are reports, and its claim and replace rules are written about reports too.
 
 In the report, a `noted` or a `partial` whose Note holds all three, and whose
 recommendation is `met`, reads **`<verdict> — ready to tick`**. Those words are

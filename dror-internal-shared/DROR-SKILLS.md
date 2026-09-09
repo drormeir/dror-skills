@@ -22,7 +22,7 @@ The words are in [`CONTEXT.md`](CONTEXT.md); the reasons are in
 | `dror-adr-resume` | Whose is the lock on ADR N, and start the drain again where it is nobody's | nothing of its own — it removes `adr-<N>.lock`, then whatever the drain writes |
 | `dror-interview` | Ask, before the drain starts, everything it can be expected to stop on | `interview-<ADR>.md` |
 | `dror-implement-ticket` | Run one ticket through the whole chain, in order | code, in one commit, pushed to its branch; then whatever the three below write |
-| `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes |
+| `dror-prove` | Does every criterion have a test that bites? | tests; ticks green boxes; `prove-evidence-<ticket>.md`, one per ticket; `## Awaiting` and `## Needs your call` in the ticket body |
 | `dror-code-review` | What is wrong with the unpushed work? | `review-report-<ticket>.md`, its per-criterion verdicts inside |
 | `dror-code-repair` | Fix what the review found, each one red then green | code and tests; unticks a red box |
 | `dror-code-review-repair` | Loop the two until it converges, up to its own cap | whatever its two steps write |
