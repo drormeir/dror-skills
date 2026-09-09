@@ -99,6 +99,13 @@ blame the answer on. In §Present the preflight is one word — green, or the
 line that failed — never the four lines again.
 Everything past §0a assumes an environment that was proved rather than built.
 
+**Those four commands, and the baseline below, are this skill's own and none of
+them is a git command**, so `git -C <path>` — §0a's device — does not reach
+them. This shell runs them from inside the worktree, which is where
+`../dror-internal-shared/WORKTREE.md` puts every command from there on. Moving
+it costs the delegated prompts nothing: a spawned agent does not inherit a
+working directory (§0a).
+
 **Then the baseline: the project's full suite, once, in the worktree, before the
 first ticket.** The tree is the remote head and nothing of this run's is in it,
 so a red here is pre-existing by construction, and it is the cheapest moment
@@ -205,9 +212,10 @@ every ticket, and invokes the gather only on a miss — so a separate call here
 buys nothing the first ticket does not buy anyway. (`dror-show-tickets` does not
 use it: it is convention-bound and names its own commands.)
 
-Where it runs is fixed rather than chosen: the script runs in the session
-shell's working directory — the user's checkout, since nothing in this skill
-`cd`s — so the store it reads is that checkout's, and a miss gathers into it.
+Where it runs is fixed rather than chosen: the script runs inside
+`dror-implement-ticket`'s spawned agent, which starts in the session's primary
+working directory — the user's checkout — whatever `cd` ran here (§0a), so the
+store it reads is that checkout's, and a miss gathers into it.
 The worktree is cut from the same rule files, so the facts are the same; what
 could differ is a rule file this ADR's own branch changes, and that is what a
 gather after the merge is for.
@@ -321,10 +329,10 @@ first.
 **A `Needs your call` row is no node, and is not passed over silently.** That
 status is the tracker saying the decision is the user's — the one §3a exists for,
 except that it was already there before this run started rather than raised by
-it. Name it now, on screen and in the state file, drop it from the node set, and
-work what the sort produces anyway. Anything that depends on it goes with it, set
-aside as not workable here for the same reason: the sort would never place a node
-whose dependency is on no list. **But an ADR
+it. Name it now in the state file and again in §Present's summary, drop it from
+the node set, and work what the sort produces anyway. Anything that depends on
+it goes with it, set aside as not workable here for the same reason: the sort
+would never place a node whose dependency is on no list. **But an ADR
 whose list is empty while such a row stands is a stop, not a finish** — go to §3a
 and ask, rather than reporting a drained ADR with an undecided ticket in it. A row
 whose status this skill genuinely cannot read is a stop the same way, at the
@@ -768,13 +776,10 @@ take the first ticket off the list at step 1.**
      after the last code change and quoted, and the push confirmed at step 5. Any
      of the three failing leaves the ticket open with a line saying which.
 
-   Closing at all is deliberate, and the objection it overrules is real: every box
-   on this ticket was ticked by this same chain, so the close inherits whatever
-   the proofs were worth. It is taken because reopening is one command and the
-   alternative is a queue of finished tickets nobody can tell from unfinished
-   ones. Where a criterion's evidence is thin the verdict itself says so —
-   `unproven` and `partial` do not tick, so they hold the ticket open on their
-   own, which is the check that matters rather than the gesture.
+   **Closing at all is deliberate, and the objection it overrules is real** —
+   `dror-implement-ticket`'s step 8 owns that argument and its reason. The one
+   thing to add here: it covers this step's own close too, made on the ticket
+   run's behalf by the branch above.
 
    **Rewrite this round's `outcome`** from `picked` to `finished`, `skipped`,
    `parked` or `stopped`, in the same write as the counts below. This is the round's only
