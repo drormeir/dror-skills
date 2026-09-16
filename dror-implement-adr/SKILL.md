@@ -33,8 +33,8 @@ conversation that invoked it, and a question that is the user's (§3a) goes back
 as this run's result for the caller to put.
 
 **A step and a spawn are not alternatives**, which is what §0a's warning and the
-paragraph above are each half of. `dror-show-tickets` at §2 is a step run in this
-context; the ticket run at §3 step 4 is a step run in an agent of its own; the
+paragraph above are each half of. `dror-show-tickets` at §2 and the ticket run
+at §3 step 4 are each a step run in an agent of its own; the
 lens and refuter agents `dror-code-review` spawns far beneath both are neither this
 skill's steps nor its business. What makes something a step is that this run is
 not finished when it returns — DELEGATION.md says so for both ways of invoking,
@@ -222,11 +222,24 @@ gather after the merge is for.
 
 ## 2. Map the ADR
 
-Invoke `dror-show-tickets` for ADR `<N>`, with §0a's sentence — it reads the
-tracker rather than the tree, but it reaches the repo for the ADR file and for
-what landed, and one skill in this run answering from a different checkout is how a
-row comes back `Ready` that is not. Its table is the loop's input: which tickets
-are `Ready`, which are blocked and behind what, which can close.
+Spawn the map agent — `dror-show-tickets`'s file, by the shelf's carrier
+(`../dror-internal-shared/STEP-AGENT.md`) — with §0a's sentence at the top of its
+brief, then: **show the tickets of ADR `<N>`**, and return the table as the
+agent's final message, beneath the toplevel line. It reads the tracker rather
+than the tree, but it reaches the repo for the ADR file and for what landed, and
+one skill in this run answering from a different checkout is how a row comes back
+`Ready` that is not. `dror-show-tickets` has no project-facts line, so the
+carrier's stamp duty has nothing to run. Its table is the loop's input: which
+tickets are `Ready`, which are blocked and behind what, which can close.
+
+**It rides an agent, never an inline `Skill` call.** `dror-show-tickets` carries
+no `context: fork`, so a `Skill` call loads its text into this run's own context,
+and its rule — "the reply is the table plus at most two sentences under it" —
+becomes this run's newest instruction. On 2026-09-16 that rule ended a drain at
+this step: the table was printed, the turn ended, and no ticket was worked. In an
+agent the same rule shapes the agent's return and nothing else. The toplevel line
+the carrier requires is read first: a toplevel that is not the worktree means the
+table came from another checkout, and §3a owns what happens next.
 
 **This is the only scan of the run**, so read the table properly here rather than
 leaning on a later one to correct it — §3 builds its whole work list from it and
@@ -236,11 +249,11 @@ Its table is a step's output and not this run's reply. Its "nothing else — no
 plan, no next steps" is that skill refusing to invent work of its own, and the
 loop below is not invented work.
 
-**The table is where this skill most often ends by mistake** — **a deliverable's
-shape** followed by **a prohibition against guidance**, in DELEGATION.md's words. So this step's named next action:
-**immediately after printing the table, and in the same turn, run `date +%s` for
-§3's start-of-run reading.** That call is the step's last move, and a turn that
-shows the table and makes no such call has stopped here.
+**The returned table is still where this skill could end by mistake** — **a
+deliverable's shape** in a result, in DELEGATION.md's words. So this step's named
+next action: **immediately after the agent returns, and in the same turn, run
+`date +%s` for §3's start-of-run reading.** That call is the step's last move,
+and a turn that relays the table and makes no such call has stopped here.
 
 That skill's vocabulary is convention-bound — it knows this project's tracker —
 and this skill inherits that binding by using its words. Nothing else here names
