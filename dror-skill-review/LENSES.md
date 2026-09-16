@@ -119,6 +119,16 @@ skill and another owner both changed and now disagree with each other
   read, the next invocation. The shape is the shelf's `DELEGATION.md`; quote
   the step and say what a run does at that boundary: it stops with the
   caller's work undone. Kind `hole`.
+- A **step that loads a reply-shaped skill inline** — it invokes, by a `Skill`
+  call, a skill whose frontmatter carries no `context: fork` and whose closing
+  contract defines the reply ("the reply is the table", "nothing else"). Inline,
+  that skill's text joins the caller's context as its newest instruction, and
+  its closing rule ends the caller's turn; a named next action in the step does
+  not hold against it (an ADR drain stopped at its map step with one in place).
+  The repair is to spawn the step by the shelf's `STEP-AGENT.md`, not to guard it
+  harder. A sub-skill whose own text says a caller carries on past its return —
+  `dror-internal-project-facts` does — is no finding. Quote the step and the
+  sub-skill's closing sentence. Kind `hole`.
 - A **closing contract that no longer stops a direct run** — a stop, a "wait",
   a "nothing else" that has been softened, or that now carries an exemption for
   a caller invoking this skill as a step. The shelf's `DELEGATION.md` puts that
