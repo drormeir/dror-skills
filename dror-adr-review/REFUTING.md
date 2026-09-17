@@ -167,6 +167,25 @@ A survivor names the criterion, the ADR's silence, and what was decided. It does
 **not** say whether the choice was a good one — that is the user's, and it is the
 line this kind must not cross.
 
+**`effect`** — building the decision reaches something it never names. It is
+about the code, so read both ends yourself. It dies five ways:
+
+- **The link is not there.** The far end does not read, write or rely on the
+  thing the near end changes, or it does so through a path the change leaves
+  alone. Quote the far end's `file:line`.
+- **It is address-only.** Only an import, a name, a key path or a patch target
+  changes, and the behaviour stays the same.
+- **The text states it.** The ADR, a ticket body, or the ADR's standing answers
+  file already names this effect. Re-read the ticket bodies
+  (`gh issue view <n> --json body,state`) and quote the sentence.
+- **It is more than one hop.** The consequence needs a second link the finding
+  only assumes.
+- **Nothing differs.** You cannot say, in one sentence, what would behave
+  differently for a user, a saved file or another feature.
+
+A survivor names both ends, the consequence you confirmed, and the options. It
+does **not** say which option is right — that is the user's.
+
 **`revisit`** — the decision is sound and what it predicted has not held. This
 is the kind most likely to be an opinion wearing a measurement's clothes, so it
 is held to the hardest standard in this file: **re-measure it yourself**. Run

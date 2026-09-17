@@ -84,6 +84,8 @@ is only how each one leaves *this* loop:
   quoted. Adopting the value would make this loop decide something, and it may
   not (ADR 0020).
 - A **`revisit`** goes to the user too, with the two numbers the review carried.
+- An **`effect`** goes to the user too, with both ends and the options.
+  `/dror-interview` is where it is answered and logged.
 
 **`unticketed` is not a fifth door.** It is repaired here like any other kind,
 and the step returns either an issue number or a draft. A draft reaches the user
@@ -198,7 +200,8 @@ and what each round leaves behind. That is the whole state of the loop:
 - per round: the announcement, the report path step 1 confirmed, the round's one
   line, any log a round said it could not write, and the word step 4 answered;
 - everything §Present owes somebody else — the breaches with their `file:line`,
-  the conflicts, the unstated values, the revisits, the `ungrounded` items, the
+  the conflicts, the unstated values, the revisits, the effects, the `ungrounded`
+  items, the
   ticket drafts in full, the tickets filed or corrected, and every file edited.
 
 What it never keeps is what the paragraph above forbids: the earlier rounds'
@@ -302,8 +305,8 @@ repair means nothing new to review, and this is the ordinary way a run converges
 Say so and skip to the summary. The report's `## Refuted` section is not the list
 — those findings were raised and disproved.
 
-**A review whose survivors are all `breach`, `conflict`, `unstated` or
-`revisit` ends it the same way.** There is no sentence for `dror-adr-repair` to write, so a repair
+**A review whose survivors are all `breach`, `conflict`, `unstated`, `revisit`
+or `effect` ends it the same way.** There is no sentence for `dror-adr-repair` to write, so a repair
 round would produce a report of `For dror-code-repair` and `Left — needs a decision`
 rows and change nothing. Carry them out by the doors above and stop.
 
@@ -462,9 +465,10 @@ Then **what leaves this run for somebody else**, which is the part no round
 repairs and the part a reader will otherwise lose:
 
 - the **breaches**, each with its `file:line`, as work for `/dror-code-repair`;
-- the **conflicts**, the **unstated** values and the **revisits**, each as the
-  question the user has to answer, with the passages, the criterion and the
-  ADR's silence, or the two numbers the review carried;
+- the **conflicts**, the **unstated** values, the **revisits** and the
+  **effects**, each as the question the user has to answer, with the passages,
+  the criterion and the ADR's silence, the two numbers the review carried, or
+  the two ends and the options;
 - the **ungrounded** items, each with what could not be settled;
 - the **ticket drafts** nothing filed, each in full — title, parent, what to
   build, acceptance criteria — with the one question they carry: file this, or

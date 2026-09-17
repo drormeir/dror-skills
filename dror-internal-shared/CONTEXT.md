@@ -87,7 +87,7 @@ condensed pointer, and that file owns the term.
 ## Findings about an ADR
 
 The kinds `dror-adr-review` returns — `text`, `hole`, `breach`, `conflict`,
-`revisit`, `echo`, `unticketed`, `unstated` — minted and defined in its own `LENSES.md` preamble, the
+`revisit`, `echo`, `unticketed`, `unstated`, `effect` — minted and defined in its own `LENSES.md` preamble, the
 text pasted into every lens agent's prompt; this entry is the condensed
 pointer, and that file owns them. They are separate words because each names a
 different hand as the one that fixes it, and
@@ -249,7 +249,7 @@ These words are the same in every `dror-*` run.
   first.
 - **Phase report** — `adr-sweep-report-<tag>.md` in the store: what a
   `dror-adr-sweep` run's members left for somebody else — the conflicts,
-  unstated values, revisits, ungrounded items, breaches and unfiled ticket
+  unstated values, revisits, effects, ungrounded items, breaches and unfiled ticket
   drafts of the whole set, collected by kind and appended as each member ends.
   It is where those go instead of on screen, which is what keeps a long sweep
   quiet (ADR 0052).
@@ -271,6 +271,10 @@ These words are the same in every `dror-*` run.
   criterion `dror-prove` hands back to the user instead of ticking, carrying the
   command its Note offered and the recommendation it made. How often the chain
   stops, and how much of the work behind each stop was already done.
+- **Effects log** — `~/.claude/dror-skills/effects.tsv`: one line per answer to
+  an `effects` finding, per side effect a drain met that no finding named, and
+  per change of that lens's cap. What tells the lens it is too narrow or too
+  wide; `EFFECTS-CAP.md` owns the rule that reads it.
 - **Prove evidence** — `prove-evidence-<ticket>.md` in the store: the checks
   behind a run's hand-backs, where they ran to more than a couple of commands.
   One file per ticket, appended to across criteria.

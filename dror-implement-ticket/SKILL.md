@@ -184,7 +184,9 @@ Typecheck and run the affected tests as you go, with this project's own
 verification commands; run the full suite once, at the end of this step. Read
 its result against step 0's baseline: a test red there is not this step's and is
 named as such, not chased; a test red here and green there is this step's, and
-this step fixes it before it ends.
+this step fixes it before it ends. An existing test this step turned red is
+fixed, deleted or asked about by
+`../dror-internal-shared/WRITING-TESTS.md`'s §An existing test the work broke.
 
 **A step that cannot be finished ends the run here.** An ambiguous criterion, a
 criterion the code contradicts, a dependency discovered mid-way — say what

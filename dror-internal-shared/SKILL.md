@@ -13,7 +13,7 @@ that sharpening a rule sharpens every run that obeys it.
   proved to bite. Read whole by `dror-prove` and `dror-code-repair`.
 - [`REPORT-STORE.md`](REPORT-STORE.md) — which name a report takes, the identity
   line that makes the name checkable, the finding id, and the columns and
-  discipline of all four logs. Read whole by the reviews that write a report,
+  discipline of all five logs. Read whole by the reviews that write a report,
   the repairs that read one, the loops that name the path both ends use, and
   `dror-review-retrospective`, which joins the logs by finding id. It shares a
   script with WORKTREE.md below: [`claim-path.sh`](claim-path.sh) takes a
@@ -23,6 +23,10 @@ that sharpening a rule sharpens every run that obeys it.
   refuses and names the holder, which is what a lock wants. It enforces the
   claim, so it is where its bound lives. The two references own when each mode is
   reached for.
+- [`EFFECTS-CAP.md`](EFFECTS-CAP.md) — the `effects` lens's cap on findings,
+  the log that counts its misses and dismissals, and the rule that suggests
+  moving the cap by one. Read whole by `dror-adr-review`'s `effects` lens,
+  `dror-interview` and `dror-implement-adr`.
 - [`LENS-FANOUT.md`](LENS-FANOUT.md) — which model a lens and a refuter run on,
   the escape a lens takes when its read boundary cannot settle the question,
   what a run does about a lens whose output never arrived and why it never asks

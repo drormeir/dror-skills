@@ -190,10 +190,17 @@ which is the ordinary case and not a failure.
 **What it settles**, and nothing else: the four standing permissions §3a would
 otherwise put to the user — a dirty tree, an open blocker, a ticket still
 **owed** at its cap, a criterion that cannot honestly be implemented — and the
-questions that run's review raised about this ADR's tickets, each with the user's
-answer beside it. An answer is applied where the question the drain meets is the
+questions that run's review raised about this ADR's tickets and its side
+effects, each with the user's answer beside it. A side effect answered *keep the
+decision and accept the effect* counts as stated, for a ticket run as for this
+one. An answer is applied where the question the drain meets is the
 question the file answers, and **the file is quoted in the log when it is
 applied**: a permission exercised silently is one nobody can audit afterwards.
+
+A side effect answered *change the decision* **ends the run here**, before any
+ticket: the user said the ADR is reopened first, and a ticket built now is built
+on the decision being changed. Say which effect, and that the ADR is to be
+reopened before the next drain.
 
 **It never widens the three that end a drain whatever it says** — the red
 baseline, a ticket run that was in the wrong tree, a dirty tree holding somebody
@@ -1075,7 +1082,9 @@ end the drain where they are found:
   at all — both are about the list rather than about one ticket, so there is no
   single node to park;
 - an ADR whose list is **empty while a `Needs your call` row stands**, which is
-  §3's rule and not a round's.
+  §3's rule and not a round's;
+- an answers file holding a side effect answered **change the decision**, which
+  is §0b's rule.
 
 **A drain that parked everything still ends properly.** Where parking empties the
 list, the run finishes at §4 with no round `finished` — the branch is pushed, the
@@ -1121,6 +1130,19 @@ what the choice is, and waits; a park says the same three lines to the log and
 takes the next ticket. **A stop that took no ticket has no bookkeeping to
 finish**: nothing was written to the tree, no round entry exists, and the three
 lines name what stopped it in the ticket's place.
+
+**A park is also how the `effects` lens learns it was too narrow.** Where the
+parked or stopped question is about a **side effect** — a behaviour the ADR's
+change reached that neither the ADR, a ticket body nor the answers file states —
+and neither this drain's ADR check report nor the interview's report holds an
+`effect` finding naming it, append a `missed` row to
+`~/.claude/dror-skills/effects.tsv`, on
+`../dror-internal-shared/REPORT-STORE.md`'s terms: `subject` is the ADR, `value`
+the ticket number, `note` the side effect in a few words. A question about what
+to build that no change reached — an ambiguous criterion, two tickets that
+disagree — is not a side effect and writes no row.
+`../dror-internal-shared/EFFECTS-CAP.md` owns what the row is for. A row that
+cannot be written is one line in the log and never stops the drain.
 
 **What a park costs, and it is not nothing.** An answer given now applies to a
 tree with one ticket of work in it; the same answer given in the morning applies
@@ -1326,6 +1348,9 @@ Then single lines, one each and only where it applies:
   `/dror-interview <N>` is what writes one before the next run.
 - The ADR check: that it ran, and what it left for somebody else — the kinds and
   the report path, never the findings themselves. Where it was skipped, why.
+- The effects cap: read `../dror-internal-shared/EFFECTS-CAP.md` and apply its
+  rule to the logs as they stand. Where it suggests a change, or keeps N over
+  missed rows, the one line that file's §Suggesting it names. Otherwise nothing.
 - The spec issue: closed, or the children it still awaits.
 - Worktree path and branch, and removed or the one §4a condition that kept it.
 - The lock: released. Where it was not, the path, so the user can clear it.

@@ -253,9 +253,10 @@ the whole set rather than scattered through the members, each item naming its
 ADR. This is the part a phase exists to produce and the part seventeen separate
 runs destroy:
 
-- the **conflicts**, the **unstated** values and the **revisits**, each as the
-  question the user has to answer, with the passages, the criterion and the ADR's
-  silence, or the numbers the member carried;
+- the **conflicts**, the **unstated** values, the **revisits** and the
+  **effects**, each as the question the user has to answer, with the passages,
+  the criterion and the ADR's silence, the numbers the member carried, or the
+  two ends and the options;
 - the **ungrounded** items, each with what could not be settled;
 - the **breaches**, each with its `file:line`, as work for `/dror-code-repair`;
 - the **ticket drafts** nothing filed, each in full, with the one question they

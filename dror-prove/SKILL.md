@@ -221,7 +221,8 @@ State is one of:
   the clause that fails, why the code is right and the clause is not, and the
   wording that would be true — as a proposal, never as an edit. **Rewording is
   the user's,** so say plainly that this criterion needs their call, and change
-  no criterion text under any circumstance.
+  no criterion text under any circumstance. An existing test edited under
+  `WRITING-TESTS.md`'s §An existing test the work broke is never grounds for it.
 - **`question open`** — waiting on the user, nothing written.
 
 **Note** is empty only where a reader would be left guessing nothing; otherwise

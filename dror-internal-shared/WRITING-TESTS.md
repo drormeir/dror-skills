@@ -78,6 +78,72 @@ Follow the project's own layout and runner (`dror-internal-project-facts` holds 
 not invent a new test tree. A test that needs a GUI, a server or the app
 singletons goes through the project's isolation helper like every other.
 
+## An existing test the work broke
+
+A test has two parts. Its **address** is how it reaches the behaviour. Its
+**checks** are what it asserts: the assertions and their expected values.
+
+Two cases are the user's standing answer and need no question: a changed
+address, and a change the text states. Everything else is asked.
+
+### The address changed
+
+A test can fail only because its address changed. The work moved or renamed
+something the test names, and the behaviour it checks is the same. Examples:
+
+- an import — code moved to another module, or a module split or deleted;
+- a symbol — a function, class, method, constant or parameter renamed, or a
+  class constant moved to a module;
+- a path inside data — a record key renamed or nested into a group;
+- a patch target — the `"module.name"` string a mock or monkeypatch replaces;
+- a file path — a fixture, a baseline or a data file moved;
+- an outside name — a command-line flag, an environment variable, a setting
+  name;
+- a call shape — the same values passed in another grouping, such as loose
+  arguments gathered into one object.
+
+Edit the address to the new place. The checks stay the same: no assertion
+removed, weakened or rewritten, and no expected value changed. The same holds
+when the test file itself moves to the new code's test directory.
+
+A criterion that says such tests pass "unchanged", or that "nothing else in them
+changes", is met by that edit. It is never grounds for `criterion wrong`.
+
+### The ticket states the change
+
+The checks may change when the ticket, the ADR it implements, or that ADR's
+standing answers file says in words that the behaviour they check changes. A
+side effect the user answered *keep the decision and accept the effect* is
+stated this way. Two shapes:
+
+- **Removed.** The text removes the behaviour, and the test checks nothing
+  else. Delete the test. Example: the ticket says the subwindow stops copying a
+  value into the dialog, and the test checks only that copy. Do not rewrite it
+  into a test of the replacement — the criteria tests cover that.
+- **Changed.** The text states the new behaviour, and the test's check follows
+  from it. Change the assertion or the expected value to the stated one, and
+  nothing more. Example: the ticket says an unavailable layer now falls back to
+  Filtered, and the test expected the old choice to stay.
+
+### Everything else is asked
+
+Ask the user, with what changed and why, when any of these holds:
+
+- The change is a **side effect** the text does not state. The ticket moved
+  something, and a behaviour nobody named went with it.
+- The test checks a removed or changed behaviour **and** one that still stands.
+  Cutting its assertions apart is a judgement, not a rename.
+- The new expected value comes from **running the code**, not from the text.
+  That makes the test agree with the code by construction.
+- A check would be **weakened** — a looser tolerance, a smaller case, a skip —
+  without the text saying so.
+
+### Every such edit is reported
+
+Name each test edited or deleted under this section in the run's report, with
+its case: the address it moved to, or the sentence of the ticket, the ADR or the
+answers file that allowed the change.
+
 ## Proving a test bites when the code already works
 
 This is the same machine whatever fed it — a gap in cover a review named, or a

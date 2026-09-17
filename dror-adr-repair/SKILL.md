@@ -151,7 +151,9 @@ that would close it is sitting in the ticket, so writing it in adopts a decision
 sentence on the subject or its silence, and carry it to the report as a question
 for the user. **A value that has already shipped does not turn it into an item to
 write**: the code settling it is what makes the item grounded, not what makes it
-repairable.
+repairable. An `effect` item stops here too: confirm both ends still read that
+way, quote them, and carry it to the report as a question for the user. Writing
+the effect into the ADR would decide whether it is accepted, and that is theirs.
 
 ### Fan out, one agent per item
 
@@ -168,15 +170,17 @@ already carries the work. **The three kinds that stop at this step return no
 corrected sentence at all**: a `breach` returns the still-violating site with its
 quote, marked as work for `dror-code-repair`; an `unstated` returns the criterion
 beside the ADR's nearest sentence on the subject or its silence; a `revisit`
-returns both numbers, re-read and confirmed to still read that way. The last two
-are questions for the user. Filing a ticket is nobody's here: an agent that
+returns both numbers, re-read and confirmed to still read that way; an `effect`
+returns both ends, re-read and confirmed. The last three are questions for the
+user. Filing a ticket is nobody's here: an agent that
 writes nothing writes no issue either.
 
 Grouping is by item and not by file because every edit lands in one document,
 which is precisely why the *writing* below is not parallelized.
 
 Done when every item is grounded, ungrounded, not reproduced, or carried as a
-`breach`, an `unstated` or a `revisit`, with the evidence on screen for each.
+`breach`, an `unstated`, a `revisit` or an `effect`, with the evidence on screen
+for each.
 
 ## Step 2 — Write
 
@@ -298,7 +302,8 @@ skill repo-agnostic. A facts block naming none has nothing to ask about: leave
 the draft in the report and say so.
 
 Done when every grounded item has an edit behind it — a drafted ticket for an
-`unticketed` one, and nothing at all for an `unstated`, which stopped at step 1 —
+`unticketed` one, and nothing at all for an `unstated` or an `effect`, which
+stopped at step 1 —
 and every other item has a recorded reason it has none.
 
 ## Step 3 — Check
@@ -343,8 +348,8 @@ the outcome carries the verdict.
   - `unclear` — true but readable two ways.
 
   Those three are this skill's own split of the review's `text`, and they are
-  owned here. The other seven are the review's — `hole`, `unticketed`, `echo`,
-  `breach`, `conflict`, `unstated` and `revisit` are minted and defined in
+  owned here. The other eight are the review's — `hole`, `unticketed`, `echo`,
+  `breach`, `conflict`, `unstated`, `revisit` and `effect` are minted and defined in
   `../dror-adr-review/LENSES.md`'s preamble, and that file owns them. Read a
   kind there; do not restate it here, and where a finding's kind and this
   file's handling of it seem to disagree, the owner's wording is the one that
@@ -365,8 +370,9 @@ the outcome carries the verdict.
     it is a `revisit` and nothing is broken; or it is an `unticketed` and
     whether the work is wanted at all is the user's; or it is an `unstated`,
     where the edit is a paste from the ticket and making it is how this chain
-    would come to decide what the document left open. Names the question the user
-    has to answer, and for a `revisit` both numbers.
+    would come to decide what the document left open; or it is an `effect`,
+    where whether to accept it is the user's. Names the question the user has to
+    answer, for a `revisit` both numbers, and for an `effect` both ends.
   - `Left — ungrounded` — nothing in the tree settles it. Names what is missing.
   - `Not reproduced` — the tree agrees with the document. Nothing changed, and
     the evidence is quoted.
@@ -380,9 +386,10 @@ Never pair a finding with an outcome that contradicts it:
 - `breach` ends in `For dror-code-repair` or `Not reproduced`, never in a
   `Corrected` — editing the document to match code that breaks its rule is how a
   rule is lost.
-- `conflict` and `revisit` end in `Left — needs a decision`, never in a
-  `Corrected` — the first because somebody must choose, the second because there
-  was never a wrong sentence to correct.
+- `conflict`, `revisit` and `effect` end in `Left — needs a decision`, never in
+  a `Corrected` — the first because somebody must choose, the second because
+  there was never a wrong sentence to correct, the third because accepting a
+  side effect is a decision.
 - `unticketed` ends in `Ticket drafted`, `Not reproduced` or
   `Left — needs a decision`, never in a `Corrected` — no sentence of the
   document is wrong, so an edit to it is prose written to cover missing work,

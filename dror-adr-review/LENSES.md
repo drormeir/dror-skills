@@ -12,8 +12,8 @@ against itself, some against other documents, one against its tickets, one
 against the reader who will act on it — and **the evidence each axis admits is
 different**. Find yours before you raise anything:
 
-- **Against the code** — `claims`, `breach`, `outcome`. The tree as it stands
-  now is the evidence, and every finding carries the `file:line` it was judged
+- **Against the code** — `claims`, `breach`, `outcome`, `effects`. The tree as
+  it stands now is the evidence, and every finding carries the `file:line` it was judged
   at. What the ADR says about the code is never the evidence for it, and a
   finding whose only support is another sentence of the same document is a
   reading, not a defect.
@@ -36,7 +36,7 @@ different**. Find yours before you raise anything:
 Five axes, and a finding is settled on **its own lens's** and no other. Judging
 your finding by a neighbouring axis's standard is how a true one dies: most of
 these lenses can produce no `file:line` at all, and a run that demanded one from
-every lens would return only the three that read code.
+every lens would return only the four that read code.
 
 Every finding carries:
 
@@ -51,7 +51,10 @@ Every finding carries:
   `unticketed` (the ADR decides something no ticket asks for — only the
   `tickets` lens mints this one), `unstated` (a ticket decides something the ADR
   never decided — the same lens, the same subject, the other direction),
-  `revisit` (nothing is wrong and what the decision predicted has not held);
+  `revisit` (nothing is wrong and what the decision predicted has not held),
+  `effect` (building the decision reaches something it never names, and the
+  user might decide differently once shown — only the `effects` lens mints this
+  one);
 - **what would make it true**: the corrected fact and the evidence for it. Not
   the replacement prose — writing that is the repair's job.
 
@@ -325,6 +328,62 @@ so there is nothing to correct, and whether to reopen a decision is the user's.
 and what the tree shows — and how you measured. Without the measurement it is an
 opinion about somebody else's decision, which is the one thing this pool must
 never produce.
+
+## effects — what building the decision reaches that it never names
+
+The other code lenses read the tree as it stands. This one reads what the tree
+will do **once the decision is built**. It looks for a link the author would not
+see: a place the change reaches that no name connects to the ADR, where the user
+might decide differently once shown. It is worth running only while the tickets
+are unbuilt, since that is when an effect can still be prevented.
+
+Read `../dror-internal-shared/EFFECTS-CAP.md` first. It gives your cap.
+
+**Start from what the ADR changes**: a move, a rename, a removal, a changed
+behaviour, a changed format, a changed default or order. For each change, look
+for a far end of one of these shapes:
+
+- **Shared state.** Another reader of the same record key, session field, cache
+  or file assumes the old shape or the old meaning.
+- **Order and timing.** Code depends on when a value is set, a signal fires, a
+  restore runs or a redraw happens.
+- **Silent reliance.** Another feature uses a behaviour nobody specified — a
+  choice kept, a default, a side effect of a call — and the change removes it.
+- **Twins.** A second copy of the same logic, which the decision changes on one
+  side only.
+- **Data in the field.** Files users already have would load or behave
+  differently.
+- **The user's habits.** A gesture, a shortcut or a visible state the decision
+  removes as a by-product.
+
+**The width is three rules.**
+
+- **One hop.** The near end is a site the decision changes. The far end is a
+  site the ADR and its tickets never name. A chain of two links is a guess.
+- **Both ends evidenced.** Each end is a `file:line`, and the far end reads,
+  writes or relies on the same thing the near end changes. "This could matter"
+  is not a finding.
+- **A consequence.** One sentence says what would behave differently for a user,
+  a saved file or another feature.
+
+**Not findings:**
+
+- **Address-only fallout** — an import, a renamed symbol, a key path, a patch
+  target. The implementer fixes those without asking, by
+  `../dror-internal-shared/WRITING-TESTS.md`'s §An existing test the work broke.
+- **What the text already states** — in the ADR, a ticket body, or the ADR's
+  standing answers file where one exists.
+- **The obvious** — a far end a search for the changed names finds directly and
+  that only calls through, such as a direct caller that must be updated.
+
+**Report at most the cap**, ranked by consequence, and say how many more you had
+and dropped.
+
+The kind is `effect`. Every finding carries: the near end and the far end, each
+as a `file:line`; the shape; why a search for the changed names misses the link;
+the consequence; and what the user might decide instead — keep the old
+behaviour, widen the ADR to cover it, or accept the cost in writing. Give the
+options without a recommendation: which one is right is the user's.
 
 ## misreading — the document read as instructions
 

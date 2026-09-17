@@ -1,6 +1,6 @@
 ---
 name: dror-interview
-description: Ask, one multiple-choice question at a time, everything a drain of this ADR can be expected to stop on - the conflicts between its tickets, the values they decided for you, the criteria that look unwinnable, and the standing permissions - each with a recommendation where the run honestly has one, and room to answer in your own words, and write the answers where dror-implement-adr reads them. Use when an ADR is about to be drained unattended, or when a drain keeps stopping to ask things you could have answered up front.
+description: Ask, one multiple-choice question at a time, everything a drain of this ADR can be expected to stop on - the conflicts between its tickets, the side effects the decision never names, the values they decided for you, the criteria that look unwinnable, and the standing permissions - each with a recommendation where the run honestly has one, and room to answer in your own words, and write the answers where dror-implement-adr reads them. Use when an ADR is about to be drained unattended, or when a drain keeps stopping to ask things you could have answered up front.
 disable-model-invocation: true
 ---
 
@@ -48,13 +48,16 @@ ADR. It is the same check the drain runs before its first ticket, and running it
 here is what makes that one find nothing new. What this run wants from its report
 are the kinds that reach a user. What each kind **means** is minted in
 `../dror-adr-review/LENSES.md`'s preamble, and which hand fixes it is owned by
-`../dror-internal-shared/DROR-SKILLS.md`; neither is restated here. The three
+`../dror-internal-shared/DROR-SKILLS.md`; neither is restated here. The four
 that reach the user, and so become questions:
 
 - every **`conflict`** the report carries;
 - every **`unstated`** — the ones the user most often did not know they had
   decided;
-- every **`revisit`** item the report carries.
+- every **`revisit`** item the report carries;
+- every **`effect`** — a side effect of building the decision that the ADR never
+  names. Each answer is also logged, because the answers are what tune that lens
+  (§3).
 
 A review that writes no report — a stub or superseded ADR — is one line, and this
 run carries on to the other two sources: a stub ADR has no decision to argue
@@ -114,9 +117,23 @@ says the cache holds 200 entries; the decision never says how many". The reader
 is deciding about their project, not about this machinery.
 
 **Order them so the answers can do the most work**: the questions that can retire
-other questions first — the conflicts between tickets, then the criteria that look
+other questions first — the conflicts between tickets, then the side effects,
+since changing the decision can retire the rest, then the criteria that look
 unwinnable, then the values a ticket decided that the ADR left open — and the
 standing permissions last, since they apply to whatever survives.
+
+**A side effect is put with three options**, in this order and with no
+recommendation, since whether it matters is exactly what the user is asked:
+
+- **Change the decision** — the ADR is reopened before the drain, so this ADR
+  should not be drained until it is.
+- **Keep the decision and accept the effect** — the answer is written down, and
+  the drain treats the effect as stated.
+- **Not a real concern** — nothing changes, and the lens learns it reached too
+  far.
+
+The question carries both ends in plain words, what would behave differently,
+and for whom.
 
 **The standing permissions** are the same every run, and each is a choice
 between working on and stopping. Which they are, and why the list stops where it
@@ -171,6 +188,16 @@ the ADR, the time, and the review's report path.
 **Append each answer as it is given**, not at the end of the interview. An
 interview interrupted after four questions has four answers on disk and is worth
 resuming; one that writes at the end has nothing.
+
+**A side effect's answer is also a log row.** As it is written to the file,
+append one line to `~/.claude/dror-skills/effects.tsv`, on
+`../dror-internal-shared/REPORT-STORE.md`'s terms for every log: `event` is
+`reconsidered`, `accepted` or `dismissed` for the three options, and `id` is the
+finding id from the review's report. Free text that is none of the three is
+logged as the option it plainly means; where it plainly means none, log nothing.
+An unanswered one writes no row. `../dror-internal-shared/EFFECTS-CAP.md` owns
+what the rows are for. A row that cannot be written is one line on screen and
+never stops the interview.
 
 **Record the answer the user chose, in their words or the option's**, and where
 they wrote free text, that text verbatim — it is the answer the drain reads, and

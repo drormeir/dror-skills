@@ -184,7 +184,7 @@ later reader (ADR 0025, ADR 0050).
 
 ## The logs
 
-Four tab-separated files under `~/.claude/dror-skills/`, outside any repo,
+Five tab-separated files under `~/.claude/dror-skills/`, outside any repo,
 because the questions they answer are about the lenses and the skills rather than
 about a project, and one repo's runs are too few to read anything into (ADR
 0009):
@@ -194,6 +194,8 @@ about a project, and one repo's runs are too few to read anything into (ADR
 - `runs.tsv` — one line per review run.
 - `repairs.tsv` — one line per finding a repair handled.
 - `handbacks.tsv` — one line per criterion a prove hands back to the user.
+- `effects.tsv` — one line per answer to an `effects` finding, per side effect
+  a drain met that no finding named, and per change of that lens's cap.
 
 **The first three have several writers each**, so all their column lists live
 here, once. A skill that appends to one of these files points at this section
@@ -301,7 +303,21 @@ whose `check` is `-` and whose `recommendation` is `-` is a hand-back the user
 had to investigate themselves, and a run of them is the signal that the Note
 rules are being written past.
 
-What follows holds for all four.
+**`effects.tsv`** — written by `dror-interview`, `dror-implement-adr` and, on
+the user's yes, the user's own command:
+
+`date` (ISO) · `repo` (the directory name, or `-` on a `cap` row) · `subject`
+(the ADR's number, or `-`) · `id` (the finding id from the review's report, or
+`-` on a `missed` or `cap` row) · `event` (`reconsidered`, `accepted`,
+`dismissed`, `missed` or `cap`) · `value` (the new cap on a `cap` row; the ticket
+number on a `missed` row; `-` otherwise) · `note` (under 120 characters and no
+tabs: the question's gist, or the counts behind a cap change).
+
+It answers whether the `effects` lens is too narrow or too wide.
+`dror-internal-shared/EFFECTS-CAP.md` owns what each event means, which rows are
+counted and the rule that reads them; this section owns only the columns.
+
+What follows holds for all five.
 
 **Create the directory and the file with its header row when they are not
 there** — the first run's ordinary case, since nothing else creates that

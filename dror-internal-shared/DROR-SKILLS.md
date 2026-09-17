@@ -40,7 +40,7 @@ it, and they are the same shape one level up: find, then fix, in two runs
 | `dror-adr-review-repair` | Loop the two over one ADR until it converges, up to a cap of its own — lower than the loop below it, and with no round-1 floor | whatever its two steps write |
 | `dror-adr-sweep` | Work the loop above over every ADR in the decision directory, one at a time in number order, as one pre-implementation phase | whatever its members write, plus `adr-sweep-report-<tag>.md` and `adr-sweep.json` |
 
-They divide the findings by **kind**, because different hands fix them. Eight
+They divide the findings by **kind**, because different hands fix them. Nine
 kinds, and this is where each one goes:
 
 - `text`, `hole`, `echo` and `unticketed` go to `dror-adr-repair`. An `echo`
@@ -54,9 +54,13 @@ kinds, and this is where each one goes:
   It is `unticketed`'s mirror: that one is work no ticket carries, this one is a
   decision no ADR carries.
 - `revisit` is nobody's either, and whether to reopen is the user's.
+- `effect` is nobody's either — the decision reaches something it never names,
+  and whether that changes the decision is the user's. `dror-interview` puts it
+  as a question and logs the answer, which is what tunes the lens
+  (`EFFECTS-CAP.md`).
 
 Neither skill writes code, and neither may rewrite what was decided — see
-ADR 0020. `dror-adr-review/LENSES.md` defines the eight and its lenses mint them;
+ADR 0020. `dror-adr-review/LENSES.md` defines the nine and its lenses mint them;
 this paragraph owns only where each one goes.
 
 ## On the machinery itself
@@ -133,7 +137,7 @@ middle steps — one or the other, never both, or one ticket gets two test sets.
 
 `dror-internal-shared` is the shelf the others read from, holding
 [`WRITING-TESTS.md`](WRITING-TESTS.md), [`REPORT-STORE.md`](REPORT-STORE.md),
-[`LENS-FANOUT.md`](LENS-FANOUT.md),
+[`LENS-FANOUT.md`](LENS-FANOUT.md), [`EFFECTS-CAP.md`](EFFECTS-CAP.md),
 [`WORKTREE.md`](WORKTREE.md), [`DELEGATION.md`](DELEGATION.md),
 [`ADR-FILE.md`](ADR-FILE.md), [`DIRECTORY-OVERRIDE.md`](DIRECTORY-OVERRIDE.md),
 [`STEP-AGENT.md`](STEP-AGENT.md),

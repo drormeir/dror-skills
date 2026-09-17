@@ -92,9 +92,9 @@ flowchart TD
     ARP -.->|corrected prose| ADR
 
     AXES["an ADR is judged against five things<br/>the code it governs · itself<br/>other documents · its tickets · the reader"]
-    AXES -.->|only 3 of 10 lenses read code| AR
+    AXES -.->|only 4 of 11 lenses read code| AR
 
-    AR -.->|"conflict · unstated · revisit"| YOU(["your call — nobody repairs these"])
+    AR -.->|"conflict · unstated · revisit · effect"| YOU(["your call — nobody repairs these"])
 
     subgraph build ["STAGE 2 · build it — one ticket at a time"]
         ST[dror-show-tickets] --> IA[dror-implement-adr]

@@ -144,11 +144,15 @@ the ADR's path, the path of the store's `facts.md`, and the path of `LENSES.md`
 with the name of its lens — it reads that file itself, and is told that the
 preamble and the section headed with its name bind it while the other sections
 are other agents'. Paths, never contents. A code-axis lens — `claims`,
-`breach`, `outcome` — is also given the paths the ADR names, which are its
+`breach`, `outcome`, `effects` — is also given the paths the ADR names, which are its
 axis's subject, and the path of the drift log the read above saved: where the
 tree moved since the decision is where its findings live, and a lens that
 starts there reads less to find them.
 An empty log is a prior, not a verdict; the lens still works its bullets.
+`effects` is also given the absolute path of
+`../dror-internal-shared/EFFECTS-CAP.md`, the ticket numbers the read above
+found, and the path of the ADR's standing answers file,
+`<the user's checkout>/.claude/dror-skills/interview-<N>.md`, where one exists.
 `neighbours` is given the paths of the sibling documents the read above picked
 — the files in the ADR's own directory whose titles touch its subject. Which
 files those are is the read's finding to hand on, not the lens's to re-derive.
@@ -168,6 +172,11 @@ is work not yet done — dropping it lets a stale criterion be implemented
 correctly, which no later run of any lens catches. No tickets, no lens: say so
 in the report like any other that was not run.
 
+**`effects` earns its place whenever the ticket set has an open ticket** — the
+decision is not fully built, so a side effect can still be prevented. It counts
+toward the five. On an ADR whose tickets are all closed, skip it and say why:
+the effects are already in the tree.
+
 `claims` and `breach` are the two that earn their place on nearly every run:
 between them they are the whole question of whether the document and the tree
 still agree. `misreading` is the third, wherever the ADR states rules somebody
@@ -185,7 +194,9 @@ in one copy for all three reviews. Read it whole before launching the batch. It
 is not restated here.
 
 **What this run gives each lens, inside that boundary.** A code-axis lens gets
-the ADR, the files it names and their direct callers. A lens on any other axis
+the ADR, the files it names and their direct callers. `effects` may also search
+the tree for the far ends its section names — other readers of the same keys,
+files, signals and state — one hop from the code the ADR changes. A lens on any other axis
 gets the ADR plus the thing it is judged against and nothing more — the sibling
 ADRs and the copies for `neighbours` and `echoes`, the named rows of the listing
 it was handed for `tickets`, and for the three that read the document against
@@ -236,8 +247,8 @@ it. It is not restated here.
 
 Number the survivors: `conflict` first — it is the kind that blocks
 somebody — then `breach` in the order of the damage a violation does, then
-`text`, then `hole`, then `unticketed`, then `unstated`, then `echo`, then
-`revisit` last, which is the only kind that asks for nothing to be fixed. Save them under the name the reference gives — claimed
+`text`, then `hole`, then `unticketed`, then `unstated`, then `effect`, then
+`echo`, then `revisit` last, which is the only kind that asks for nothing to be fixed. Save them under the name the reference gives — claimed
 first where that name came from a caller, as the reference says, and written to
 whatever path the claim printed. It is a separate file from the code review's on purpose: a code
 review and an ADR review are started for different reasons and neither should be
@@ -285,6 +296,10 @@ Then one section per finding, numbered as on screen, each with:
   or has already shipped it. Not a sentence for the ADR to adopt: adopting it is
   a decision and the decision is the user's, so a drafted one would read as this
   run having taken it.
+- for an `effect` — **what the decision reaches**: the near end and the far end,
+  each as a `file:line`, the shape, the consequence the refuter confirmed, and
+  the options. No recommendation, for the same reason as `unstated`. Also say, once
+  for the whole report, how many more the lens dropped at its cap.
 
 **A finding is about fifteen lines.** This file is read start to finish by a
 repair run and by you tomorrow, so it carries what is needed to act and not the
@@ -310,7 +325,7 @@ One tab-separated line per finding — the columns and their order are the store
 reference's (`REPORT-STORE.md`, "The logs"), stated there once. This run's own
 values: `path` is **the ADR's repo-relative path**, which is what this run
 reviewed, even for a `breach` whose evidence sits in code; `kind` is `text /
-hole / breach / conflict / revisit / echo / unticketed / unstated`; `claim` is always `no` — this skill
+hole / breach / conflict / revisit / echo / unticketed / unstated / effect`; `claim` is always `no` — this skill
 writes no claim comments, and the column stays so the pools share one
 schema; `subject` is **the ADR's number**, the same one the identity line
 carries; `round` is the round a looping caller named, or `-`; and `run_tag` is
@@ -395,7 +410,8 @@ sentence. It is a judgement the count cannot make: a stale sentence and a
 decision nobody may repair are one survivor each, and only this run has met them.
 Three answers — *yes*, naming which findings need the edit; *no*, where every
 survivor is something to know rather than something to change; *the user's call*,
-where a `conflict` or a `revisit` is the whole list and choosing is theirs. It
+where a `conflict`, a `revisit` or an `effect` is the whole list and choosing is
+theirs. It
 binds nobody; a looping caller reads this line to decide whether to spend a
 repair at all.
 
